@@ -3,7 +3,7 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {PlatformPressable, Text} from "@react-navigation/elements";
 import {createStaticNavigation, useLinkBuilder} from "@react-navigation/native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {Home, Star} from "iconsax-react-native";
+import {Home, Setting4, Star} from "iconsax-react-native";
 import {View} from "react-native";
 
 import {FavouritesScreen} from "@/app/modules/Favourites/screens/FavouritesScreen";
@@ -11,6 +11,7 @@ import {HomeScreen} from "@/app/modules/Home/screens/HomeScreen";
 import {NamesRowScreen} from "@/app/modules/Home/screens/NamesRowScreen";
 import {colors} from "@/app/ui/config/colors";
 import {StyleSheet} from "react-native-unistyles";
+import {SettingsScreen} from "../modules/Settings/screens/SettingsScreen";
 
 const TabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
 	const {buildHref} = useLinkBuilder();
@@ -64,13 +65,19 @@ const TabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
 								color={colors.primary}
 								variant={isFocused ? "Bold" : "Outline"}
 							/>
-						) : (
+						) : label === "Favourites" ? (
 							<Star
 								size="27"
 								color={colors.primary}
 								variant={isFocused ? "Bold" : "Outline"}
 							/>
-						)}
+						) : label === "Settings" ? (
+							<Setting4
+								size="27"
+								color={colors.primary}
+								variant={isFocused ? "Bold" : "Outline"}
+							/>
+						) : null}
 						<Text style={styles.bottomTabText}>
 							{BOTTOM_TAB_TEXT_MAP[label as keyof typeof BOTTOM_TAB_TEXT_MAP]}
 						</Text>
@@ -84,6 +91,7 @@ const TabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
 const BOTTOM_TAB_TEXT_MAP = {
 	HomeStack: "Home",
 	Favourites: "Favourites",
+	Settings: "Settings",
 };
 
 const HomeStack = createNativeStackNavigator({
@@ -102,6 +110,7 @@ const RootStack = createBottomTabNavigator({
 	screens: {
 		HomeStack,
 		Favourites: FavouritesScreen,
+		Settings: SettingsScreen,
 	},
 	screenOptions: {
 		headerShown: false,
