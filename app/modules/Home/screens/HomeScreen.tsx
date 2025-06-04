@@ -1,6 +1,6 @@
 import type {BottomSheetModal} from "@gorhom/bottom-sheet";
-import {LegendList} from "@legendapp/list";
 import {useNavigation} from "@react-navigation/native";
+import {FlashList} from "@shopify/flash-list";
 import React from "react";
 import {Pressable, Text, View} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
@@ -36,10 +36,11 @@ export function HomeScreen() {
 	}, [vardūs]);
 
 	const onViewableItemsChanged = React.useCallback(
-		({viewableItems}: {viewableItems: {index: number}[]}) => {
+		({viewableItems}: {viewableItems: Array<{index: number | null}>}) => {
 			if (viewableItems.length === 0) return;
 
 			const firstVisibleIndex = viewableItems[0].index;
+			if (firstVisibleIndex === null) return;
 
 			for (let i = monthIndexMap.length - 1; i >= 0; i--) {
 				if (monthIndexMap[i].index <= firstVisibleIndex) {
@@ -51,58 +52,65 @@ export function HomeScreen() {
 		[monthIndexMap],
 	);
 
-	return (
-		<>
-			<Layout>
-				<Search currentMonth={currentMonth} openSearch={handleOpenSearch} />
-				<View style={{flexDirection: "row"}}>
-					<SearchBottomSheet ref={bottomSheetRef} />
-					<LegendList
-						data={vardūs}
-						contentContainerStyle={{paddingHorizontal: 10}}
-						// contentContainerStyle={{
-						// 	paddingBottom: 50,
-						// 	backgroundColor: "#fff",
-						// }}
-						renderItem={({item}) => {
-							return typeof item === "string" ? null : (
-								<Pressable
-									style={{paddingBottom: 10}}
-									onPress={() => navigate("NamesRow", {data: item})}
-								>
-									<Text style={styles.diena}>{item.diena}</Text>
-									<View>
-										<Text style={styles.vardi}>{item.vardi.join(" ")}</Text>
-										<Text style={styles.citiVardi}>
-											{item.citiVardi.join(" ")}
-										</Text>
-									</View>
-								</Pressable>
-							);
-						}}
-						keyExtractor={(item, index) =>
-							typeof item === "string" ? item : `${item.diena}-${index}`
-						}
-						recycleItems
-						showsVerticalScrollIndicator={false}
-						estimatedItemSize={70}
-						initialScrollIndex={getTodaysIndex(vardūs)}
-						onViewableItemsChanged={onViewableItemsChanged}
-					/>
+	type VardusItem = {diena: string; vardi: string[]; citiVardi: string[]};
+	const renderItem = React.useCallback(
+		({item}: {item: string | VardusItem}) => {
+			if (typeof item === "string") return null;
+			return (
+				<Pressable
+					onPress={() =>
+						navigate("NamesRow", {data: item, month: currentMonth})
+					}
+				>
+					<Text style={styles.diena}>{item.diena}</Text>
 					<View>
-						<Text>List</Text>
+						<Text style={styles.vardi}>{item.vardi.join(" ")}</Text>
+						<Text style={styles.citiVardi}>{item.citiVardi.join(" ")}</Text>
 					</View>
+				</Pressable>
+			);
+		},
+		[navigate, currentMonth],
+	);
+
+	return (
+		<Layout>
+			<Search currentMonth={currentMonth} openSearch={handleOpenSearch} />
+			<View style={{flexDirection: "row"}}>
+				<SearchBottomSheet ref={bottomSheetRef} />
+				<FlashList
+					data={vardūs}
+					contentContainerStyle={{paddingHorizontal: 10}}
+					renderItem={renderItem}
+					keyExtractor={(item, index) => {
+						if (typeof item === "string") {
+							return `month-${item}`;
+						}
+						let month = "unknown";
+						for (let i = index; i >= 0; i--) {
+							const prev = vardūs[i];
+							if (typeof prev === "string") {
+								month = prev;
+								break;
+							}
+						}
+
+						return `day-${month}-${item.diena}`;
+					}}
+					showsVerticalScrollIndicator={false}
+					estimatedItemSize={70}
+					initialScrollIndex={getTodaysIndex(vardūs)}
+					onViewableItemsChanged={onViewableItemsChanged}
+				/>
+				<View>
+					<Text>List</Text>
 				</View>
-			</Layout>
-		</>
+			</View>
+		</Layout>
 	);
 }
 
 const styles = StyleSheet.create(({colors, sizes}) => ({
-	text: {
-		fontSize: 35,
-		fontWeight: "700",
-	},
 	diena: {
 		fontSize: 30,
 		fontWeight: "700",
