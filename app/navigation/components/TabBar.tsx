@@ -1,8 +1,8 @@
 import type {BottomTabBarProps} from "@react-navigation/bottom-tabs";
-import {View} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
 import {Bar} from "@/app/navigation/components/Bar";
+import {View} from "@/app/ui/components/View";
 
 export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
 	return (
@@ -53,7 +53,7 @@ export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}, rt) => ({
+const styles = StyleSheet.create(({colors, sizes}, {insets}) => ({
 	bottomTabs: {
 		flexDirection: "row",
 	},
@@ -62,7 +62,7 @@ const styles = StyleSheet.create(({colors, sizes}, rt) => ({
 		paddingTop: sizes["3px"],
 		backgroundColor: colors.white,
 		alignItems: "center",
-		paddingBottom: rt.insets.bottom,
+		paddingBottom: insets.bottom,
 	},
 	bottomTabText: {
 		color: colors.primary,

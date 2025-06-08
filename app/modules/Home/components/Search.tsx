@@ -1,7 +1,10 @@
-import {colors} from "@/app/ui/config/colors";
 import {SearchNormal} from "iconsax-react-native";
-import {Pressable, Text} from "react-native";
+import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
+
+import {Text} from "@/app/ui/components/Text";
+import {colors} from "@/app/ui/config/colors";
+import {hapticToTrigger} from "@/app/utils/haptics";
 
 type Props = {
 	openSearch: () => void;
@@ -9,9 +12,16 @@ type Props = {
 };
 
 export function Search({openSearch, currentMonth}: Props) {
+	const haptic = hapticToTrigger("impactMedium");
+
+	const handleOpenSearch = () => {
+		openSearch();
+		haptic.impactMedium();
+	};
+
 	return (
-		<Pressable style={styles.container} onPress={openSearch}>
-			<Text style={styles.header}>{currentMonth}</Text>
+		<Pressable style={styles.container} onPress={handleOpenSearch}>
+			<Text variant="header">{currentMonth}</Text>
 			<SearchNormal size="25" color={colors.white} variant="Outline" />
 		</Pressable>
 	);
@@ -20,13 +30,10 @@ export function Search({openSearch, currentMonth}: Props) {
 const styles = StyleSheet.create(({colors, sizes}) => ({
 	container: {
 		backgroundColor: colors.primary,
-		padding: sizes["10px"],
+		paddingHorizontal: sizes["10px"],
+		height: 50,
 		flexDirection: "row",
 		justifyContent: "space-between",
-	},
-	header: {
-		fontSize: 24,
-		fontWeight: "600",
-		color: colors.white,
+		alignItems: "center",
 	},
 }));

@@ -1,5 +1,5 @@
+import {Text} from "@/app/ui/components/Text";
 import {Layout} from "@/app/ui/components/layout";
-import {Text} from "react-native";
 
 export function SettingsScreen() {
 	return (

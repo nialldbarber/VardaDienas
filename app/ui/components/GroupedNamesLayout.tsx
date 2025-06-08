@@ -1,21 +1,18 @@
-import type {BottomTabNavigationOptions} from "@react-navigation/bottom-tabs";
-import {PlatformPressable} from "@react-navigation/elements";
-import {
-	type NavigationRoute,
-	type ParamListBase,
-	useLinkBuilder,
-} from "@react-navigation/native";
-import {Home, Setting4, Star} from "iconsax-react-native";
-import Animated, {
-	useAnimatedStyle,
-	useSharedValue,
-	withSpring,
-} from "react-native-reanimated";
-import {StyleSheet} from "react-native-unistyles";
+import {Accordion}}}}} fr@animatereactnative/accordionmatereactnative/accordionmatereactnative/accordionmatereactnative/accordionmatereactnative/accordion";
+import {ArrowDown2} from "iconsax-iconsax-icon
+import typemReact  "rrrrreact
+import {StyleSheet} from "styl-unistyl-unistyleseseseses";
 
+import type {Favourite} from "@/app/store/favourites";
+import {favourites$} from "@/app/store/favourites";
+import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
-import {colors} from "@/app/ui/config/colors";
-import {hapticToTrigger} from "@/app/utils/haptics";
+import {View} from "@/app/ui/components/View";
+import {
+	cancelNameDayNotifications,
+	requestNotificationPermissions,
+	scheduleNameDayNotifications,
+} from "@/app/utils/notifications";
 
 const BOTTOM_TAB_TEXT_MAP = {
 	HomeStack: "Home",

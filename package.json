@@ -11,9 +11,11 @@
 		"deps": "cd ios && npx pod install && cd .."
 	},
 	"dependencies": {
+		"@animatereactnative/accordion": "^0.1.5",
 		"@gorhom/bottom-sheet": "^5",
 		"@legendapp/list": "^1.0.14",
 		"@legendapp/state": "^3.0.0-beta.30",
+		"@notifee/react-native": "^9.1.8",
 		"@react-navigation/bottom-tabs": "^7.3.14",
 		"@react-navigation/drawer": "^7.4.1",
 		"@react-navigation/native": "^7.1.10",
@@ -24,6 +26,7 @@
 		"iconsax-react-native": "^0.0.8",
 		"react": "19.0.0",
 		"react-native": "0.79.2",
+		"react-native-bouncy-checkbox": "^4.1.2",
 		"react-native-edge-to-edge": "^1.6.0",
 		"react-native-gesture-handler": "^2.25.0",
 		"react-native-haptic-feedback": "^2.3.3",
@@ -33,6 +36,7 @@
 		"react-native-safe-area-context": "^5.4.1",
 		"react-native-screens": "^4.11.1",
 		"react-native-svg": "^15.12.0",
+		"react-native-toast-message": "^2.3.0",
 		"react-native-unistyles": "^3.0.0-rc.4",
 		"zod": "^3.25.42"
 	},

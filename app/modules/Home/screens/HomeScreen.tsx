@@ -2,25 +2,127 @@ import type {BottomSheetModal} from "@gorhom/bottom-sheet";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
 import React from "react";
-import {Pressable, Text, View} from "react-native";
+import {Pressable, useWindowDimensions} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {StyleSheet} from "react-native-unistyles";
 
 import {vardūs} from "@/app/constants/vardūs.json";
+import {FastScrollIndex} from "@/app/modules/Home/components/FastScrollIndex";
 import {Search} from "@/app/modules/Home/components/Search";
 import {SearchBottomSheet} from "@/app/modules/Home/components/SearchBottomSheet";
 import type {NamesRowScreenNavigationProp} from "@/app/navigation/navigation";
-import {Layout} from "@/app/ui/components/layout";
+import type {DayData} from "@/app/types";
+import {Text} from "@/app/ui/components/Text";
+import {View} from "@/app/ui/components/View";
 import {getTodaysIndex} from "@/app/utils/dates";
+
+type VardusItem = DayData;
+
+type SearchResult = {
+	day: DayData;
+	month: string;
+	matchType: "vardi" | "citiVardi";
+	matchedName: string;
+};
 
 export function HomeScreen() {
 	const bottomSheetRef = React.useRef<BottomSheetModal>(null);
+	const flashListRef = React.useRef<FlashList<string | VardusItem>>(null);
 	const [currentMonth, setCurrentMonth] = React.useState<string | null>(null);
+	const [searchQuery, setSearchQuery] = React.useState("");
+	const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
 	const {navigate} = useNavigation<NamesRowScreenNavigationProp>();
+	const {height} = useWindowDimensions();
+	const insets = useSafeAreaInsets();
 
 	const handleOpenSearch = React.useCallback(() => {
 		bottomSheetRef.current?.present();
 		console.log("i am expanding ");
 	}, []);
+
+	const handleSearchQueryChange = React.useCallback((query: string) => {
+		setSearchQuery(query);
+	}, []);
+
+	// Debounced search effect
+	React.useEffect(() => {
+		if (!searchQuery.trim() || searchQuery.trim().length < 2) {
+			setSearchResults([]);
+			return;
+		}
+
+		// Debounce the search by 300ms
+		const timeoutId = setTimeout(() => {
+			const lowercaseQuery = searchQuery.toLowerCase().trim();
+			const results: SearchResult[] = [];
+			let currentMonthName = "";
+
+			// Search through the vardūs data
+			for (const item of vardūs) {
+				if (typeof item === "string") {
+					currentMonthName = item;
+					continue;
+				}
+
+				// Search in main names (vardi)
+				for (const name of item.vardi) {
+					if (name.toLowerCase().includes(lowercaseQuery)) {
+						results.push({
+							day: item,
+							month: currentMonthName,
+							matchType: "vardi",
+							matchedName: name,
+						});
+					}
+				}
+
+				// Search in other names (citiVardi)
+				for (const name of item.citiVardi) {
+					if (name.toLowerCase().includes(lowercaseQuery)) {
+						results.push({
+							day: item,
+							month: currentMonthName,
+							matchType: "citiVardi",
+							matchedName: name,
+						});
+					}
+				}
+
+				// Early exit if we have enough results for performance
+				if (results.length >= 40) break;
+			}
+
+			// Sort results
+			results.sort((a, b) => {
+				const aExact = a.matchedName.toLowerCase() === lowercaseQuery;
+				const bExact = b.matchedName.toLowerCase() === lowercaseQuery;
+
+				if (aExact && !bExact) return -1;
+				if (!aExact && bExact) return 1;
+
+				// Then sort by main names vs other names
+				if (a.matchType === "vardi" && b.matchType === "citiVardi") return -1;
+				if (a.matchType === "citiVardi" && b.matchType === "vardi") return 1;
+
+				return 0;
+			});
+
+			setSearchResults(results.slice(0, 20)); // Limit to 20 results for better UX
+		}, 300);
+
+		// Cleanup function to cancel the timeout if query changes
+		return () => {
+			clearTimeout(timeoutId);
+		};
+	}, [searchQuery]);
+
+	const handleSearchResultPress = React.useCallback(
+		(result: SearchResult) => {
+			bottomSheetRef.current?.dismiss();
+			navigate("NamesRow", {data: result.day, month: result.month});
+		},
+		[navigate],
+	);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const monthIndexMap = React.useMemo(() => {
@@ -34,6 +136,23 @@ export function HomeScreen() {
 			[],
 		);
 	}, [vardūs]);
+
+	const months = React.useMemo(() => {
+		return monthIndexMap.map((item) => item.name);
+	}, [monthIndexMap]);
+
+	const handleMonthSelect = React.useCallback(
+		(monthIndex: number) => {
+			const monthInfo = monthIndexMap[monthIndex];
+			if (monthInfo && flashListRef.current) {
+				flashListRef.current.scrollToIndex({
+					index: monthInfo.index,
+					animated: true,
+				});
+			}
+		},
+		[monthIndexMap],
+	);
 
 	const onViewableItemsChanged = React.useCallback(
 		({viewableItems}: {viewableItems: Array<{index: number | null}>}) => {
@@ -52,7 +171,6 @@ export function HomeScreen() {
 		[monthIndexMap],
 	);
 
-	type VardusItem = {diena: string; vardi: string[]; citiVardi: string[]};
 	const renderItem = React.useCallback(
 		({item}: {item: string | VardusItem}) => {
 			if (typeof item === "string") return null;
@@ -61,8 +179,11 @@ export function HomeScreen() {
 					onPress={() =>
 						navigate("NamesRow", {data: item, month: currentMonth})
 					}
+					style={{paddingBottom: 10}}
 				>
-					<Text style={styles.diena}>{item.diena}</Text>
+					<Text variant="header" color="black">
+						{item.diena}
+					</Text>
 					<View>
 						<Text style={styles.vardi}>{item.vardi.join(" ")}</Text>
 						<Text style={styles.citiVardi}>{item.citiVardi.join(" ")}</Text>
@@ -73,44 +194,79 @@ export function HomeScreen() {
 		[navigate, currentMonth],
 	);
 
-	return (
-		<Layout>
-			<Search currentMonth={currentMonth} openSearch={handleOpenSearch} />
-			<View style={{flexDirection: "row"}}>
-				<SearchBottomSheet ref={bottomSheetRef} />
-				<FlashList
-					data={vardūs}
-					contentContainerStyle={{paddingHorizontal: 10}}
-					renderItem={renderItem}
-					keyExtractor={(item, index) => {
-						if (typeof item === "string") {
-							return `month-${item}`;
-						}
-						let month = "unknown";
-						for (let i = index; i >= 0; i--) {
-							const prev = vardūs[i];
-							if (typeof prev === "string") {
-								month = prev;
-								break;
-							}
-						}
+	const listContainerHeight = height - insets.top - 120; // Account for header (60px) + bottom tabs (60px)
 
-						return `day-${month}-${item.diena}`;
-					}}
-					showsVerticalScrollIndicator={false}
-					estimatedItemSize={70}
-					initialScrollIndex={getTodaysIndex(vardūs)}
-					onViewableItemsChanged={onViewableItemsChanged}
+	return (
+		<View style={styles.container}>
+			<View style={styles.headerContainer}>
+				<Search currentMonth={currentMonth} openSearch={handleOpenSearch} />
+			</View>
+			<View style={styles.contentContainer}>
+				<SearchBottomSheet
+					ref={bottomSheetRef}
+					searchQuery={searchQuery}
+					onSearchQueryChange={handleSearchQueryChange}
+					searchResults={searchResults}
+					onResultPress={handleSearchResultPress}
 				/>
-				<View>
-					<Text>List</Text>
+				<View style={styles.listContainer}>
+					<FlashList
+						ref={flashListRef}
+						data={vardūs}
+						contentContainerStyle={styles.flashListContent}
+						renderItem={renderItem}
+						keyExtractor={(item, index) => {
+							if (typeof item === "string") {
+								return `month-${item}`;
+							}
+							let month = "unknown";
+							for (let i = index; i >= 0; i--) {
+								const prev = vardūs[i];
+								if (typeof prev === "string") {
+									month = prev;
+									break;
+								}
+							}
+
+							return `day-${month}-${item.diena}`;
+						}}
+						showsVerticalScrollIndicator={false}
+						estimatedItemSize={70}
+						initialScrollIndex={getTodaysIndex(vardūs)}
+						onViewableItemsChanged={onViewableItemsChanged}
+					/>
+					<FastScrollIndex
+						months={months}
+						onMonthSelect={handleMonthSelect}
+						containerHeight={listContainerHeight}
+					/>
 				</View>
 			</View>
-		</Layout>
+		</View>
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
+	container: {
+		flex: 1,
+		paddingTop: rtl.insets.top,
+		backgroundColor: colors.primary,
+	},
+	headerContainer: {
+		zIndex: 100,
+		elevation: 2,
+	},
+	contentContainer: {
+		flex: 1,
+	},
+	listContainer: {
+		flex: 1,
+		position: "relative",
+	},
+	flashListContent: {
+		paddingHorizontal: 10,
+		backgroundColor: tokens.background.primary,
+	},
 	diena: {
 		fontSize: 30,
 		fontWeight: "700",
