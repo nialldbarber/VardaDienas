@@ -18,9 +18,9 @@ import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
 
 const BOTTOM_TAB_TEXT_MAP = {
-	HomeStack: "Home",
-	Favourites: "Favourites",
-	Settings: "Settings",
+	HomeStack: "Sākums",
+	Favourites: "Mīļākie",
+	Settings: "Iestatījumi",
 };
 
 const AnimatedPressable = Animated.createAnimatedComponent(PlatformPressable);

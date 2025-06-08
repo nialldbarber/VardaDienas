@@ -11,7 +11,7 @@ export type Favourite = {
 	name: string;
 	day: string;
 	month: string;
-	notifyMe?: boolean; // Auto sends: day before + day of
+	notifyMe?: boolean;
 };
 
 type FavouritesStore = {

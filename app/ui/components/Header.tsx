@@ -1,7 +1,7 @@
 import {StyleSheet} from "react-native-unistyles";
 
-import {Text} from "./Text";
-import {View} from "./View";
+import {Text} from "@/app/ui/components/Text";
+import {View} from "@/app/ui/components/View";
 
 type HeaderProps = {
 	title: string;

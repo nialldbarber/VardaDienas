@@ -1,7 +1,5 @@
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
-import {reduceArrayToObject} from "@/app/utils/arrays";
-
 export const HapticFeedback = {
 	impactHeavy: "impactHeavy",
 	impactLight: "impactLight",
@@ -17,12 +15,36 @@ export const HapticFeedback = {
 export type HapticFeedbackType =
 	(typeof HapticFeedback)[keyof typeof HapticFeedback];
 
+function triggerHaptic(haptic: HapticFeedbackType) {
+	try {
+		if (
+			ReactNativeHapticFeedback &&
+			typeof ReactNativeHapticFeedback.trigger === "function"
+		) {
+			ReactNativeHapticFeedback.trigger(haptic);
+		} else {
+			console.warn("Haptic feedback library not properly loaded");
+		}
+	} catch (error) {
+		console.warn(`Haptic feedback '${haptic}' not available:`, error);
+	}
+}
+
 export function hapticToTrigger(haptic: HapticFeedbackType) {
 	return {
-		[haptic]: () => ReactNativeHapticFeedback.trigger(haptic),
+		[haptic]: () => triggerHaptic(haptic),
 	};
 }
 
-export const haptics = reduceArrayToObject(
-	Object.values(HapticFeedback).map(hapticToTrigger),
-);
+// Direct export of individual haptic functions for easier usage
+export const haptics = {
+	impactLight: () => triggerHaptic("impactLight"),
+	impactMedium: () => triggerHaptic("impactMedium"),
+	impactHeavy: () => triggerHaptic("impactHeavy"),
+	rigid: () => triggerHaptic("rigid"),
+	soft: () => triggerHaptic("soft"),
+	notificationError: () => triggerHaptic("notificationError"),
+	notificationSuccess: () => triggerHaptic("notificationSuccess"),
+	notificationWarning: () => triggerHaptic("notificationWarning"),
+	selection: () => triggerHaptic("selection"),
+};

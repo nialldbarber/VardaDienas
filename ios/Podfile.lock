@@ -1778,6 +1778,8 @@ PODS:
     - React-logger (= 0.79.2)
     - React-perflogger (= 0.79.2)
     - React-utils (= 0.79.2)
+  - RNDeviceInfo (14.0.4):
+    - React-Core
   - RNFlashList (2.0.0-rc.2):
     - DoubleConversion
     - glog
@@ -1831,6 +1833,30 @@ PODS:
     - RNNotifee/NotifeeCore (= 9.1.8)
   - RNNotifee/NotifeeCore (9.1.8):
     - React-Core
+  - RNPermissions (5.4.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNReactNativeHapticFeedback (2.3.3):
     - DoubleConversion
     - glog
@@ -2030,6 +2056,30 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNShare (12.0.11):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNSVG (15.12.0):
     - DoubleConversion
     - glog
@@ -2182,12 +2232,15 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Unistyles (from `../node_modules/react-native-unistyles`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2342,18 +2395,24 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFlashList:
     :path: "../node_modules/@shopify/flash-list"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNReactNativeHapticFeedback:
     :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Unistyles:
@@ -2434,17 +2493,20 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: d5dcc564f129632276bd3184e60f053fcd574d6b
   ReactCodegen: fda99a79c866370190e162083a35602fdc314e5d
   ReactCommon: 4d0da92a5eb8da86c08e3ec34bd23ab439fb2461
+  RNDeviceInfo: feea80a690d2bde1fe51461cf548039258bd03f2
   RNFlashList: 4b7d726843c42587289c888f950e3ab4d0055b83
   RNGestureHandler: 5d8431415d4b8518e86e289e9ad5bb9be78f6dba
   RNNotifee: 4a6ee5c7deaf00e005050052d73ee6315dff7ec9
+  RNPermissions: d02fe326cc338d0803b25d96f2e3f4e0666e836c
   RNReactNativeHapticFeedback: 7dfb10cca09eb7a4ed6b63ae6415a195beec8cf2
   RNReanimated: 6a437c90e263e4a2202a282f9d6dea0ad28d018d
   RNScreens: c2e3cc506212228c607b4785b315205e28acbf0f
+  RNShare: 339d241dcefeef0099e6681ee1d08634ff669ff7
   RNSVG: 50819276c95d91ccd8fbe5cfea7e09a416c9beaa
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Unistyles: 2d2ffcd49d2da51a2a5688d37bb5852411262df0
-  Yoga: 9f110fc4b7aa538663cba3c14cbb1c335f43c13f
+  Yoga: c758bfb934100bb4bf9cbaccb52557cee35e8bdf
 
-PODFILE CHECKSUM: 9b8291c3345d1cc0432dc5a32889a9658cd0300d
+PODFILE CHECKSUM: 7aa132acb63eb1cee83ea41e835dc6906052b79e
 
 COCOAPODS: 1.16.2

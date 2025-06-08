@@ -33,11 +33,9 @@ export function FastScrollIndex({
 		.onStart((event) => {
 			isActive.value = true;
 
-			// Use the raw gesture Y coordinate directly
 			const clampedY = Math.max(0, Math.min(event.y, containerHeight));
 			translateY.value = clampedY;
 
-			// Calculate index based on equal distribution, ensuring we go to start of month
 			const rawIndex = (clampedY / containerHeight) * monthLetters.length;
 			const index = Math.min(Math.floor(rawIndex), monthLetters.length - 1);
 
@@ -45,11 +43,9 @@ export function FastScrollIndex({
 			runOnJS(onMonthSelect)(index);
 		})
 		.onUpdate((event) => {
-			// Use the raw gesture Y coordinate directly
 			const clampedY = Math.max(0, Math.min(event.y, containerHeight));
 			translateY.value = clampedY;
 
-			// Calculate index based on equal distribution, ensuring we go to start of month
 			const rawIndex = (clampedY / containerHeight) * monthLetters.length;
 			const index = Math.min(Math.floor(rawIndex), monthLetters.length - 1);
 
@@ -68,7 +64,7 @@ export function FastScrollIndex({
 			opacity: isActive.value ? 1 : 0,
 			transform: [
 				{
-					translateY: translateY.value - 12.5, // Center the 25px indicator
+					translateY: translateY.value - 12.5,
 				},
 			],
 		};

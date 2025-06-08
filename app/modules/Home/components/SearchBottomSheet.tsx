@@ -147,6 +147,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		paddingVertical: sizes["12px"],
 		fontSize: 16,
 		backgroundColor: colors.grey1,
+		fontFamily: "PlusJakartaSans-Medium",
 	},
 	flatListContent: {
 		paddingHorizontal: sizes["10px"],

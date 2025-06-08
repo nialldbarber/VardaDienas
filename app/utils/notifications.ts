@@ -9,12 +9,12 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 			);
 			return granted === PermissionsAndroid.RESULTS.GRANTED;
 		}
-		return true; // Permissions are granted by default for Android < 13
+		return true;
 	}
 
 	// iOS
 	const settings = await notifee.requestPermission();
-	return settings.authorizationStatus >= 1; // Authorized or provisional
+	return settings.authorizationStatus >= 1;
 }
 
 export async function scheduleNameDayNotifications(
@@ -23,7 +23,6 @@ export async function scheduleNameDayNotifications(
 	month: string,
 ): Promise<void> {
 	try {
-		// Create notification channel for Android
 		const channelId = await notifee.createChannel({
 			id: "nameday-notifications",
 			name: "Name Day Notifications",
@@ -32,7 +31,6 @@ export async function scheduleNameDayNotifications(
 			vibration: true,
 		});
 
-		// Calculate the next occurrence of this date
 		const nextDate = getNextOccurrenceDate(day, month);
 
 		if (!nextDate) {
@@ -40,7 +38,6 @@ export async function scheduleNameDayNotifications(
 			return;
 		}
 
-		// Schedule day-of notification
 		const dayOfId = generateDayOfNotificationId(name, day, month);
 		await notifee.createTriggerNotification(
 			{
@@ -67,7 +64,6 @@ export async function scheduleNameDayNotifications(
 			},
 		);
 
-		// Schedule day-before notification
 		const dayBeforeDate = new Date(nextDate);
 		dayBeforeDate.setDate(dayBeforeDate.getDate() - 1);
 
@@ -132,7 +128,6 @@ export async function cancelAllNotifications(): Promise<void> {
 	}
 }
 
-// Helper function to get the next occurrence of a specific day/month
 function getNextOccurrenceDate(day: string, month: string): Date | null {
 	const monthMap: Record<string, number> = {
 		Janvāris: 0,
@@ -155,7 +150,6 @@ function getNextOccurrenceDate(day: string, month: string): Date | null {
 		return null;
 	}
 
-	// Parse day number (remove ordinal suffixes if any)
 	const dayNumber = Number.parseInt(day.replace(/\D/g, ""), 10);
 	if (Number.isNaN(dayNumber) || dayNumber < 1 || dayNumber > 31) {
 		console.warn(`Invalid day: ${day}`);
@@ -165,10 +159,8 @@ function getNextOccurrenceDate(day: string, month: string): Date | null {
 	const now = new Date();
 	const currentYear = now.getFullYear();
 
-	// Try current year first
-	let targetDate = new Date(currentYear, monthIndex, dayNumber, 9, 0, 0); // 9 AM notification
+	let targetDate = new Date(currentYear, monthIndex, dayNumber, 9, 0, 0);
 
-	// If the date has already passed this year, schedule for next year
 	if (targetDate <= now) {
 		targetDate = new Date(currentYear + 1, monthIndex, dayNumber, 9, 0, 0);
 	}

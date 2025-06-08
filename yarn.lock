@@ -12,7 +12,7 @@
 
 "@animatereactnative/accordion@^0.1.5":
   version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@animatereactnative/accordion/-/accordion-0.1.5.tgz#31eb3c4ea1c84caed6157bedadebc4d6293baff4"
+  resolved "https://registry.npmjs.org/@animatereactnative/accordion/-/accordion-0.1.5.tgz"
   integrity sha512-BYUb3lRwHHnok6bv3D9lUmwho54+xhSziWGyvX+iZ0cXqWH3eOJX8c2welUMTHt552Mc0mhR4xmqTDO95YuwsA==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.24.7", "@babel/code-frame@^7.27.1":
@@ -5887,6 +5887,11 @@ react-native-bouncy-checkbox@^4.1.2:
   dependencies:
     "@freakycoder/react-native-bounceable" "^1.0.3"
 
+react-native-device-info@^14.0.4:
+  version "14.0.4"
+  resolved "https://registry.npmjs.org/react-native-device-info/-/react-native-device-info-14.0.4.tgz"
+  integrity sha512-NX0wMAknSDBeFnEnSFQ8kkAcQrFHrG4Cl0mVjoD+0++iaKrOupiGpBXqs8xR0SeJyPC5zpdPl4h/SaBGly6UxA==
+
 react-native-drawer-layout@^4.1.10:
   version "4.1.10"
   resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.1.10.tgz"
@@ -5928,6 +5933,11 @@ react-native-nitro-modules@^0.25.2:
   resolved "https://registry.npmjs.org/react-native-nitro-modules/-/react-native-nitro-modules-0.25.2.tgz"
   integrity sha512-rL+X0LzB8BXvpdrUE/+oZ5v4qS/1nZIq0M8Uctbvqq2q53sVCHX4995ffT8+lGIJe/f0QcBvvrEeXtBPl86iwQ==
 
+react-native-permissions@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-5.4.1.tgz#b147e5901f2f5d847b367f2ba6e60378ebcee90c"
+  integrity sha512-MTou5DVn8IADr7OQjYePJzcxrVNEeODBvSpB8XOt5qBI9ui3HduSBn/KTNZECH/Ph2Y20OnZBMqe6Wp9IryrgQ==
+
 react-native-reanimated@^3.18.0:
   version "3.18.0"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.18.0.tgz"
@@ -5960,6 +5970,11 @@ react-native-screens@^4.11.1:
     react-native-is-edge-to-edge "^1.1.7"
     warn-once "^0.1.0"
 
+react-native-share@^12.0.11:
+  version "12.0.11"
+  resolved "https://registry.npmjs.org/react-native-share/-/react-native-share-12.0.11.tgz"
+  integrity sha512-jb9RzHjgFKvl/fVPPAiyxjmMHjnwKhKiZul6ptSUX7w7Rl7ifDYpdY7uJkipevyvwcn5DlzqXBcd8d6DPBeNVg==
+
 react-native-svg@^15.12.0:
   version "15.12.0"
   resolved "https://registry.npmjs.org/react-native-svg/-/react-native-svg-15.12.0.tgz"
@@ -5971,7 +5986,7 @@ react-native-svg@^15.12.0:
 
 react-native-toast-message@^2.3.0:
   version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.3.0.tgz#c25fb40d7af4388f6a798efbfca479d53916ed00"
+  resolved "https://registry.npmjs.org/react-native-toast-message/-/react-native-toast-message-2.3.0.tgz"
   integrity sha512-d7LldTK1ei1Bl7RFhoOYw8hVQ4oKPQHORYI//xR9Pyz3HxSlFlvQbueE5X3KLoemRRgBrOUg3zY6DxXnxrVLRg==
 
 react-native-unistyles@^3.0.0-rc.4:

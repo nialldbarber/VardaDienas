@@ -44,27 +44,23 @@ export function HomeScreen() {
 		setSearchQuery(query);
 	}, []);
 
-	// Debounced search effect
 	React.useEffect(() => {
 		if (!searchQuery.trim() || searchQuery.trim().length < 2) {
 			setSearchResults([]);
 			return;
 		}
 
-		// Debounce the search by 300ms
 		const timeoutId = setTimeout(() => {
 			const lowercaseQuery = searchQuery.toLowerCase().trim();
 			const results: SearchResult[] = [];
 			let currentMonthName = "";
 
-			// Search through the vardūs data
 			for (const item of vardūs) {
 				if (typeof item === "string") {
 					currentMonthName = item;
 					continue;
 				}
 
-				// Search in main names (vardi)
 				for (const name of item.vardi) {
 					if (name.toLowerCase().includes(lowercaseQuery)) {
 						results.push({
@@ -76,7 +72,6 @@ export function HomeScreen() {
 					}
 				}
 
-				// Search in other names (citiVardi)
 				for (const name of item.citiVardi) {
 					if (name.toLowerCase().includes(lowercaseQuery)) {
 						results.push({
@@ -88,11 +83,9 @@ export function HomeScreen() {
 					}
 				}
 
-				// Early exit if we have enough results for performance
 				if (results.length >= 40) break;
 			}
 
-			// Sort results
 			results.sort((a, b) => {
 				const aExact = a.matchedName.toLowerCase() === lowercaseQuery;
 				const bExact = b.matchedName.toLowerCase() === lowercaseQuery;
@@ -100,17 +93,15 @@ export function HomeScreen() {
 				if (aExact && !bExact) return -1;
 				if (!aExact && bExact) return 1;
 
-				// Then sort by main names vs other names
 				if (a.matchType === "vardi" && b.matchType === "citiVardi") return -1;
 				if (a.matchType === "citiVardi" && b.matchType === "vardi") return 1;
 
 				return 0;
 			});
 
-			setSearchResults(results.slice(0, 20)); // Limit to 20 results for better UX
+			setSearchResults(results.slice(0, 20));
 		}, 300);
 
-		// Cleanup function to cancel the timeout if query changes
 		return () => {
 			clearTimeout(timeoutId);
 		};
@@ -194,7 +185,7 @@ export function HomeScreen() {
 		[navigate, currentMonth],
 	);
 
-	const listContainerHeight = height - insets.top - 120; // Account for header (60px) + bottom tabs (60px)
+	const listContainerHeight = height - insets.top - 120;
 
 	return (
 		<View style={styles.container}>
@@ -270,16 +261,17 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 	diena: {
 		fontSize: 30,
 		fontWeight: "700",
+		fontFamily: "PlusJakartaSans-ExtraBold",
 	},
 	vardi: {
 		fontSize: 18,
 		color: colors.primary,
 		marginTop: sizes["5px"],
+		fontFamily: "PlusJakartaSans-Bold",
 	},
 	citiVardi: {
 		fontSize: 14,
 		color: colors.black,
 		marginTop: sizes["3px"],
-		lineHeight: 18,
 	},
 }));

@@ -1,10 +1,11 @@
+import Toast from "react-native-toast-message";
+import {StyleSheet} from "react-native-unistyles";
+
 import {favourites$} from "@/app/store/favourites";
 import type {DayData} from "@/app/types";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
-import Toast from "react-native-toast-message";
-import {StyleSheet} from "react-native-unistyles";
 
 type Props = {
 	vards: string;
