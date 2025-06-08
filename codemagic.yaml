@@ -9,6 +9,8 @@ workflows:
             ios_signing:
                 distribution_type: app_store
                 bundle_identifier: com.nialldbarber.vardadienas
+                signing_certificate: Apple Distribution
+                provisioning_profile: varda-dev
             vars:
                 XCODE_WORKSPACE: "VardaDienas.xcworkspace"
                 XCODE_SCHEME: "VardaDienas"
@@ -67,6 +69,8 @@ workflows:
             ios_signing:
                 distribution_type: app_store
                 bundle_identifier: com.nialldbarber.vardadienas
+                signing_certificate: Apple Distribution
+                provisioning_profile: varda-dist
             vars:
                 XCODE_WORKSPACE: "VardaDienas.xcworkspace"
                 XCODE_SCHEME: "VardaDienas"
