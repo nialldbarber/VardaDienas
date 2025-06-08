@@ -38,7 +38,9 @@ export function Checkbox({
 	return (
 		<BouncyCheckbox
 			style={{
-				alignSelf: "flex-end",
+				alignSelf: "center",
+				justifyContent: "flex-start",
+				width: 25,
 			}}
 			fillColor={colors.primary}
 			isChecked={localChecked}

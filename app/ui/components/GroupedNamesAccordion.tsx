@@ -1,6 +1,6 @@
 import {Accordion} from "@animatereactnative/accordion";
 import {ArrowDown2} from "iconsax-react-native";
-import React, {useState} from "react";
+import React from "react";
 import {StyleSheet} from "react-native-unistyles";
 
 import type {Favourite} from "@/app/store/favourites";
@@ -77,7 +77,6 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 }
 
 export function GroupedNamesAccordion({favourites}: Props) {
-	const [removingNames, setRemovingNames] = useState<Set<string>>(new Set());
 	const groupedData = groupFavouritesByMonthAndDay(favourites);
 
 	const handleNotificationToggle = async (
@@ -153,9 +152,24 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 												<Accordion.Expanded style={styles.accordionContent}>
 													<View style={styles.checkboxRow}>
-														<Text style={styles.checkboxLabel}>🔔</Text>
 														<Text style={styles.checkboxDescription}>
-															Paziņojumi
+															❤️ Unfavourite
+														</Text>
+														<Checkbox
+															checked={true}
+															onUnCheckedChange={() =>
+																handleRemoveFavourite(favourite.name)
+															}
+															onCheckedChange={() => {}}
+														/>
+													</View>
+
+													<View style={styles.checkboxRow}>
+														<Text style={styles.checkboxDescription}>
+															🔔{" "}
+															{favourite.notifyMe
+																? "Don't notify me"
+																: "Notify me"}
 														</Text>
 														<Checkbox
 															checked={favourite.notifyMe || false}
@@ -165,20 +179,6 @@ export function GroupedNamesAccordion({favourites}: Props) {
 															onUnCheckedChange={() =>
 																handleNotificationToggle(favourite, false)
 															}
-														/>
-													</View>
-
-													<View style={styles.checkboxRow}>
-														<Text style={styles.checkboxLabel}>❤️</Text>
-														<Text style={styles.checkboxDescription}>
-															Izlase
-														</Text>
-														<Checkbox
-															checked={true}
-															onUnCheckedChange={() =>
-																handleRemoveFavourite(favourite.name)
-															}
-															onCheckedChange={() => {}}
 														/>
 													</View>
 												</Accordion.Expanded>
@@ -225,10 +225,10 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	accordion: {
 		marginBottom: sizes["8px"],
-		backgroundColor: colors.grey1,
+		backgroundColor: colors.grey2,
 		borderRadius: sizes["8px"],
 		borderWidth: StyleSheet.hairlineWidth,
-		borderColor: colors.grey1,
+		borderColor: colors.lightGrey,
 		padding: sizes["10px"],
 	},
 	accordionHeader: {
@@ -251,20 +251,23 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	accordionContent: {
 		paddingHorizontal: sizes["12px"],
-		paddingBottom: sizes["12px"],
+		paddingVertical: sizes["16px"],
 		gap: sizes["12px"],
 	},
 	checkboxRow: {
 		flexDirection: "row",
+		justifyContent: "space-between",
 		alignItems: "center",
-		gap: sizes["8px"],
 	},
 	checkboxLabel: {
 		fontSize: sizes["16px"],
 	},
 	checkboxDescription: {
 		flex: 1,
-		fontSize: sizes["15px"],
-		color: colors.grey,
+		fontSize: sizes["16px"],
+		fontWeight: "500",
+		color: colors.black,
+		backgroundColor: "transparent",
+		paddingVertical: sizes["4px"],
 	},
 }));

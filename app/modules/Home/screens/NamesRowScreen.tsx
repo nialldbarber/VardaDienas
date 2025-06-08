@@ -41,7 +41,7 @@ export function NamesRowScreen({
 			<View style={{padding: 10}}>
 				<View>
 					<Text style={styles.header("light")}>Vārdi</Text>
-					<View>
+					<View style={styles.sectionBlock}>
 						{data.vardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
 							return (
@@ -59,7 +59,7 @@ export function NamesRowScreen({
 				<View style={{height: 20}} />
 				<View>
 					<Text style={styles.header("light")}>Citi vārdi</Text>
-					<View>
+					<View style={styles.sectionBlock}>
 						{data.citiVardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
 							return (
@@ -93,4 +93,12 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		fontWeight: "600",
 		color: variant === "dark" ? colors.white : colors.black,
 	}),
+	sectionBlock: {
+		backgroundColor: colors.grey2,
+		borderRadius: sizes["8px"],
+		borderWidth: StyleSheet.hairlineWidth,
+		borderColor: colors.lightGrey,
+		padding: sizes["12px"],
+		marginBottom: sizes["8px"],
+	},
 }));

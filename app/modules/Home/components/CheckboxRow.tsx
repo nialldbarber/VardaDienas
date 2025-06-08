@@ -53,7 +53,7 @@ export function CheckboxRow({vards, isChecked, data, month}: Props) {
 
 const styles = StyleSheet.create(({sizes}) => ({
 	container: {
-		paddingVertical: sizes["6px"],
+		paddingVertical: sizes["8px"],
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",

@@ -256,6 +256,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 	},
 	flashListContent: {
 		paddingHorizontal: 10,
+		paddingRight: 45,
 		backgroundColor: tokens.background.primary,
 	},
 	diena: {
@@ -273,5 +274,6 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 		fontSize: 14,
 		color: colors.black,
 		marginTop: sizes["3px"],
+		lineHeight: 20,
 	},
 }));

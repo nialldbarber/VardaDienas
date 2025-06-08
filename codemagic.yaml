@@ -1,5 +1,120 @@
 workflows:
-    sample-workflow:
-        name: Codemagic Sample Workflow
+    ios-testflight:
+        name: Varda Dienas iOS TestFlight
         max_build_duration: 120
         instance_type: mac_mini_m2
+        integrations:
+            app_store_connect: Varda
+        environment:
+            ios_signing:
+                distribution_type: app_store
+                bundle_identifier: com.nialldbarber.vardadienas
+            vars:
+                XCODE_WORKSPACE: "VardaDienas.xcworkspace"
+                XCODE_SCHEME: "VardaDienas"
+                APP_ID: 6747011314
+            node: v19.7.0
+            xcode: latest
+            cocoapods: default
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                npm install
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install
+            - name: Set up code signing settings on Xcode project
+              script: |
+                xcode-project use-profiles --warn-only
+            - name: Increment build number
+              script: |
+                cd $CM_BUILD_DIR/ios
+                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
+                agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa \
+                  --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                  --scheme "$XCODE_SCHEME"
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+            email:
+                recipients:
+                    - nialldbarber@gmail.com # Update with your email
+                notify:
+                    success: true
+                    failure: false
+            app_store_connect:
+                auth: integration
+                # Configuration related to TestFlight
+                submit_to_testflight: true
+                beta_groups: # Optional: specify beta groups
+                    - Varda Dienas Test Group
+                # Configuration related to App Store
+                submit_to_app_store: false
+
+    ios-production:
+        name: Varda Dienas iOS App Store
+        max_build_duration: 120
+        instance_type: mac_mini_m2
+        integrations:
+            app_store_connect: Varda
+        environment:
+            ios_signing:
+                distribution_type: app_store
+                bundle_identifier: com.nialldbarber.vardadienas
+            vars:
+                XCODE_WORKSPACE: "VardaDienas.xcworkspace"
+                XCODE_SCHEME: "VardaDienas"
+                APP_ID: 6747011314
+            node: v19.7.0
+            xcode: latest
+            cocoapods: default
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                npm install
+            - name: Install CocoaPods dependencies
+              script: |
+                cd ios && pod install
+            - name: Set up code signing settings on Xcode project
+              script: |
+                xcode-project use-profiles --warn-only
+            - name: Increment build number
+              script: |
+                cd $CM_BUILD_DIR/ios
+                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
+                agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+            - name: Build ipa for distribution
+              script: |
+                xcode-project build-ipa \
+                  --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
+                  --scheme "$XCODE_SCHEME"
+        artifacts:
+            - build/ios/ipa/*.ipa
+            - /tmp/xcodebuild_logs/*.log
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+            - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        publishing:
+            email:
+                recipients:
+                    - nialldbarber@gmail.com # Update with your email
+                notify:
+                    success: true
+                    failure: false
+            app_store_connect:
+                auth: integration
+                # Configuration related to TestFlight
+                submit_to_testflight: false
+                # Configuration related to App Store
+                submit_to_app_store: true
+        triggering:
+            events:
+                - tag
+            tag_patterns:
+                - pattern: 'v*.*.*'
+                  include: true

@@ -3,6 +3,7 @@ export const greys = {
 	lightGrey: "#E5E5E5",
 	lightestGrey: "#fcfcfc",
 	grey1: "#E7E8EA",
+	grey2: "#F5F5F7",
 };
 
 export const semantics = {
