@@ -98,8 +98,7 @@ workflows:
             app_store_connect:
                 auth: integration
                 submit_to_testflight: true
-                beta_groups:
-                    - "Vardu Kalendārs Test Group"
+                # Removed beta_groups to prevent assignment errors
                 submit_to_app_store: false
 
     ios-production:
