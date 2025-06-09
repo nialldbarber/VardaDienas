@@ -1,8 +1,8 @@
 workflows:
   ios-testflight:
     name: Varda Dienas iOS TestFlight
-    max_build_duration: 120
     instance_type: mac_mini_m2
+    max_build_duration: 120
     integrations:
       app_store_connect: Varda
     environment:
@@ -13,60 +13,28 @@ workflows:
         XCODE_WORKSPACE: "VardaDienas.xcworkspace"
         XCODE_SCHEME: "VardaDienas"
         APP_ID: 6747011314
+        XCODE_PROJECT_CUSTOM_EXPORT_OPTIONS: '{"testFlightInternalTestingOnly": true}'
       node: v19.7.0
       xcode: latest
       cocoapods: default
     scripts:
       - name: Install npm dependencies
+        script: npm install
+      - name: Install CocoaPods
         script: |
-          npm install
-      - name: Install CocoaPods dependencies
+          cd ios
+          pod install
+      - name: Code signing with internal‑only TestFlight flag
         script: |
-          cd ios && pod install
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles --warn-only
+          xcode-project use-profiles --custom-export-options="$XCODE_PROJECT_CUSTOM_EXPORT_OPTIONS"
       - name: Increment build number
         script: |
           cd $CM_BUILD_DIR/ios
-
-          if [ ! -f *.xcodeproj/project.pbxproj ] && [ ! -f *.xcworkspace ]; then
-            echo "Error: No Xcode project found in $(pwd)"
-            ls -la
-            exit 1
-          fi
-
-          echo "Fetching latest build number from TestFlight..."
-          if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
-            echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
-            if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-              echo "Warning: Invalid build number format: $LATEST_BUILD_NUMBER"
-              LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
-            fi
-          else
-            echo "Warning: Failed to fetch TestFlight build number"
-            LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
-          fi
-
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          echo "Setting new build number: $NEW_BUILD_NUMBER"
-
-          if agvtool new-version -all $NEW_BUILD_NUMBER; then
-            echo "✅ Build number updated"
-          else
-            echo "❌ Failed to set build number"
-            exit 1
-          fi
-
-          CURRENT_BUILD_NUMBER=$(agvtool what-version -terse)
-          if [ "$CURRENT_BUILD_NUMBER" != "$NEW_BUILD_NUMBER" ]; then
-            echo "❌ Build number verification failed"
-            echo "Expected: $NEW_BUILD_NUMBER, Got: $CURRENT_BUILD_NUMBER"
-            exit 1
-          fi
-
-          echo "✅ Build number verified"
-      - name: Build ipa for distribution
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null || echo 0)
+          [[ $LATEST =~ ^[0-9]+$ ]] || LATEST=$(agvtool what-version -terse 2>/dev/null || echo 0)
+          NEW=$((LATEST + 1))
+          agvtool new-version -all "$NEW"
+      - name: Build ipa
         script: |
           xcode-project build-ipa \
             --workspace "$CM_BUILD_DIR/ios/$XCODE_WORKSPACE" \
@@ -78,16 +46,12 @@ workflows:
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
       email:
-        recipients:
-          - nialldbarber@gmail.com
+        recipients: [nialldbarber@gmail.com]
         notify:
           success: true
           failure: false
       app_store_connect:
         auth: integration
-        upload: true
-        submit_to_testflight: false
-        submit_to_app_store: false
 
   ios-production:
     name: Varda Dienas iOS App Store
