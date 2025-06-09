@@ -6,6 +6,7 @@ import {
 	useLinkBuilder,
 } from "@react-navigation/native";
 import {Home, Setting4, Star} from "iconsax-react-native";
+import {useTranslation} from "react-i18next";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -16,12 +17,6 @@ import {StyleSheet} from "react-native-unistyles";
 import {Text} from "@/app/ui/components/Text";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
-
-const BOTTOM_TAB_TEXT_MAP = {
-	HomeStack: "Sākums",
-	Favourites: "Mīļākie",
-	Settings: "Iestatījumi",
-};
 
 const AnimatedPressable = Animated.createAnimatedComponent(PlatformPressable);
 
@@ -49,9 +44,23 @@ export function Bar({
 	onPress,
 	onLongPress,
 }: Props) {
+	const {t} = useTranslation();
 	const {buildHref} = useLinkBuilder();
 	const scale = useSharedValue(1);
 	const haptic = hapticToTrigger("impactMedium");
+
+	const getTabText = (routeName: string) => {
+		switch (routeName) {
+			case "HomeStack":
+				return t("navigation.home");
+			case "Favourites":
+				return t("navigation.favourites");
+			case "Settings":
+				return t("navigation.settings");
+			default:
+				return routeName;
+		}
+	};
 
 	const handlePressIn = () => {
 		scale.value = withSpring(0.95);
@@ -100,9 +109,7 @@ export function Bar({
 					variant={isFocused ? "Bold" : "Outline"}
 				/>
 			) : null}
-			<Text style={styles.bottomTabText}>
-				{BOTTOM_TAB_TEXT_MAP[label as keyof typeof BOTTOM_TAB_TEXT_MAP]}
-			</Text>
+			<Text style={styles.bottomTabText}>{getTabText(label as string)}</Text>
 		</AnimatedPressable>
 	);
 }

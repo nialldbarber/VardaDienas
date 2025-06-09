@@ -4,9 +4,6 @@ import {Text as NativeText} from "react-native";
 import type {UnistylesVariants} from "react-native-unistyles";
 import {StyleSheet} from "react-native-unistyles";
 
-// const NativeText: React.FC<TextProps> = (props) =>
-// 	React.createElement("RCTText", props);
-
 interface Props extends TextProps, UnistylesVariants<typeof styles> {}
 
 export function Text({variant = "body", color, children, ...rest}: Props) {
@@ -38,7 +35,6 @@ const styles = StyleSheet.create(({colors}) => {
 						fontSize: 16,
 						fontFamily: "PlusJakartaSans-Medium",
 						color: colors.black,
-						// lineHeight: 26,
 					},
 				},
 				color: colorVariants,

@@ -1,6 +1,7 @@
 import {use$} from "@legendapp/state/react";
 import {type StaticScreenProps, useNavigation} from "@react-navigation/native";
 import {ArrowLeft} from "iconsax-react-native";
+import {useTranslation} from "react-i18next";
 import {Pressable, View} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -21,6 +22,7 @@ export function NamesRowScreen({
 		params: {data, month},
 	},
 }: Props) {
+	const {t} = useTranslation();
 	const {goBack} = useNavigation();
 	const favourites = use$(favourites$.favourites.get());
 
@@ -33,14 +35,14 @@ export function NamesRowScreen({
 						<ArrowLeft size="25" color={colors.white} variant="Outline" />
 					</Pressable>
 					<Text style={styles.header("dark")}>
-						{data.diena} {month}
+						{data.diena} {month ? t(`months.${month}`) : ""}
 					</Text>
 				</View>
 			}
 		>
 			<View style={{padding: 10}}>
 				<View>
-					<Text style={styles.header("light")}>Vārdi</Text>
+					<Text style={styles.header("light")}>{t("home.names")}</Text>
 					<View style={styles.sectionBlock}>
 						{data.vardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
@@ -58,7 +60,7 @@ export function NamesRowScreen({
 				</View>
 				<View style={{height: 20}} />
 				<View>
-					<Text style={styles.header("light")}>Citi vārdi</Text>
+					<Text style={styles.header("light")}>{t("home.otherNames")}</Text>
 					<View style={styles.sectionBlock}>
 						{data.citiVardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
@@ -99,6 +101,6 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		borderWidth: StyleSheet.hairlineWidth,
 		borderColor: colors.lightGrey,
 		padding: sizes["12px"],
-		marginBottom: sizes["8px"],
+		marginVertical: sizes["8px"],
 	},
 }));

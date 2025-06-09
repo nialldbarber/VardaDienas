@@ -1,0 +1,99 @@
+{
+	"common": {
+		"ok": "Labi",
+		"cancel": "Atcelt",
+		"yes": "Jā",
+		"no": "Nē",
+		"save": "Saglabāt",
+		"delete": "Dzēst",
+		"edit": "Rediģēt",
+		"done": "Gatavs",
+		"back": "Atpakaļ",
+		"next": "Nākamais",
+		"loading": "Ielādē...",
+		"error": "Kļūda",
+		"success": "Veiksmīgi"
+	},
+	"navigation": {
+		"home": "Sākums",
+		"favourites": "Mīļākie",
+		"settings": "Iestatījumi"
+	},
+	"settings": {
+		"title": "Iestatījumi",
+		"general": "Vispārīgi",
+		"language": "Valoda",
+		"languages": {
+			"en": "Angļu",
+			"lv": "Latviešu"
+		},
+		"haptics": "Taktilā atbildes",
+		"notifications": "Paziņojumi",
+		"notificationStatuses": {
+			"enabled": "Ieslēgti",
+			"disabled": "Izslēgti",
+			"permissionNeeded": "Nepieciešama atļauja",
+			"blockedInSettings": "Bloķēti iestatījumos",
+			"limitedAccess": "Ierobežota piekļuve",
+			"unknown": "Nezināms"
+		},
+		"support": "Atbalsts",
+		"writeReview": "Uzrakstīt atsauksmi",
+		"contactUs": "Sazināties ar mums",
+		"reportIssue": "Ziņot par problēmu",
+		"shareWithFriends": "Dalīties ar draugiem",
+		"version": "Versija"
+	},
+	"home": {
+		"title": "Vārda dienas",
+		"names": "Vārdi",
+		"otherNames": "Citi vārdi"
+	},
+	"favourites": {
+		"title": "Mīļākie",
+		"empty": {
+			"title": "Hmm, vārdi vēl nav pievienoti!",
+			"subtitle": "Atklājiet vārdu dienas un pievienojiet savus mīļākos, lai redzētu tos šeit",
+			"button": "Pārlūkot vārdus"
+		},
+		"info": {
+			"title": "Par favorītiem",
+			"description": "Šeit jūs varat apskatīt visus savus iecienītākos vārdus, kas ir sakārtoti pēc mēnešiem un dienām.",
+			"features": "Katram vārdam jūs varat:\n• Pievienot vai noņemt no izlases\n• Ieslēgt vai izslēgt paziņojumus vārda dienai",
+			"notifications": "Paziņojumi tiks nosūtīti vārda dienas rītā, lai atgādinātu par svarīgo dienu."
+		},
+		"actions": {
+			"unfavourite": "Noņemt no izlases",
+			"notifyMe": "Paziņot man",
+			"dontNotifyMe": "Nepaziņot man"
+		}
+	},
+	"notifications": {
+		"permissionRequired": "Nepieciešama atļauja",
+		"permissionMessage": "Lai saņemtu atgādinājumus par vārda dienām, lūdzu, ieslēdziet paziņojumus ierīces iestatījumos.",
+		"notificationsDisabled": "Paziņojumi izslēgti",
+		"notificationsBlockedMessage": "Paziņojumi pašlaik ir izslēgti. Lūdzu, ieslēdziet tos ierīces iestatījumos, lai saņemtu vārda dienu atgādinājumus.",
+		"openSettings": "Atvērt iestatījumus"
+	},
+	"months": {
+		"Janvāris": "Janvāris",
+		"Februāris": "Februāris",
+		"Marts": "Marts",
+		"Aprīlis": "Aprīlis",
+		"Maijs": "Maijs",
+		"Jūnijs": "Jūnijs",
+		"Jūlijs": "Jūlijs",
+		"Augusts": "Augusts",
+		"Septembris": "Septembris",
+		"Oktobris": "Oktobris",
+		"Novembris": "Novembris",
+		"Decembris": "Decembris"
+	},
+	"search": {
+		"title": "Meklēt vārdus",
+		"placeholder": "Ierakstiet vārdu...",
+		"minCharacters": "Ierakstiet vismaz 2 simbolus, lai meklētu",
+		"noResults": "Nav atrasts neviens vārds ar \"{{query}}\"",
+		"startTyping": "Sāciet rakstīt, lai meklētu vārdus"
+	}
+}

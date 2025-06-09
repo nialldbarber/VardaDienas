@@ -5,6 +5,7 @@ import {SafeAreaProvider} from "react-native-safe-area-context";
 
 import {Navigation} from "./app/navigation/RootStack";
 import {Toast} from "./app/ui/components/Toast";
+import "./app/utils/i18n";
 
 export default function App() {
 	return (

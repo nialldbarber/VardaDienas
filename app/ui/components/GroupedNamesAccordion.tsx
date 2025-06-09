@@ -1,6 +1,7 @@
 import {Accordion} from "@animatereactnative/accordion";
 import {ArrowDown2} from "iconsax-react-native";
 import React from "react";
+import {useTranslation} from "react-i18next";
 import {StyleSheet} from "react-native-unistyles";
 
 import type {Favourite} from "@/app/store/favourites";
@@ -77,6 +78,7 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 }
 
 export function GroupedNamesAccordion({favourites}: Props) {
+	const {t} = useTranslation();
 	const groupedData = groupFavouritesByMonthAndDay(favourites);
 
 	const handleNotificationToggle = async (
@@ -120,7 +122,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 				<Accordion.Sibling key={`${monthData.month}-sibling`}>
 					<View key={monthData.month} style={styles.monthBlock}>
 						<Text variant="header" color="black" style={styles.monthTitle}>
-							{monthData.month}
+							{t(`months.${monthData.month}`)}
 						</Text>
 						{monthData.days.map((dayData) => (
 							<View
@@ -153,7 +155,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 												<Accordion.Expanded style={styles.accordionContent}>
 													<View style={styles.checkboxRow}>
 														<Text style={styles.checkboxDescription}>
-															❤️ Unfavourite
+															❤️ {t("favourites.actions.unfavourite")}
 														</Text>
 														<Checkbox
 															checked={true}
@@ -168,8 +170,8 @@ export function GroupedNamesAccordion({favourites}: Props) {
 														<Text style={styles.checkboxDescription}>
 															🔔{" "}
 															{favourite.notifyMe
-																? "Don't notify me"
-																: "Notify me"}
+																? t("favourites.actions.dontNotifyMe")
+																: t("favourites.actions.notifyMe")}
 														</Text>
 														<Checkbox
 															checked={favourite.notifyMe || false}
@@ -264,9 +266,6 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	checkboxDescription: {
 		flex: 1,
-		fontSize: sizes["16px"],
-		fontWeight: "500",
-		color: colors.black,
 		backgroundColor: "transparent",
 		paddingVertical: sizes["4px"],
 	},

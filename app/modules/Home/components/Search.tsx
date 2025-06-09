@@ -1,4 +1,5 @@
 import {SearchNormal} from "iconsax-react-native";
+import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function Search({openSearch, currentMonth}: Props) {
+	const {t} = useTranslation();
 	const haptic = hapticToTrigger("impactMedium");
 
 	const handleOpenSearch = () => {
@@ -21,7 +23,9 @@ export function Search({openSearch, currentMonth}: Props) {
 
 	return (
 		<Pressable style={styles.container} onPress={handleOpenSearch}>
-			<Text variant="header">{currentMonth}</Text>
+			<Text variant="header">
+				{currentMonth ? t(`months.${currentMonth}`) : ""}
+			</Text>
 			<SearchNormal size="25" color={colors.white} variant="Outline" />
 		</Pressable>
 	);

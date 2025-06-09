@@ -8,6 +8,7 @@ import {
 import type {BottomSheetModalMethods} from "@gorhom/bottom-sheet/lib/typescript/types";
 import {CloseCircle} from "iconsax-react-native";
 import React from "react";
+import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -34,6 +35,7 @@ export const SearchBottomSheet = React.forwardRef<
 	BottomSheetModalMethods,
 	Props
 >(({searchQuery, onSearchQueryChange, searchResults, onResultPress}, ref) => {
+	const {t} = useTranslation();
 	const snapPoints = React.useMemo(() => ["35%", "70%"], []);
 
 	const renderBackdrop = React.useCallback(
@@ -53,15 +55,17 @@ export const SearchBottomSheet = React.forwardRef<
 				<View style={styles.resultContent}>
 					<Text style={styles.resultName}>{item.matchedName}</Text>
 					<Text style={styles.resultDate}>
-						{item.day.diena} {item.month}
+						{item.day.diena} {t(`months.${item.month}`)}
 					</Text>
 					<Text style={styles.resultType}>
-						{item.matchType === "vardi" ? "Galvenie vārdi" : "Citi vārdi"}
+						{item.matchType === "vardi"
+							? t("home.names")
+							: t("home.otherNames")}
 					</Text>
 				</View>
 			</Pressable>
 		),
-		[onResultPress],
+		[onResultPress, t],
 	);
 
 	const keyExtractor = React.useCallback(
@@ -79,10 +83,10 @@ export const SearchBottomSheet = React.forwardRef<
 			backdropComponent={renderBackdrop}
 		>
 			<BottomSheetView style={styles.header}>
-				<Text style={styles.title}>Meklēt vārdus</Text>
+				<Text style={styles.title}>{t("search.title")}</Text>
 				<BottomSheetTextInput
 					style={styles.searchInput}
-					placeholder="Ierakstiet vārdu..."
+					placeholder={t("search.placeholder")}
 					value={searchQuery}
 					onChangeText={onSearchQueryChange}
 					autoCorrect={false}
@@ -106,21 +110,17 @@ export const SearchBottomSheet = React.forwardRef<
 				/>
 			) : searchQuery.length > 0 && searchQuery.length < 2 ? (
 				<BottomSheetView style={styles.emptyState}>
-					<Text style={styles.emptyStateText}>
-						Ierakstiet vismaz 2 simbolus, lai meklētu
-					</Text>
+					<Text style={styles.emptyStateText}>{t("search.minCharacters")}</Text>
 				</BottomSheetView>
 			) : searchQuery.length >= 2 ? (
 				<BottomSheetView style={styles.noResults}>
 					<Text style={styles.noResultsText}>
-						Nav atrasts neviens vārds ar "{searchQuery}"
+						{t("search.noResults", {query: searchQuery})}
 					</Text>
 				</BottomSheetView>
 			) : (
 				<BottomSheetView style={styles.emptyState}>
-					<Text style={styles.emptyStateText}>
-						Sāciet rakstīt, lai meklētu vārdus
-					</Text>
+					<Text style={styles.emptyStateText}>{t("search.startTyping")}</Text>
 				</BottomSheetView>
 			)}
 		</BottomSheetModal>

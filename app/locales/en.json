@@ -1,0 +1,99 @@
+{
+	"common": {
+		"ok": "OK",
+		"cancel": "Cancel",
+		"yes": "Yes",
+		"no": "No",
+		"save": "Save",
+		"delete": "Delete",
+		"edit": "Edit",
+		"done": "Done",
+		"back": "Back",
+		"next": "Next",
+		"loading": "Loading...",
+		"error": "Error",
+		"success": "Success"
+	},
+	"navigation": {
+		"home": "Home",
+		"favourites": "Favourites",
+		"settings": "Settings"
+	},
+	"settings": {
+		"title": "Settings",
+		"general": "General",
+		"language": "Language",
+		"languages": {
+			"en": "English",
+			"lv": "Latvian"
+		},
+		"haptics": "Haptic Feedback",
+		"notifications": "Notifications",
+		"notificationStatuses": {
+			"enabled": "Enabled",
+			"disabled": "Disabled",
+			"permissionNeeded": "Permission needed",
+			"blockedInSettings": "Blocked in settings",
+			"limitedAccess": "Limited access",
+			"unknown": "Unknown"
+		},
+		"support": "Support",
+		"writeReview": "Write a Review",
+		"contactUs": "Contact Us",
+		"reportIssue": "Report Issue",
+		"shareWithFriends": "Share with Friends",
+		"version": "Version"
+	},
+	"home": {
+		"title": "Name Days",
+		"names": "Names",
+		"otherNames": "Other Names"
+	},
+	"favourites": {
+		"title": "Favourites",
+		"empty": {
+			"title": "Hmm, no names added yet!",
+			"subtitle": "Discover name days and add your favourites to see them here",
+			"button": "Browse Names"
+		},
+		"info": {
+			"title": "About favourites",
+			"description": "Here you can view all your favourite names, organized by months and days.",
+			"features": "For each name you can:\n• Add or remove from favourites\n• Turn notifications on or off for the name day",
+			"notifications": "Notifications will be sent on the morning of the name day to remind you of the important day."
+		},
+		"actions": {
+			"unfavourite": "Unfavourite",
+			"notifyMe": "Notify me",
+			"dontNotifyMe": "Don't notify me"
+		}
+	},
+	"notifications": {
+		"permissionRequired": "Permission Required",
+		"permissionMessage": "To receive reminders about name days, please enable notifications in your device settings.",
+		"notificationsDisabled": "Notifications Disabled",
+		"notificationsBlockedMessage": "Notifications are currently disabled. Please enable them in your device settings to receive name day reminders.",
+		"openSettings": "Open Settings"
+	},
+	"months": {
+		"Janvāris": "January",
+		"Februāris": "February",
+		"Marts": "March",
+		"Aprīlis": "April",
+		"Maijs": "May",
+		"Jūnijs": "June",
+		"Jūlijs": "July",
+		"Augusts": "August",
+		"Septembris": "September",
+		"Oktobris": "October",
+		"Novembris": "November",
+		"Decembris": "December"
+	},
+	"search": {
+		"title": "Search Names",
+		"placeholder": "Enter a name...",
+		"minCharacters": "Enter at least 2 characters to search",
+		"noResults": "No names found with \"{{query}}\"",
+		"startTyping": "Start typing to search for names"
+	}
+}

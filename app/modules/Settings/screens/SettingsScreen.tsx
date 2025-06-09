@@ -1,6 +1,7 @@
 import {use$} from "@legendapp/state/react";
 import {ExportCurve, Message, Star1} from "iconsax-react-native";
 import React from "react";
+import {useTranslation} from "react-i18next";
 import {Alert, Linking, Pressable} from "react-native";
 import DeviceInfo from "react-native-device-info";
 import * as Permissions from "react-native-permissions";
@@ -9,6 +10,7 @@ import {StyleSheet} from "react-native-unistyles";
 
 import {settings$} from "@/app/store/settings";
 import {Header} from "@/app/ui/components/Header";
+import {LanguageSelector} from "@/app/ui/components/LanguageSelector";
 import {Switch} from "@/app/ui/components/Switch";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
@@ -17,6 +19,7 @@ import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 
 export function SettingsScreen() {
+	const {t} = useTranslation();
 	const hapticsEnabled = use$(settings$.haptics);
 	const notificationsEnabled = use$(settings$.notifications);
 	const notificationPermissionStatus = use$(
@@ -60,12 +63,12 @@ export function SettingsScreen() {
 						settings$.notifications.set(true);
 					} else {
 						Alert.alert(
-							"Permission Required",
-							"To receive reminders about name days, please enable notifications in your device settings.",
+							t("notifications.permissionRequired"),
+							t("notifications.permissionMessage"),
 							[
-								{text: "Cancel", style: "cancel"},
+								{text: t("common.cancel"), style: "cancel"},
 								{
-									text: "Open Settings",
+									text: t("notifications.openSettings"),
 									onPress: () => Permissions.openSettings("notifications"),
 								},
 							],
@@ -76,12 +79,12 @@ export function SettingsScreen() {
 				}
 			} else if (currentStatus === Permissions.RESULTS.BLOCKED) {
 				Alert.alert(
-					"Notifications Disabled",
-					"Notifications are currently disabled. Please enable them in your device settings to receive name day reminders.",
+					t("notifications.notificationsDisabled"),
+					t("notifications.notificationsBlockedMessage"),
 					[
-						{text: "Cancel", style: "cancel"},
+						{text: t("common.cancel"), style: "cancel"},
 						{
-							text: "Open Settings",
+							text: t("notifications.openSettings"),
 							onPress: () => Permissions.openSettings("notifications"),
 						},
 					],
@@ -96,19 +99,19 @@ export function SettingsScreen() {
 		const status = settings$.notificationPermissionStatus.get();
 		const enabled = settings$.notifications.get();
 
-		if (!enabled) return "Disabled";
+		if (!enabled) return t("settings.notificationStatuses.disabled");
 
 		switch (status) {
 			case Permissions.RESULTS.GRANTED:
-				return "Enabled";
+				return t("settings.notificationStatuses.enabled");
 			case Permissions.RESULTS.DENIED:
-				return "Permission needed";
+				return t("settings.notificationStatuses.permissionNeeded");
 			case Permissions.RESULTS.BLOCKED:
-				return "Blocked in settings";
+				return t("settings.notificationStatuses.blockedInSettings");
 			case Permissions.RESULTS.LIMITED:
-				return "Limited access";
+				return t("settings.notificationStatuses.limitedAccess");
 			default:
-				return "Unknown";
+				return t("settings.notificationStatuses.unknown");
 		}
 	};
 
@@ -129,13 +132,11 @@ export function SettingsScreen() {
 			haptics.impactLight();
 			const iosUrl =
 				"itms-apps://itunes.apple.com/app/id[YOUR_APP_ID]?action=write-review";
-			const androidUrl = "market://details?id=com.vardadienas"; // Replace with actual package name
 
-			const url = iosUrl; // isIOS ? iosUrl : androidUrl;
-			const supported = await Linking.canOpenURL(url);
+			const supported = await Linking.canOpenURL(iosUrl);
 
 			if (supported) {
-				await Linking.openURL(url);
+				await Linking.openURL(iosUrl);
 			} else {
 				console.log("Cannot open app store");
 			}
@@ -177,7 +178,7 @@ export function SettingsScreen() {
 
 			const body = `Hi there,
 
-I'm reporting an issue with the VardaDienas app.
+I'm reporting an issue with the Varda! app.
 
 Issue Description:
 [Please describe the issue here]
@@ -214,12 +215,17 @@ Thank you!`;
 	};
 
 	return (
-		<Layout header={<Header title="Iestatījumi" />} withScroll="vertical">
+		<Layout
+			header={<Header title={t("settings.title")} />}
+			withScroll="vertical"
+		>
 			<View style={styles.container}>
 				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Vispārīgi</Text>
+					<Text style={styles.sectionTitle}>{t("settings.general")}</Text>
+					<LanguageSelector />
+					<View style={{height: 7}} />
 					<View style={styles.row}>
-						<Text style={styles.rowText}>Taktilā atbildes</Text>
+						<Text style={styles.rowText}>{t("settings.haptics")}</Text>
 						<Switch
 							value={hapticsEnabled}
 							onValueChange={(value) => settings$.haptics.set(value)}
@@ -228,7 +234,7 @@ Thank you!`;
 
 					<View style={styles.row}>
 						<View style={styles.rowContent}>
-							<Text style={styles.rowText}>Paziņojumi</Text>
+							<Text style={styles.rowText}>{t("settings.notifications")}</Text>
 							<Text style={styles.rowSubtext}>
 								{getNotificationStatusText()}
 							</Text>
@@ -241,30 +247,30 @@ Thank you!`;
 				</View>
 
 				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Atbalsts</Text>
+					<Text style={styles.sectionTitle}>{t("settings.support")}</Text>
 					<Pressable style={styles.row} onPress={handleWriteReview}>
-						<Text style={styles.rowText}>Uzrakstīt atsauksmi</Text>
+						<Text style={styles.rowText}>{t("settings.writeReview")}</Text>
 						<View style={styles.iconButton}>
 							<Star1 size="20" color={colors.primary} variant="Bold" />
 						</View>
 					</Pressable>
 
 					<Pressable style={styles.row} onPress={handleContactUs}>
-						<Text style={styles.rowText}>Sazināties ar mums</Text>
+						<Text style={styles.rowText}>{t("settings.contactUs")}</Text>
 						<View style={styles.iconButton}>
 							<Message size="20" color={colors.primary} variant="Bold" />
 						</View>
 					</Pressable>
 
 					<Pressable style={styles.row} onPress={handleReportIssue}>
-						<Text style={styles.rowText}>Ziņot par problēmu</Text>
+						<Text style={styles.rowText}>{t("settings.reportIssue")}</Text>
 						<View style={styles.iconButton}>
 							<Message size="20" color={colors.primary} variant="Bold" />
 						</View>
 					</Pressable>
 
 					<Pressable style={styles.row} onPress={handleShare}>
-						<Text style={styles.rowText}>Dalīties ar draugiem</Text>
+						<Text style={styles.rowText}>{t("settings.shareWithFriends")}</Text>
 						<View style={styles.iconButton}>
 							<ExportCurve size="20" color={colors.primary} variant="Bold" />
 						</View>
@@ -273,7 +279,8 @@ Thank you!`;
 
 				<View style={styles.versionContainer}>
 					<Text style={styles.versionText}>
-						Versija {DeviceInfo.getVersion()} ({DeviceInfo.getBuildNumber()})
+						{t("settings.version")} {DeviceInfo.getVersion()} (
+						{DeviceInfo.getBuildNumber()})
 					</Text>
 				</View>
 			</View>

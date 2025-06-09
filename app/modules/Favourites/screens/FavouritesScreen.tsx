@@ -7,6 +7,7 @@ import {use$} from "@legendapp/state/react";
 import {useNavigation} from "@react-navigation/native";
 import {Home, InfoCircle} from "iconsax-react-native";
 import React from "react";
+import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -20,6 +21,7 @@ import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
 
 export function FavouritesScreen() {
+	const {t} = useTranslation();
 	const favourites = use$(favourites$.favourites);
 	const navigation = useNavigation();
 	const haptic = hapticToTrigger("impactMedium");
@@ -50,20 +52,22 @@ export function FavouritesScreen() {
 	const EmptyState = () => (
 		<View style={styles.emptyState}>
 			<Home size="64" color="#E5E5E5" variant="Outline" />
-			<Text style={styles.emptyStateTitle}>Hmm, vārdi vēl nav pievienoti!</Text>
+			<Text style={styles.emptyStateTitle}>{t("favourites.empty.title")}</Text>
 			<Text style={styles.emptyStateSubtext}>
-				Atklājiet vārdu dienas un pievienojiet savus mīļākos, lai redzētu tos
-				šeit
+				{t("favourites.empty.subtitle")}
 			</Text>
 			<Pressable style={styles.addButton} onPress={handleNavigateToHome}>
-				<Text style={styles.addButtonText}>Pārlūkot vārdus</Text>
+				<Text style={styles.addButtonText}>{t("favourites.empty.button")}</Text>
 			</Pressable>
 		</View>
 	);
 
 	return (
 		<View style={styles.container}>
-			<Layout withScroll="vertical" header={<Header title="Mīļākie" />}>
+			<Layout
+				withScroll="vertical"
+				header={<Header title={t("favourites.title")} />}
+			>
 				{favourites.length === 0 ? (
 					<EmptyState />
 				) : (
@@ -82,19 +86,13 @@ export function FavouritesScreen() {
 				backdropComponent={renderBackdrop}
 			>
 				<BottomSheetView style={styles.infoContent}>
-					<Text style={styles.infoTitle}>Par mīļāko sadaļu</Text>
+					<Text style={styles.infoTitle}>{t("favourites.info.title")}</Text>
 					<Text style={styles.infoText}>
-						Šeit jūs varat apskatīt visus savus iecienītākos vārdus, kas ir
-						sakārtoti pēc mēnešiem un dienām.
+						{t("favourites.info.description")}
 					</Text>
+					<Text style={styles.infoText}>{t("favourites.info.features")}</Text>
 					<Text style={styles.infoText}>
-						Katram vārdam jūs varat:
-						{"\n"}• Pievienot vai noņemt no izlases
-						{"\n"}• Ieslēgt vai izslēgt paziņojumus vārda dienai
-					</Text>
-					<Text style={styles.infoText}>
-						Paziņojumi tiks nosūtīti vārda dienas rītā, lai atgādinātu par
-						svarīgo dienu.
+						{t("favourites.info.notifications")}
 					</Text>
 				</BottomSheetView>
 			</BottomSheetModal>

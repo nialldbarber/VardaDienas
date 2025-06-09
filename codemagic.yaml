@@ -44,17 +44,15 @@ workflows:
         publishing:
             email:
                 recipients:
-                    - nialldbarber@gmail.com # Update with your email
+                    - nialldbarber@gmail.com
                 notify:
                     success: true
                     failure: false
             app_store_connect:
                 auth: integration
-                # Configuration related to TestFlight
                 submit_to_testflight: true
-                beta_groups: # Optional: specify beta groups
+                beta_groups:
                     - Varda Dienas Test Group
-                # Configuration related to App Store
                 submit_to_app_store: false
 
     ios-production:
@@ -102,15 +100,13 @@ workflows:
         publishing:
             email:
                 recipients:
-                    - nialldbarber@gmail.com # Update with your email
+                    - nialldbarber@gmail.com
                 notify:
                     success: true
                     failure: false
             app_store_connect:
                 auth: integration
-                # Configuration related to TestFlight
                 submit_to_testflight: false
-                # Configuration related to App Store
                 submit_to_app_store: true
         triggering:
             events:
