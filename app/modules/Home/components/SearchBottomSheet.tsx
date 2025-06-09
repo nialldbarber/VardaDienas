@@ -16,6 +16,7 @@ import type {DayData} from "@/app/types";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {colors} from "@/app/ui/config/colors";
+import {hapticToTrigger} from "@/app/utils/haptics";
 
 type SearchResult = {
 	day: DayData;
@@ -37,6 +38,7 @@ export const SearchBottomSheet = React.forwardRef<
 >(({searchQuery, onSearchQueryChange, searchResults, onResultPress}, ref) => {
 	const {t} = useTranslation();
 	const snapPoints = React.useMemo(() => ["35%", "70%"], []);
+	const haptic = hapticToTrigger("impactMedium");
 
 	const renderBackdrop = React.useCallback(
 		(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
@@ -93,7 +95,10 @@ export const SearchBottomSheet = React.forwardRef<
 					autoCapitalize="words"
 				/>
 				<Pressable
-					onPress={() => onSearchQueryChange("")}
+					onPress={() => {
+						onSearchQueryChange("");
+						haptic.impactMedium();
+					}}
 					style={styles.closeButton}
 				>
 					<CloseCircle size="24" variant="Outline" color={colors.primary} />
@@ -202,7 +207,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	closeButton: {
 		position: "absolute",
 		right: sizes["16px"],
-		bottom: sizes["16px"],
+		bottom: 18,
 		paddingRight: sizes["8px"],
 	},
 }));

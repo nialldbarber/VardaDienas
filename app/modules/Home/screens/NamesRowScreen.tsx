@@ -11,6 +11,7 @@ import type {DayData} from "@/app/types";
 import {Text} from "@/app/ui/components/Text";
 import {Layout} from "@/app/ui/components/layout";
 import {colors} from "@/app/ui/config/colors";
+import {formatDateHeader} from "@/app/utils/dateFormat";
 
 type Props = StaticScreenProps<{
 	data: DayData;
@@ -35,7 +36,9 @@ export function NamesRowScreen({
 						<ArrowLeft size="25" color={colors.white} variant="Outline" />
 					</Pressable>
 					<Text style={styles.header("dark")}>
-						{data.diena} {month ? t(`months.${month}`) : ""}
+						{month
+							? formatDateHeader(data.diena, t(`months.${month}`))
+							: data.diena}
 					</Text>
 				</View>
 			}
@@ -96,7 +99,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	header: (variant: "dark" | "light") => ({
 		fontSize: 25,
-		fontWeight: "600",
+		fontWeight: "800",
 		color: variant === "dark" ? colors.white : colors.black,
 	}),
 	sectionBlock: {

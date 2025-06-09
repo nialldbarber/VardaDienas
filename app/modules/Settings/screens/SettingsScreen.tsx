@@ -1,5 +1,5 @@
 import {use$} from "@legendapp/state/react";
-import {ExportCurve, Message, Star1} from "iconsax-react-native";
+import {ExportCurve} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {Alert, Linking, Pressable} from "react-native";
@@ -178,7 +178,7 @@ export function SettingsScreen() {
 
 			const body = `Hi there,
 
-I'm reporting an issue with the Varda! app.
+I'm reporting an issue with the Vārdu Kalendārs app.
 
 Issue Description:
 [Please describe the issue here]
@@ -225,7 +225,12 @@ Thank you!`;
 					<LanguageSelector />
 					<View style={{height: 8}} />
 					<View style={styles.row}>
-						<Text style={styles.rowText}>{t("settings.haptics")}</Text>
+						<View style={styles.rowContent}>
+							<Text style={styles.rowText}>{t("settings.haptics")}</Text>
+							<Text style={styles.rowSubtext}>
+								{hapticsEnabled ? t("haptics.enabled") : t("haptics.disabled")}
+							</Text>
+						</View>
 						<Switch
 							value={hapticsEnabled}
 							onValueChange={(value) => settings$.haptics.set(value)}
@@ -248,7 +253,7 @@ Thank you!`;
 
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>{t("settings.support")}</Text>
-					<Pressable style={styles.row} onPress={handleWriteReview}>
+					{/* <Pressable style={styles.row} onPress={handleWriteReview}>
 						<Text style={styles.rowText}>{t("settings.writeReview")}</Text>
 						<View style={styles.iconButton}>
 							<Star1 size="20" color={colors.primary} variant="Bold" />
@@ -267,7 +272,7 @@ Thank you!`;
 						<View style={styles.iconButton}>
 							<Message size="20" color={colors.primary} variant="Bold" />
 						</View>
-					</Pressable>
+					</Pressable> */}
 
 					<Pressable style={styles.row} onPress={handleShare}>
 						<Text style={styles.rowText}>{t("settings.shareWithFriends")}</Text>

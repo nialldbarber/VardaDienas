@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Varda!</string>
+	<string>Vārdu Kalendārs</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -32,11 +32,11 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Varda! would like to access your location to provide location-based name day reminders and local features.</string>
+	<string>Vārdu Kalendārs would like to access your location to provide location-based name day reminders and local features.</string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>Varda! would like to send you push notifications to remind you about important name days and celebrations.</string>
+	<string>Vārdu Kalendārs would like to send you push notifications to remind you about important name days and celebrations.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Varda! would like to access your photo library to allow you to share name day celebrations and memories with friends and family.</string>
+	<string>Vārdu Kalendārs would like to access your photo library to allow you to share name day celebrations and memories with friends and family.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>PlusJakartaSans-Bold.ttf</string>

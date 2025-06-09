@@ -76,18 +76,18 @@
 		"openSettings": "Atvērt iestatījumus"
 	},
 	"months": {
-		"Janvāris": "Janvāris",
-		"Februāris": "Februāris",
-		"Marts": "Marts",
-		"Aprīlis": "Aprīlis",
-		"Maijs": "Maijs",
-		"Jūnijs": "Jūnijs",
-		"Jūlijs": "Jūlijs",
-		"Augusts": "Augusts",
-		"Septembris": "Septembris",
-		"Oktobris": "Oktobris",
-		"Novembris": "Novembris",
-		"Decembris": "Decembris"
+		"Janvāris": "janvāris",
+		"Februāris": "februāris",
+		"Marts": "marts",
+		"Aprīlis": "aprīlis",
+		"Maijs": "maijs",
+		"Jūnijs": "jūnijs",
+		"Jūlijs": "jūlijs",
+		"Augusts": "augusts",
+		"Septembris": "septembris",
+		"Oktobris": "oktobris",
+		"Novembris": "novembris",
+		"Decembris": "decembris"
 	},
 	"search": {
 		"title": "Meklēt vārdus",
@@ -102,5 +102,9 @@
 		"notificationsDisabled": "Paziņojumi izslēgti",
 		"notificationsBlockedMessage": "Paziņojumi pašlaik ir izslēgti. Lūdzu, ieslēdziet tos ierīces iestatījumos, lai saņemtu vārda dienu atgādinājumus.",
 		"openSettings": "Atvērt iestatījumus"
+	},
+	"haptics": {
+		"enabled": "Ieslēgti",
+		"disabled": "Izslēgti"
 	}
 }

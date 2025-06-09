@@ -161,7 +161,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 												<Accordion.Expanded style={styles.accordionContent}>
 													<View style={styles.checkboxRow}>
 														<Text style={styles.checkboxDescription}>
-															❤️ {t("favourites.actions.unfavourite")}
+															{t("favourites.actions.unfavourite")}
 														</Text>
 														<Checkbox
 															checked={true}
@@ -174,7 +174,6 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 													<View style={styles.checkboxRow}>
 														<Text style={styles.checkboxDescription}>
-															🔔{" "}
 															{favourite.notifyMe
 																? t("favourites.actions.dontNotifyMe")
 																: t("favourites.actions.notifyMe")}
