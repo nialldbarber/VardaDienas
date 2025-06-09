@@ -8,8 +8,8 @@ const toastConfig: ToastConfig = {
 			{...props}
 			style={[styles.container, styles.success]}
 			contentContainerStyle={styles.contentContainer}
-			text1Style={styles.text1}
-			text2Style={styles.text2}
+			text1Style={styles.text1Success}
+			text2Style={styles.text2Success}
 		/>
 	),
 	error: (props) => (
@@ -57,12 +57,28 @@ const styles = StyleSheet.create(({colors}) => ({
 		fontWeight: "600",
 		color: colors.white,
 		marginBottom: 2,
+		textAlign: "center",
+	},
+	text1Success: {
+		color: colors.black,
+		fontSize: 16,
+		fontWeight: "600",
+		marginBottom: 2,
+		textAlign: "center",
 	},
 	text2: {
 		fontSize: 14,
 		fontWeight: "400",
 		color: colors.white,
 		opacity: 0.9,
+		textAlign: "center",
+	},
+	text2Success: {
+		color: colors.black,
+		fontSize: 14,
+		fontWeight: "400",
+		opacity: 0.9,
+		textAlign: "center",
 	},
 	success: {
 		backgroundColor: colors.success,

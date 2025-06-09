@@ -223,7 +223,7 @@ Thank you!`;
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>{t("settings.general")}</Text>
 					<LanguageSelector />
-					<View style={{height: 7}} />
+					<View style={{height: 8}} />
 					<View style={styles.row}>
 						<Text style={styles.rowText}>{t("settings.haptics")}</Text>
 						<Switch

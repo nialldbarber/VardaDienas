@@ -4,12 +4,13 @@ export const greys = {
 	lightestGrey: "#fcfcfc",
 	grey1: "#E7E8EA",
 	grey2: "#F5F5F7",
+	grey3: "#b0b0b0",
 };
 
 export const semantics = {
-	success: "#22C55E",
-	error: "#EF4444",
-	info: "#3B82F6",
+	success: "#86EFAC",
+	error: "#F87171",
+	info: "#60A5FA",
 } as const;
 
 export const colors = {

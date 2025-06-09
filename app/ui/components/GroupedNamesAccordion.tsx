@@ -14,6 +14,7 @@ import {
 	requestNotificationPermissions,
 	scheduleNameDayNotifications,
 } from "@/app/utils/notifications";
+import Toast from "react-native-toast-message";
 import {colors} from "../config/colors";
 
 type NamesByDay = {
@@ -85,19 +86,24 @@ export function GroupedNamesAccordion({favourites}: Props) {
 		favourite: Favourite,
 		enabled: boolean,
 	) => {
+		let hasPermission = false;
+
 		try {
 			if (enabled) {
-				const hasPermission = await requestNotificationPermissions();
-				if (!hasPermission) {
-					console.warn("Notification permissions not granted");
-					return;
+				hasPermission = await requestNotificationPermissions();
+				if (hasPermission) {
+					await scheduleNameDayNotifications(
+						favourite.name,
+						favourite.day,
+						favourite.month,
+					);
+				} else {
+					Toast.show({
+						type: "error",
+						text1: t("notifications.permissionRequired"),
+						position: "bottom",
+					});
 				}
-
-				await scheduleNameDayNotifications(
-					favourite.name,
-					favourite.day,
-					favourite.month,
-				);
 			} else {
 				await cancelNameDayNotifications(
 					favourite.name,
@@ -106,9 +112,9 @@ export function GroupedNamesAccordion({favourites}: Props) {
 				);
 			}
 
-			favourites$.toggleNotification(favourite.name, enabled);
+			favourites$.toggleNotification(favourite.name, enabled && hasPermission);
 		} catch (error) {
-			console.error("Error toggling notification:", error);
+			favourites$.toggleNotification(favourite.name, false);
 		}
 	};
 
@@ -249,7 +255,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	nameText: {
 		flex: 1,
 		fontSize: sizes["16px"],
-		fontWeight: "500",
+		fontWeight: "700",
 	},
 	accordionContent: {
 		paddingHorizontal: sizes["12px"],

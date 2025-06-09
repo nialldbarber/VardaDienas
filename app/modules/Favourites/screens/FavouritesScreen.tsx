@@ -12,6 +12,7 @@ import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
 import {favourites$} from "@/app/store/favourites";
+import {Button} from "@/app/ui/components/Button";
 import {GroupedNamesAccordion} from "@/app/ui/components/GroupedNamesAccordion";
 import {Header} from "@/app/ui/components/Header";
 import {Text} from "@/app/ui/components/Text";
@@ -35,7 +36,6 @@ export function FavouritesScreen() {
 	const handleOpenInfo = () => {
 		haptic.impactMedium();
 		infoBottomSheetRef.current?.present();
-		console.log("Info button pressed");
 	};
 
 	const renderBackdrop = React.useCallback(
@@ -52,13 +52,15 @@ export function FavouritesScreen() {
 	const EmptyState = () => (
 		<View style={styles.emptyState}>
 			<Home size="64" color="#E5E5E5" variant="Outline" />
-			<Text style={styles.emptyStateTitle}>{t("favourites.empty.title")}</Text>
+			<Text variant="header" style={styles.emptyStateTitle}>
+				{t("favourites.empty.title")}
+			</Text>
 			<Text style={styles.emptyStateSubtext}>
 				{t("favourites.empty.subtitle")}
 			</Text>
-			<Pressable style={styles.addButton} onPress={handleNavigateToHome}>
+			<Button onPress={handleNavigateToHome}>
 				<Text style={styles.addButtonText}>{t("favourites.empty.button")}</Text>
-			</Pressable>
+			</Button>
 		</View>
 	);
 
@@ -126,8 +128,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 		paddingVertical: sizes["44px"],
 	},
 	emptyStateTitle: {
-		fontWeight: "600",
-		color: colors.black,
+		color: tokens.text.primary,
 		textAlign: "center",
 		marginTop: sizes["24px"],
 		marginBottom: sizes["12px"],

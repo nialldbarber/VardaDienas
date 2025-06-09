@@ -12,9 +12,10 @@ type Props = {
 	isChecked: boolean;
 	data: DayData;
 	month: string | null;
+	isLast: boolean;
 };
 
-export function CheckboxRow({vards, isChecked, data, month}: Props) {
+export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 	const handleCheckedChange = () => {
 		favourites$.addFavourite({
 			name: vards,
@@ -38,7 +39,7 @@ export function CheckboxRow({vards, isChecked, data, month}: Props) {
 	};
 
 	return (
-		<View style={styles.container}>
+		<View style={styles.container(isLast)}>
 			<Text>{vards}</Text>
 			<View>
 				<Checkbox
@@ -51,13 +52,16 @@ export function CheckboxRow({vards, isChecked, data, month}: Props) {
 	);
 }
 
-const styles = StyleSheet.create(({sizes}) => ({
-	container: {
-		paddingVertical: sizes["8px"],
+const styles = StyleSheet.create(({sizes, colors}) => ({
+	container: (isLast: boolean) => ({
+		paddingTop: sizes["10px"],
+		paddingBottom: sizes["10px"],
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
 		width: "100%",
 		flex: 1,
-	},
+		borderBottomColor: isLast ? "transparent" : colors.grey3,
+		borderBottomWidth: isLast ? 0 : StyleSheet.hairlineWidth,
+	}),
 }));

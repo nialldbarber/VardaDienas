@@ -95,5 +95,12 @@
 		"minCharacters": "Ierakstiet vismaz 2 simbolus, lai meklētu",
 		"noResults": "Nav atrasts neviens vārds ar \"{{query}}\"",
 		"startTyping": "Sāciet rakstīt, lai meklētu vārdus"
+	},
+	"toast": {
+		"permissionRequired": "Nepieciešama atļauja",
+		"permissionMessage": "Lai saņemtu atgādinājumus par vārda dienām, lūdzu, ieslēdziet paziņojumus ierīces iestatījumos.",
+		"notificationsDisabled": "Paziņojumi izslēgti",
+		"notificationsBlockedMessage": "Paziņojumi pašlaik ir izslēgti. Lūdzu, ieslēdziet tos ierīces iestatījumos, lai saņemtu vārda dienu atgādinājumus.",
+		"openSettings": "Atvērt iestatījumus"
 	}
 }

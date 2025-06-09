@@ -9,6 +9,7 @@ import {StyleSheet} from "react-native-unistyles";
 
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
+import {hapticToTrigger} from "@/app/utils/haptics";
 
 type Props = {
 	months: string[];
@@ -24,35 +25,41 @@ export function FastScrollIndex({
 	const translateY = useSharedValue(0);
 	const isActive = useSharedValue(false);
 	const currentIndex = useSharedValue(-1);
+	const haptic = hapticToTrigger("impactLight");
 
 	const monthLetters = React.useMemo(() => {
 		return months.map((month) => month.charAt(0).toUpperCase());
 	}, [months]);
 
-	const panGesture = Gesture.Pan()
-		.onStart((event) => {
-			isActive.value = true;
+	const triggerHapticFeedback = () => {
+		haptic.impactLight();
+	};
 
-			const clampedY = Math.max(0, Math.min(event.y, containerHeight));
-			translateY.value = clampedY;
+	const handlePositionUpdate = (y: number, isInitial = false) => {
+		const clampedY = Math.max(0, Math.min(y, containerHeight));
+		translateY.value = clampedY;
 
-			const rawIndex = (clampedY / containerHeight) * monthLetters.length;
-			const index = Math.min(Math.floor(rawIndex), monthLetters.length - 1);
+		const rawIndex = (clampedY / containerHeight) * monthLetters.length;
+		const index = Math.min(Math.floor(rawIndex), monthLetters.length - 1);
 
+		if (currentIndex.value !== index) {
 			currentIndex.value = index;
 			runOnJS(onMonthSelect)(index);
+			// Trigger haptic feedback only when scrolling, not on initial press
+			if (!isInitial) {
+				runOnJS(triggerHapticFeedback)();
+			}
+		}
+	};
+
+	const panGesture = Gesture.Pan()
+		.minDistance(0) // Respond immediately without minimum distance
+		.onStart((event) => {
+			isActive.value = true;
+			runOnJS(handlePositionUpdate)(event.y, true);
 		})
 		.onUpdate((event) => {
-			const clampedY = Math.max(0, Math.min(event.y, containerHeight));
-			translateY.value = clampedY;
-
-			const rawIndex = (clampedY / containerHeight) * monthLetters.length;
-			const index = Math.min(Math.floor(rawIndex), monthLetters.length - 1);
-
-			if (currentIndex.value !== index) {
-				currentIndex.value = index;
-				runOnJS(onMonthSelect)(index);
-			}
+			runOnJS(handlePositionUpdate)(event.y, false);
 		})
 		.onEnd(() => {
 			isActive.value = false;

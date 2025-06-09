@@ -24,7 +24,7 @@ export function NamesRowScreen({
 }: Props) {
 	const {t} = useTranslation();
 	const {goBack} = useNavigation();
-	const favourites = use$(favourites$.favourites.get());
+	const favourites = use$(favourites$.favourites);
 
 	return (
 		<Layout
@@ -46,6 +46,7 @@ export function NamesRowScreen({
 					<View style={styles.sectionBlock}>
 						{data.vardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
+							const isLast = index === data.vardi.length - 1;
 							return (
 								<CheckboxRow
 									key={`vardi-${vards}`}
@@ -53,6 +54,7 @@ export function NamesRowScreen({
 									isChecked={isChecked}
 									data={data}
 									month={month}
+									isLast={isLast}
 								/>
 							);
 						})}
@@ -64,6 +66,7 @@ export function NamesRowScreen({
 					<View style={styles.sectionBlock}>
 						{data.citiVardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
+							const isLast = index === data.citiVardi.length - 1;
 							return (
 								<CheckboxRow
 									key={`citi-vardi-${vards}`}
@@ -71,6 +74,7 @@ export function NamesRowScreen({
 									isChecked={isChecked}
 									data={data}
 									month={month}
+									isLast={isLast}
 								/>
 							);
 						})}

@@ -1,16 +1,24 @@
 import React from "react";
-import type {TextProps} from "react-native";
+import type {StyleProp, TextProps, TextStyle} from "react-native";
 import {Text as NativeText} from "react-native";
 import type {UnistylesVariants} from "react-native-unistyles";
 import {StyleSheet} from "react-native-unistyles";
 
-interface Props extends TextProps, UnistylesVariants<typeof styles> {}
+interface Props extends TextProps, UnistylesVariants<typeof styles> {
+	style?: StyleProp<TextStyle>;
+}
 
-export function Text({variant = "body", color, children, ...rest}: Props) {
+export function Text({
+	variant = "body",
+	color,
+	children,
+	style,
+	...rest
+}: Props) {
 	styles.useVariants({variant, color});
 
 	return (
-		<NativeText style={styles.container} {...rest}>
+		<NativeText style={[styles.container, style]} {...rest}>
 			{children}
 		</NativeText>
 	);

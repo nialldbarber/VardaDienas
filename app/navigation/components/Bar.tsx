@@ -87,7 +87,6 @@ export function Bar({
 			onPressIn={handlePressIn}
 			onPressOut={handlePressOut}
 			onLongPress={onLongPress}
-			pressOpacity={1}
 			style={[styles.bottomTabContainer, animatedStyle]}
 		>
 			{label === "HomeStack" ? (

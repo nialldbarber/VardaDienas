@@ -95,5 +95,12 @@
 		"minCharacters": "Enter at least 2 characters to search",
 		"noResults": "No names found with \"{{query}}\"",
 		"startTyping": "Start typing to search for names"
+	},
+	"toast": {
+		"permissionRequired": "Permission Required",
+		"permissionMessage": "To receive reminders about name days, please enable notifications in your device settings.",
+		"notificationsDisabled": "Notifications Disabled",
+		"notificationsBlockedMessage": "Notifications are currently disabled. Please enable them in your device settings to receive name day reminders.",
+		"openSettings": "Open Settings"
 	}
 }

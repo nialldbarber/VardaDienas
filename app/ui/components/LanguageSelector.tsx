@@ -25,6 +25,11 @@ export function LanguageSelector() {
 	];
 
 	const handleLanguageChange = (languageCode: Language) => {
+		// Prevent unchecking the currently selected language
+		if (currentLanguage === languageCode) {
+			return;
+		}
+
 		haptics.impactLight();
 		language$.setLanguage(languageCode);
 	};
