@@ -85,7 +85,8 @@ workflows:
           failure: false
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        upload: true
+        submit_to_testflight: false
         submit_to_app_store: false
 
   ios-production:
