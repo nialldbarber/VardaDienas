@@ -29,8 +29,55 @@ workflows:
             - name: Increment build number
               script: |
                 cd $CM_BUILD_DIR/ios
-                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
-                agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+                
+                # Verify we're in the right directory
+                if [ ! -f *.xcodeproj/project.pbxproj ] && [ ! -f *.xcworkspace ]; then
+                  echo "Error: No Xcode project found in $(pwd)"
+                  ls -la
+                  exit 1
+                fi
+                
+                # Get the latest build number from TestFlight with error handling
+                echo "Fetching latest build number from TestFlight..."
+                if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
+                  echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
+                  
+                  # Validate that we got a numeric value
+                  if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
+                    echo "Warning: Invalid build number format received: $LATEST_BUILD_NUMBER"
+                    echo "Falling back to current project build number"
+                    LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
+                  fi
+                else
+                  echo "Warning: Failed to fetch TestFlight build number"
+                  echo "Falling back to current project build number"
+                  LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
+                fi
+                
+                # Increment by 1
+                NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
+                echo "Setting new build number to: $NEW_BUILD_NUMBER"
+                
+                # Set the new build number with error handling
+                if agvtool new-version -all $NEW_BUILD_NUMBER; then
+                  echo "✅ Build number successfully updated"
+                else
+                  echo "❌ Failed to set build number"
+                  exit 1
+                fi
+                
+                # Verify the change
+                CURRENT_BUILD_NUMBER=$(agvtool what-version -terse)
+                echo "Verification - Current build number: $CURRENT_BUILD_NUMBER"
+                
+                # Double-check that the number was actually updated
+                if [ "$CURRENT_BUILD_NUMBER" != "$NEW_BUILD_NUMBER" ]; then
+                  echo "❌ Build number verification failed"
+                  echo "Expected: $NEW_BUILD_NUMBER, Got: $CURRENT_BUILD_NUMBER"
+                  exit 1
+                fi
+                
+                echo "✅ Build number successfully set and verified"
             - name: Build ipa for distribution
               script: |
                 xcode-project build-ipa \
@@ -85,8 +132,55 @@ workflows:
             - name: Increment build number
               script: |
                 cd $CM_BUILD_DIR/ios
-                LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
-                agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+                
+                # Verify we're in the right directory
+                if [ ! -f *.xcodeproj/project.pbxproj ] && [ ! -f *.xcworkspace ]; then
+                  echo "Error: No Xcode project found in $(pwd)"
+                  ls -la
+                  exit 1
+                fi
+                
+                # Get the latest build number from TestFlight with error handling
+                echo "Fetching latest build number from TestFlight..."
+                if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
+                  echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
+                  
+                  # Validate that we got a numeric value
+                  if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
+                    echo "Warning: Invalid build number format received: $LATEST_BUILD_NUMBER"
+                    echo "Falling back to current project build number"
+                    LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
+                  fi
+                else
+                  echo "Warning: Failed to fetch TestFlight build number"
+                  echo "Falling back to current project build number"
+                  LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
+                fi
+                
+                # Increment by 1
+                NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
+                echo "Setting new build number to: $NEW_BUILD_NUMBER"
+                
+                # Set the new build number with error handling
+                if agvtool new-version -all $NEW_BUILD_NUMBER; then
+                  echo "✅ Build number successfully updated"
+                else
+                  echo "❌ Failed to set build number"
+                  exit 1
+                fi
+                
+                # Verify the change
+                CURRENT_BUILD_NUMBER=$(agvtool what-version -terse)
+                echo "Verification - Current build number: $CURRENT_BUILD_NUMBER"
+                
+                # Double-check that the number was actually updated
+                if [ "$CURRENT_BUILD_NUMBER" != "$NEW_BUILD_NUMBER" ]; then
+                  echo "❌ Build number verification failed"
+                  echo "Expected: $NEW_BUILD_NUMBER, Got: $CURRENT_BUILD_NUMBER"
+                  exit 1
+                fi
+                
+                echo "✅ Build number successfully set and verified"
             - name: Build ipa for distribution
               script: |
                 xcode-project build-ipa \
