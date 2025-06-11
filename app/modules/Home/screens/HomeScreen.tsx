@@ -172,7 +172,7 @@ export function HomeScreen() {
 					}
 					style={{paddingBottom: 10}}
 				>
-					<Text variant="header" color="black">
+					<Text variant="header" style={styles.headerText}>
 						{item.diena}
 					</Text>
 					<View>
@@ -272,8 +272,11 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 	},
 	citiVardi: {
 		fontSize: 14,
-		color: colors.black,
+		color: tokens.text.header,
 		marginTop: sizes["3px"],
 		lineHeight: 20,
+	},
+	headerText: {
+		color: tokens.text.header,
 	},
 }));

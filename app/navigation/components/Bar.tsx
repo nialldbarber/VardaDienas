@@ -113,19 +113,19 @@ export function Bar({
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}, rt) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}, rt) => ({
 	bottomTabs: {
 		flexDirection: "row",
 	},
 	bottomTabContainer: {
 		flex: 1,
 		paddingTop: sizes["3px"],
-		backgroundColor: colors.white,
+		backgroundColor: tokens.background.primary,
 		alignItems: "center",
 		paddingBottom: rt.insets.bottom,
 	},
 	bottomTabText: {
-		color: colors.primary,
+		color: tokens.text.primary,
 		fontSize: 12,
 		marginTop: sizes["3px"],
 	},

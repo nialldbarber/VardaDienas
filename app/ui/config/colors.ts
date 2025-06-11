@@ -5,6 +5,7 @@ export const greys = {
 	grey1: "#E7E8EA",
 	grey2: "#F5F5F7",
 	grey3: "#b0b0b0",
+	darkGrey: "#161616",
 };
 
 export const semantics = {

@@ -26,7 +26,7 @@ export function LanguageSelector() {
 
 	const handleLanguageChange = (languageCode: Language) => {
 		if (currentLanguage !== languageCode) {
-			haptics.impactLight();
+			haptics.impactMedium();
 			language$.setLanguage(languageCode);
 		}
 	};
@@ -70,9 +70,9 @@ export function LanguageSelector() {
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	optionsContainer: {
-		backgroundColor: colors.grey2,
+		backgroundColor: tokens.background.row,
 		marginHorizontal: sizes["16px"],
 		borderRadius: sizes["8px"],
 		borderWidth: StyleSheet.hairlineWidth,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	optionText: {
 		fontSize: 16,
 		fontWeight: "500",
-		color: colors.black,
+		color: tokens.text.primary,
 		marginLeft: sizes["8px"],
 	},
 }));

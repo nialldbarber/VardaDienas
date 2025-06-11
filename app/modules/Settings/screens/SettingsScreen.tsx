@@ -293,7 +293,7 @@ Thank you!`;
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	container: {
 		flex: 1,
 		paddingVertical: sizes["16px"],
@@ -314,7 +314,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		backgroundColor: colors.grey2,
+		backgroundColor: tokens.background.row,
 		marginHorizontal: sizes["16px"],
 		paddingVertical: sizes["16px"],
 		paddingHorizontal: sizes["20px"],
@@ -337,7 +337,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	rowText: {
 		fontSize: 16,
 		fontWeight: "500",
-		color: colors.black,
+		color: tokens.text.primary,
 	},
 	rowSubtext: {
 		fontSize: 12,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	iconButton: {
 		padding: sizes["8px"],
 		borderRadius: 100,
-		backgroundColor: colors.lightestGrey,
+		backgroundColor: tokens.background.row,
 	},
 	versionContainer: {
 		alignItems: "center",
@@ -356,7 +356,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	versionText: {
 		fontSize: 12,
-		color: colors.grey,
+		color: tokens.text.fadedText,
 		fontWeight: "400",
 	},
 }));

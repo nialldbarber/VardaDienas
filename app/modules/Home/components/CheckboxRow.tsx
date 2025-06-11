@@ -40,7 +40,7 @@ export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 
 	return (
 		<View style={styles.container(isLast)}>
-			<Text>{vards}</Text>
+			<Text style={styles.text}>{vards}</Text>
 			<View>
 				<Checkbox
 					checked={isChecked}
@@ -52,7 +52,7 @@ export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 	);
 }
 
-const styles = StyleSheet.create(({sizes, colors}) => ({
+const styles = StyleSheet.create(({sizes, colors, tokens}) => ({
 	container: (isLast: boolean) => ({
 		paddingTop: sizes["10px"],
 		paddingBottom: sizes["10px"],
@@ -64,4 +64,7 @@ const styles = StyleSheet.create(({sizes, colors}) => ({
 		borderBottomColor: isLast ? "transparent" : colors.grey3,
 		borderBottomWidth: isLast ? 0 : StyleSheet.hairlineWidth,
 	}),
+	text: {
+		color: tokens.text.primary,
+	},
 }));

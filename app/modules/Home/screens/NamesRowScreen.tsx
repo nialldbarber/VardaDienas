@@ -35,7 +35,7 @@ export function NamesRowScreen({
 					<Pressable onPress={() => goBack()}>
 						<ArrowLeft size="25" color={colors.white} variant="Outline" />
 					</Pressable>
-					<Text style={styles.header("dark")}>
+					<Text style={[styles.header, styles.headerText]}>
 						{month
 							? formatDateHeader(data.diena, t(`months.${month}`))
 							: data.diena}
@@ -45,7 +45,7 @@ export function NamesRowScreen({
 		>
 			<View style={{padding: 10}}>
 				<View>
-					<Text style={styles.header("light")}>{t("home.names")}</Text>
+					<Text style={styles.header}>{t("home.names")}</Text>
 					<View style={styles.sectionBlock}>
 						{data.vardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
@@ -65,7 +65,7 @@ export function NamesRowScreen({
 				</View>
 				<View style={{height: 20}} />
 				<View>
-					<Text style={styles.header("light")}>{t("home.otherNames")}</Text>
+					<Text style={styles.header}>{t("home.otherNames")}</Text>
 					<View style={styles.sectionBlock}>
 						{data.citiVardi.map((vards, index) => {
 							const isChecked = favourites.some((fav) => fav.name === vards);
@@ -88,7 +88,7 @@ export function NamesRowScreen({
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	headerRow: {
 		backgroundColor: colors.primary,
 		flexDirection: "row",
@@ -97,13 +97,16 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		paddingHorizontal: sizes["10px"],
 		height: 50,
 	},
-	header: (variant: "dark" | "light") => ({
+	header: {
 		fontSize: 25,
 		fontWeight: "800",
-		color: variant === "dark" ? colors.white : colors.black,
-	}),
+		color: tokens.text.primary,
+	},
+	headerText: {
+		color: colors.white,
+	},
 	sectionBlock: {
-		backgroundColor: colors.grey2,
+		backgroundColor: tokens.background.row,
 		borderRadius: sizes["8px"],
 		borderWidth: StyleSheet.hairlineWidth,
 		borderColor: colors.lightGrey,

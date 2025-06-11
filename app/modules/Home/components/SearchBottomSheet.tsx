@@ -82,6 +82,7 @@ export const SearchBottomSheet = React.forwardRef<
 			index={0}
 			snapPoints={snapPoints}
 			detached
+			backgroundStyle={styles.modal}
 			backdropComponent={renderBackdrop}
 		>
 			<BottomSheetView style={styles.header}>
@@ -132,16 +133,20 @@ export const SearchBottomSheet = React.forwardRef<
 	);
 });
 
-const styles = StyleSheet.create(({colors, sizes}) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
+	modal: {
+		backgroundColor: tokens.background.primary,
+	},
 	header: {
 		paddingHorizontal: sizes["16px"],
 		paddingTop: sizes["8px"],
 		paddingBottom: sizes["8px"],
+		backgroundColor: tokens.background.primary,
 	},
 	title: {
 		fontSize: 20,
 		fontWeight: "600",
-		color: colors.black,
+		color: tokens.text.primary,
 		marginBottom: sizes["16px"],
 		textAlign: "center",
 	},
@@ -151,8 +156,9 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		paddingHorizontal: sizes["12px"],
 		paddingVertical: sizes["12px"],
 		fontSize: 16,
-		backgroundColor: colors.grey1,
+		backgroundColor: tokens.background.textInput,
 		fontFamily: "PlusJakartaSans-Medium",
+		color: tokens.text.primary,
 	},
 	flatListContent: {
 		paddingHorizontal: sizes["10px"],
@@ -175,12 +181,12 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	resultDate: {
 		fontSize: 14,
-		color: colors.black,
+		color: colors.grey,
 		marginBottom: sizes["2px"],
 	},
 	resultType: {
 		fontSize: 12,
-		color: colors.grey,
+		color: tokens.text.fadedText,
 	},
 	noResults: {
 		flex: 1,
@@ -190,7 +196,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	noResultsText: {
 		fontSize: 16,
-		color: colors.grey,
+		color: tokens.text.fadedText,
 		textAlign: "center",
 	},
 	emptyState: {
@@ -201,7 +207,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 	},
 	emptyStateText: {
 		fontSize: 16,
-		color: colors.grey,
+		color: tokens.text.fadedText,
 		textAlign: "center",
 	},
 	closeButton: {

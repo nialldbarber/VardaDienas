@@ -6,11 +6,14 @@ import {StyleSheet} from "react-native-unistyles";
 
 import type {Favourite} from "@/app/store/favourites";
 import {favourites$} from "@/app/store/favourites";
+import {settings$} from "@/app/store/settings";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
+import {haptics} from "@/app/utils/haptics";
 import {
 	cancelNameDayNotifications,
+	debugNotificationSetup,
 	requestNotificationPermissions,
 	scheduleNameDayNotifications,
 } from "@/app/utils/notifications";
@@ -82,6 +85,10 @@ export function GroupedNamesAccordion({favourites}: Props) {
 	const {t} = useTranslation();
 	const groupedData = groupFavouritesByMonthAndDay(favourites);
 
+	const handleAccordionChange = (isOpen: boolean) => {
+		haptics.impactMedium();
+	};
+
 	const handleNotificationToggle = async (
 		favourite: Favourite,
 		enabled: boolean,
@@ -89,7 +96,28 @@ export function GroupedNamesAccordion({favourites}: Props) {
 		let hasPermission = false;
 
 		try {
+			// Debug logging - remove this after testing
 			if (enabled) {
+				await debugNotificationSetup(
+					favourite.name,
+					favourite.day,
+					favourite.month,
+				);
+			}
+
+			if (enabled) {
+				// Check if global notifications are enabled
+				const globalNotificationsEnabled = settings$.notifications.get();
+				if (!globalNotificationsEnabled) {
+					Toast.show({
+						type: "error",
+						text1: t("notifications.permissionRequired"),
+						text2: "Please enable notifications in Settings first",
+						position: "bottom",
+					});
+					return;
+				}
+
 				hasPermission = await requestNotificationPermissions();
 				if (hasPermission) {
 					await scheduleNameDayNotifications(
@@ -97,6 +125,13 @@ export function GroupedNamesAccordion({favourites}: Props) {
 						favourite.day,
 						favourite.month,
 					);
+
+					Toast.show({
+						type: "success",
+						text1: "Notification scheduled",
+						text2: `You'll be reminded about ${favourite.name}'s name day`,
+						position: "bottom",
+					});
 				} else {
 					Toast.show({
 						type: "error",
@@ -110,10 +145,24 @@ export function GroupedNamesAccordion({favourites}: Props) {
 					favourite.day,
 					favourite.month,
 				);
+
+				Toast.show({
+					type: "info",
+					text1: "Notification cancelled",
+					text2: `No more reminders for ${favourite.name}`,
+					position: "bottom",
+				});
 			}
 
 			favourites$.toggleNotification(favourite.name, enabled && hasPermission);
 		} catch (error) {
+			console.error("Error toggling notification:", error);
+			Toast.show({
+				type: "error",
+				text1: "Error",
+				text2: "Failed to update notification settings",
+				position: "bottom",
+			});
 			favourites$.toggleNotification(favourite.name, false);
 		}
 	};
@@ -138,7 +187,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 								<Text variant="body" style={styles.dayTitle}>
 									{dayData.day}
 								</Text>
-								<View style={styles.namesContainer}>
+								<View>
 									{dayData.favourites.map((favourite, index) => (
 										<Accordion.Sibling
 											key={`${favourite.name}-${index}-sibling`}
@@ -146,6 +195,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 											<Accordion.Accordion
 												key={`${favourite.name}-${index}`}
 												style={styles.accordion}
+												onChange={handleAccordionChange}
 											>
 												<Accordion.Header>
 													<View style={styles.headerContent}>
@@ -202,7 +252,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 	);
 }
 
-const styles = StyleSheet.create(({colors, sizes}) => ({
+const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	container: {
 		flex: 1,
 		paddingVertical: sizes["16px"],
@@ -216,6 +266,7 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		marginBottom: sizes["16px"],
 		fontSize: sizes["24px"],
 		fontWeight: "bold",
+		color: tokens.text.primary,
 	},
 	dayBlock: {
 		marginBottom: sizes["20px"],
@@ -227,12 +278,9 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		marginBottom: sizes["8px"],
 		color: colors.primary,
 	},
-	namesContainer: {
-		// paddingLeft: sizes["12px"],
-	},
 	accordion: {
 		marginBottom: sizes["8px"],
-		backgroundColor: colors.grey2,
+		backgroundColor: tokens.background.row,
 		borderRadius: sizes["8px"],
 		borderWidth: StyleSheet.hairlineWidth,
 		borderColor: colors.lightGrey,
