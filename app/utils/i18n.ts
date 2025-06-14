@@ -2,7 +2,6 @@ import {language$} from "@/app/store/language";
 import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
 
-// Translation resources
 import en from "@/app/locales/en.json";
 import lv from "@/app/locales/lv.json";
 
@@ -25,7 +24,6 @@ i18n.use(initReactI18next).init({
 	compatibilityJSON: "v4",
 });
 
-// Listen to language changes from Legend State
 language$.currentLanguage.onChange((newLanguage) => {
 	i18n.changeLanguage(newLanguage.value);
 });

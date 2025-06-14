@@ -7,9 +7,11 @@ import Animated, {
 } from "react-native-reanimated";
 import {StyleSheet} from "react-native-unistyles";
 
+import {settings$} from "@/app/store/settings";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {hapticToTrigger} from "@/app/utils/haptics";
+import {use$} from "@legendapp/state/react";
 
 type Props = {
 	months: string[];
@@ -25,6 +27,7 @@ export function FastScrollIndex({
 	const translateY = useSharedValue(0);
 	const isActive = useSharedValue(false);
 	const currentIndex = useSharedValue(-1);
+	const hapticsEnabled = use$(settings$.haptics);
 	const haptic = hapticToTrigger("impactLight");
 
 	const monthLetters = React.useMemo(() => {
@@ -32,7 +35,9 @@ export function FastScrollIndex({
 	}, [months]);
 
 	const triggerHapticFeedback = () => {
-		haptic.impactLight();
+		if (hapticsEnabled) {
+			haptic.impactLight();
+		}
 	};
 
 	const handlePositionUpdate = (y: number, isInitial = false) => {
@@ -45,7 +50,6 @@ export function FastScrollIndex({
 		if (currentIndex.value !== index) {
 			currentIndex.value = index;
 			runOnJS(onMonthSelect)(index);
-			// Trigger haptic feedback only when scrolling, not on initial press
 			if (!isInitial) {
 				runOnJS(triggerHapticFeedback)();
 			}
@@ -53,7 +57,7 @@ export function FastScrollIndex({
 	};
 
 	const panGesture = Gesture.Pan()
-		.minDistance(0) // Respond immediately without minimum distance
+		.minDistance(0)
 		.onStart((event) => {
 			isActive.value = true;
 			runOnJS(handlePositionUpdate)(event.y, true);

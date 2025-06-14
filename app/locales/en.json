@@ -106,5 +106,22 @@
 	"haptics": {
 		"enabled": "Enabled",
 		"disabled": "Disabled"
+	},
+	"validation": {
+		"required": "This field is required",
+		"minLength": "Must be at least {{min}} characters",
+		"maxLength": "Must be no more than {{max}} characters",
+		"email": "Please enter a valid email address",
+		"password": {
+			"minLength": "Password must be at least {{min}} characters",
+			"uppercase": "Password must contain at least one uppercase letter",
+			"lowercase": "Password must contain at least one lowercase letter",
+			"number": "Password must contain at least one number",
+			"special": "Password must contain at least one special character"
+		},
+		"name": {
+			"minLength": "Name must be at least {{min}} characters",
+			"invalid": "Please enter a valid name"
+		}
 	}
 }

@@ -14,9 +14,11 @@ import Animated, {
 } from "react-native-reanimated";
 import {StyleSheet} from "react-native-unistyles";
 
+import {settings$} from "@/app/store/settings";
 import {Text} from "@/app/ui/components/Text";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
+import {use$} from "@legendapp/state/react";
 
 const AnimatedPressable = Animated.createAnimatedComponent(PlatformPressable);
 
@@ -48,6 +50,7 @@ export function Bar({
 	const {buildHref} = useLinkBuilder();
 	const scale = useSharedValue(1);
 	const haptic = hapticToTrigger("impactMedium");
+	const hapticsEnabled = use$(settings$.haptics);
 
 	const getTabText = (routeName: string) => {
 		switch (routeName) {
@@ -82,7 +85,9 @@ export function Bar({
 			testID={options.tabBarButtonTestID}
 			onPress={() => {
 				onPress();
-				haptic.impactMedium();
+				if (hapticsEnabled) {
+					haptic.impactMedium();
+				}
 			}}
 			onPressIn={handlePressIn}
 			onPressOut={handlePressOut}

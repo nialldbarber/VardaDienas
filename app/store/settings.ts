@@ -21,6 +21,7 @@ export const settings$ = observable({
 			name: "haptics",
 		},
 	}),
+	setHaptics: (value: boolean) => settings$.haptics.set(value),
 	notifications: syncedSettings({
 		initial: false,
 		persist: {

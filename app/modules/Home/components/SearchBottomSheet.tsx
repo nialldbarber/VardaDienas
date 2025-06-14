@@ -12,11 +12,13 @@ import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
+import {settings$} from "@/app/store/settings";
 import type {DayData} from "@/app/types";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
+import {use$} from "@legendapp/state/react";
 
 type SearchResult = {
 	day: DayData;
@@ -39,6 +41,7 @@ export const SearchBottomSheet = React.forwardRef<
 	const {t} = useTranslation();
 	const snapPoints = React.useMemo(() => ["35%", "70%"], []);
 	const haptic = hapticToTrigger("impactMedium");
+	const hapticsEnabled = use$(settings$.haptics);
 
 	const renderBackdrop = React.useCallback(
 		(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
@@ -98,7 +101,9 @@ export const SearchBottomSheet = React.forwardRef<
 				<Pressable
 					onPress={() => {
 						onSearchQueryChange("");
-						haptic.impactMedium();
+						if (hapticsEnabled) {
+							haptic.impactMedium();
+						}
 					}}
 					style={styles.closeButton}
 				>

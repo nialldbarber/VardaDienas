@@ -32,6 +32,7 @@ declare module "react-native-unistyles" {
 StyleSheet.configure({
 	themes: appThemes,
 	settings: {
-		adaptiveThemes: true,
+		adaptiveThemes: false,
+		initialTheme: "light",
 	},
 });

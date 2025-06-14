@@ -36,7 +36,6 @@ export function hapticToTrigger(haptic: HapticFeedbackType) {
 	};
 }
 
-// Direct export of individual haptic functions for easier usage
 export const haptics = {
 	impactLight: () => triggerHaptic("impactLight"),
 	impactMedium: () => triggerHaptic("impactMedium"),

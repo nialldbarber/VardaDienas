@@ -106,5 +106,22 @@
 	"haptics": {
 		"enabled": "Ieslēgti",
 		"disabled": "Izslēgti"
+	},
+	"validation": {
+		"required": "Šis lauks ir obligāts",
+		"minLength": "Jābūt vismaz {{min}} rakstzīmēm",
+		"maxLength": "Jābūt ne vairāk kā {{max}} rakstzīmēm",
+		"email": "Lūdzu, ievadiet derīgu e-pasta adresi",
+		"password": {
+			"minLength": "Parolei jābūt vismaz {{min}} rakstzīmēm",
+			"uppercase": "Parolei jāsatur vismaz viena lielā burtā",
+			"lowercase": "Parolei jāsatur vismaz viena mazā burtā",
+			"number": "Parolei jāsatur vismaz viens cipars",
+			"special": "Parolei jāsatur vismaz viens speciālais simbols"
+		},
+		"name": {
+			"minLength": "Vārdam jābūt vismaz {{min}} rakstzīmēm",
+			"invalid": "Lūdzu, ievadiet derīgu vārdu"
+		}
 	}
 }

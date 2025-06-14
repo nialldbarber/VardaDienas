@@ -16,7 +16,6 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 			return true;
 		}
 
-		// iOS - use notifee for consistent permission handling
 		const settings = await notifee.requestPermission();
 		return settings.authorizationStatus >= 1;
 	} catch (error) {
@@ -37,7 +36,6 @@ export async function checkNotificationPermissions(): Promise<boolean> {
 			return true;
 		}
 
-		// iOS
 		const settings = await notifee.getNotificationSettings();
 		return settings.authorizationStatus >= 1;
 	} catch (error) {
@@ -52,7 +50,6 @@ export async function scheduleNameDayNotifications(
 	month: string,
 ): Promise<void> {
 	try {
-		// Check permissions first
 		const hasPermission = await checkNotificationPermissions();
 		if (!hasPermission) {
 			console.warn("Cannot schedule notification: no permission");
@@ -198,16 +195,12 @@ function getNextOccurrenceDate(day: string, month: string): Date | null {
 	const now = new Date();
 	const currentYear = now.getFullYear();
 
-	// Set notification time to 9 AM
 	let targetDate = new Date(currentYear, monthIndex, dayNumber, 9, 0, 0);
 
-	// If the date has already passed this year (including if it's today but after 9 AM),
-	// schedule for next year
 	if (targetDate <= now) {
 		targetDate = new Date(currentYear + 1, monthIndex, dayNumber, 9, 0, 0);
 	}
 
-	// Additional validation: make sure the date is valid (handles Feb 29 on non-leap years, etc.)
 	if (targetDate.getDate() !== dayNumber) {
 		console.warn(
 			`Invalid date: ${dayNumber} ${month} (adjusted to ${targetDate.getDate()})`,
@@ -256,11 +249,9 @@ export async function debugNotificationSetup(
 ): Promise<void> {
 	console.log("=== NOTIFICATION DEBUG ===");
 
-	// Check permissions
 	const hasPermission = await checkNotificationPermissions();
 	console.log("Has permission:", hasPermission);
 
-	// Calculate next date
 	const nextDate = getNextOccurrenceDate(day, month);
 	console.log("Next occurrence date:", nextDate);
 	console.log("Current date:", new Date());
@@ -274,12 +265,9 @@ export async function debugNotificationSetup(
 		);
 	}
 
-	// Check existing notifications
 	const scheduled = await getScheduledNotifications();
 	const nameNotifications = scheduled.filter((n) =>
 		n.notification.id?.includes(name.toLowerCase().replace(/\s+/g, "-")),
 	);
 	console.log("Existing notifications for this name:", nameNotifications);
-
-	console.log("=== END DEBUG ===");
 }

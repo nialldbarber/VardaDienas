@@ -12,6 +12,7 @@ import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
 import {favourites$} from "@/app/store/favourites";
+import {settings$} from "@/app/store/settings";
 import {Button} from "@/app/ui/components/Button";
 import {GroupedNamesAccordion} from "@/app/ui/components/GroupedNamesAccordion";
 import {Header} from "@/app/ui/components/Header";
@@ -24,12 +25,15 @@ import {hapticToTrigger} from "@/app/utils/haptics";
 export function FavouritesScreen() {
 	const {t} = useTranslation();
 	const favourites = use$(favourites$.favourites);
+	const hapticsEnabled = use$(settings$.haptics);
 	const navigation = useNavigation();
 	const haptic = hapticToTrigger("impactMedium");
 	const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
 
 	const handleNavigateToHome = () => {
-		haptic.impactMedium();
+		if (hapticsEnabled) {
+			haptic.impactMedium();
+		}
 		navigation.navigate("HomeStack" as never);
 	};
 
