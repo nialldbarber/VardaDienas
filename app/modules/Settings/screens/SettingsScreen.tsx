@@ -22,9 +22,6 @@ export function SettingsScreen() {
 	const {t} = useTranslation();
 	const hapticsEnabled = use$(settings$.haptics);
 	const notificationsEnabled = use$(settings$.notifications);
-	const notificationPermissionStatus = use$(
-		settings$.notificationPermissionStatus,
-	);
 
 	React.useEffect(() => {
 		checkNotificationPermission();
@@ -117,7 +114,9 @@ export function SettingsScreen() {
 
 	const handleShare = async () => {
 		try {
-			haptics.impactLight();
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
 			await Share.open({
 				message: "Check out this app",
 				url: "https://www.google.com", // TODO: add app url
@@ -129,7 +128,9 @@ export function SettingsScreen() {
 
 	const handleWriteReview = async () => {
 		try {
-			haptics.impactLight();
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
 			const iosUrl =
 				"itms-apps://itunes.apple.com/app/id[YOUR_APP_ID]?action=write-review";
 
@@ -147,7 +148,9 @@ export function SettingsScreen() {
 
 	const handleContactUs = async () => {
 		try {
-			haptics.impactLight();
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
 			const email = "support@vardadienas.com";
 			const subject = "VardaDienas App - Contact";
 			const body =
@@ -168,7 +171,9 @@ export function SettingsScreen() {
 
 	const handleReportIssue = async () => {
 		try {
-			haptics.impactLight();
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
 			const email = "support@vardadienas.com";
 			const subject = "VardaDienas App - Issue Report";
 			const appVersion = DeviceInfo.getVersion();

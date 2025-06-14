@@ -17,6 +17,7 @@ import {
 	requestNotificationPermissions,
 	scheduleNameDayNotifications,
 } from "@/app/utils/notifications";
+import {use$} from "@legendapp/state/react";
 import Toast from "react-native-toast-message";
 import {colors} from "../config/colors";
 
@@ -53,7 +54,6 @@ const MONTH_ORDER = [
 function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 	const grouped: Record<string, Record<string, Favourite[]>> = {};
 
-	// Group by month, then by day
 	for (const favourite of favourites) {
 		if (!grouped[favourite.month]) {
 			grouped[favourite.month] = {};
@@ -64,7 +64,6 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 		grouped[favourite.month][favourite.day].push(favourite);
 	}
 
-	// Convert to array format and sort by month order
 	return Object.entries(grouped)
 		.map(([month, days]) => ({
 			month,
@@ -84,9 +83,12 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 export function GroupedNamesAccordion({favourites}: Props) {
 	const {t} = useTranslation();
 	const groupedData = groupFavouritesByMonthAndDay(favourites);
+	const hapticsEnabled = use$(settings$.haptics);
 
 	const handleAccordionChange = (isOpen: boolean) => {
-		haptics.impactMedium();
+		if (hapticsEnabled) {
+			haptics.impactMedium();
+		}
 	};
 
 	const handleNotificationToggle = async (

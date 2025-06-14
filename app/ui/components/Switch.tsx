@@ -8,9 +8,11 @@ import Animated, {
 } from "react-native-reanimated";
 import {StyleSheet} from "react-native-unistyles";
 
+import {settings$} from "@/app/store/settings";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {haptics} from "@/app/utils/haptics";
+import {use$} from "@legendapp/state/react";
 
 type LabelPosition = "left" | "right" | "inline-left" | "inline-right";
 
@@ -56,6 +58,7 @@ export function Switch({
 }: Props) {
 	const animatedValue = useSharedValue(value ? 1 : 0);
 	const pressScale = useSharedValue(1);
+	const hapticsEnabled = use$(settings$.haptics);
 
 	const config = SWITCH_CONFIG[size];
 
@@ -69,7 +72,9 @@ export function Switch({
 	const handlePress = () => {
 		if (disabled) return;
 
-		haptics.impactLight();
+		if (hapticsEnabled) {
+			haptics.impactMedium();
+		}
 		onValueChange(!value);
 	};
 

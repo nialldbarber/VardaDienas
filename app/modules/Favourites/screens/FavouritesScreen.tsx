@@ -38,7 +38,9 @@ export function FavouritesScreen() {
 	};
 
 	const handleOpenInfo = () => {
-		haptic.impactMedium();
+		if (hapticsEnabled) {
+			haptic.impactMedium();
+		}
 		infoBottomSheetRef.current?.present();
 	};
 

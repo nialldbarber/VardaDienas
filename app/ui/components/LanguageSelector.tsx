@@ -5,6 +5,7 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import {StyleSheet} from "react-native-unistyles";
 
 import {language$, type Language} from "@/app/store/language";
+import {settings$} from "@/app/store/settings";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {colors} from "@/app/ui/config/colors";
@@ -18,6 +19,7 @@ interface LanguageOption {
 export function LanguageSelector() {
 	const {t} = useTranslation();
 	const currentLanguage = use$(language$.currentLanguage);
+	const hapticsEnabled = use$(settings$.haptics);
 
 	const languages: LanguageOption[] = [
 		{code: "en", name: t("settings.languages.en")},
@@ -26,7 +28,9 @@ export function LanguageSelector() {
 
 	const handleLanguageChange = (languageCode: Language) => {
 		if (currentLanguage !== languageCode) {
-			haptics.impactMedium();
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
 			language$.setLanguage(languageCode);
 		}
 	};
