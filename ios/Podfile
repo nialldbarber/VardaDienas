@@ -1,5 +1,4 @@
 def node_require(script)
-  # Resolve script with node to allow for hoisting
   require Pod::Executable.execute_command('node', ['-p',
     "require.resolve(
       '#{script}',
@@ -7,14 +6,12 @@ def node_require(script)
     )", __dir__]).strip
 end
 
-# Use it to require both react-native's and this package's scripts:
 node_require('react-native/scripts/react_native_pods.rb')
 node_require('react-native-permissions/scripts/setup.rb')
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# ⬇️ uncomment the permissions you need
 setup_permissions([
   'LocationWhenInUse',
   'Notifications',
@@ -26,15 +23,14 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-# Patch for Xcode 15 object version compatibility
 require 'xcodeproj'
-
-abstract = Xcodeproj::Project::Object::AbstractObject
-if abstract.const_defined?(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
-  mapping = abstract.const_get(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
-  mapping['70'] = :Xcode15
-else
-  abstract.const_set(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION, { '70' => :Xcode15 })
+begin
+  compat = Xcodeproj::Project::Object::AbstractObject.const_get(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
+  unless compat.key?('70')
+    compat['70'] = :Xcode15
+  end
+rescue NameError
+  Pod::UI.warn "Xcodeproj monkey patch for object version 70 failed: constant not found"
 end
 
 target 'VardaDienas' do
@@ -42,7 +38,6 @@ target 'VardaDienas' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
@@ -50,8 +45,7 @@ target 'VardaDienas' do
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
   end
 end
