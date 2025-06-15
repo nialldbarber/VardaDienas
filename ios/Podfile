@@ -26,9 +26,16 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+# Patch for Xcode 15 object version compatibility
 require 'xcodeproj'
-Xcodeproj::Project::Object::AbstractObject.send(:remove_const, :COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
-Xcodeproj::Project::Object::AbstractObject.const_set(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION, Xcodeproj::Project::Object::AbstractObject::COMPATIBILITY_VERSION_BY_OBJECT_VERSION.merge('70' => :Xcode15))
+
+abstract = Xcodeproj::Project::Object::AbstractObject
+if abstract.const_defined?(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
+  mapping = abstract.const_get(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
+  mapping['70'] = :Xcode15
+else
+  abstract.const_set(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION, { '70' => :Xcode15 })
+end
 
 target 'VardaDienas' do
   config = use_native_modules!
@@ -40,7 +47,6 @@ target 'VardaDienas' do
   )
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
