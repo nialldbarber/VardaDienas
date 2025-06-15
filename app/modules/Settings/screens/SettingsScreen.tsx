@@ -37,7 +37,9 @@ export function SettingsScreen() {
 	};
 
 	const handleNotificationToggle = async (value: boolean) => {
-		haptics.impactLight();
+		if (hapticsEnabled) {
+			haptics.impactMedium();
+		}
 
 		if (value) {
 			const currentStatus = settings$.notificationPermissionStatus.get();

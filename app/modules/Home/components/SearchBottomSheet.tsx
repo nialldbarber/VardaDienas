@@ -84,7 +84,6 @@ export const SearchBottomSheet = React.forwardRef<
 			ref={ref}
 			index={0}
 			snapPoints={snapPoints}
-			detached
 			backgroundStyle={styles.modal}
 			backdropComponent={renderBackdrop}
 		>

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,7 +18,24 @@
 		72707288657E44759D54B8F1 /* PlusJakartaSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B7C6FEDC08AA4605B8EB54F9 /* PlusJakartaSans-BoldItalic.ttf */; };
 		755712E28C3642548AED97BA /* PlusJakartaSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 217D00B500B04BFD9FDE8964 /* PlusJakartaSans-Light.ttf */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		76A184B22DFE111400532B5B /* PlusJakartaSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184A12DFE111400532B5B /* PlusJakartaSans-SemiBold.ttf */; };
+		76A184B32DFE111400532B5B /* PlusJakartaSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A1849F2DFE111400532B5B /* PlusJakartaSans-MediumItalic.ttf */; };
+		76A184B42DFE111400532B5B /* PlusJakartaSans-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A1849A2DFE111400532B5B /* PlusJakartaSans-ExtraLightItalic.ttf */; };
+		76A184B52DFE111400532B5B /* PlusJakartaSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A1849C2DFE111400532B5B /* PlusJakartaSans-Light.ttf */; };
+		76A184B62DFE111400532B5B /* PlusJakartaSans-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184992DFE111400532B5B /* PlusJakartaSans-ExtraLight.ttf */; };
+		76A184B72DFE111400532B5B /* PlusJakartaSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A1849D2DFE111400532B5B /* PlusJakartaSans-LightItalic.ttf */; };
+		76A184B82DFE111400532B5B /* PlusJakartaSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184962DFE111400532B5B /* PlusJakartaSans-BoldItalic.ttf */; };
+		76A184B92DFE111400532B5B /* PlusJakartaSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A1849B2DFE111400532B5B /* PlusJakartaSans-Italic.ttf */; };
+		76A184BA2DFE111400532B5B /* PlusJakartaSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184952DFE111400532B5B /* PlusJakartaSans-Bold.ttf */; };
+		76A184BB2DFE111400532B5B /* PlusJakartaSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184982DFE111400532B5B /* PlusJakartaSans-ExtraBoldItalic.ttf */; };
+		76A184BC2DFE111400532B5B /* PlusJakartaSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184972DFE111400532B5B /* PlusJakartaSans-ExtraBold.ttf */; };
+		76A184BD2DFE111400532B5B /* PlusJakartaSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184A22DFE111400532B5B /* PlusJakartaSans-SemiBoldItalic.ttf */; };
+		76A184BE2DFE111400532B5B /* PlusJakartaSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A1849E2DFE111400532B5B /* PlusJakartaSans-Medium.ttf */; };
+		76A184BF2DFE111400532B5B /* PlusJakartaSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76A184A02DFE111400532B5B /* PlusJakartaSans-Regular.ttf */; };
 		76ABB0732DF5865D00B3C547 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76ABB0722DF5865D00B3C547 /* Images.xcassets */; };
+		76ABB07A2DFDB9FF00B3C547 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76ABB0792DFDB9FF00B3C547 /* WidgetKit.framework */; };
+		76ABB07C2DFDB9FF00B3C547 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76ABB07B2DFDB9FF00B3C547 /* SwiftUI.framework */; };
+		76ABB0892DFDBA0200B3C547 /* VardaDienasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 76ABB0782DFDB9FF00B3C547 /* VardaDienasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		881EABF40BA645C9B8E53A5D /* PlusJakartaSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 831EB905B66848728AD88E57 /* PlusJakartaSans-LightItalic.ttf */; };
 		90DE9B251F3E4B99B1ED5B6A /* PlusJakartaSans-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BEDB62293CD4466A8DDDD229 /* PlusJakartaSans-SemiBoldItalic.ttf */; };
@@ -30,6 +47,30 @@
 		E7E9598B3CA846C3947C82AC /* PlusJakartaSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5EA0B03D9F62434F8B73198D /* PlusJakartaSans-ExtraBoldItalic.ttf */; };
 		FB3093176CE6452C9497AAEB /* PlusJakartaSans-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5461B72072642FF9BF9DDE2 /* PlusJakartaSans-ExtraLightItalic.ttf */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		76ABB0872DFDBA0200B3C547 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 76ABB0772DFDB9FF00B3C547;
+			remoteInfo = VardaDienasWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		76ABB08A2DFDBA0200B3C547 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				76ABB0892DFDBA0200B3C547 /* VardaDienasWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0568E658B68B4F6A87A8D1C2 /* PlusJakartaSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-Italic.ttf"; path = "../assets/fonts/PlusJakartaSans-Italic.ttf"; sourceTree = "<group>"; };
@@ -46,14 +87,31 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-VardaDienas.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VardaDienas.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EA0B03D9F62434F8B73198D /* PlusJakartaSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-ExtraBoldItalic.ttf"; path = "../assets/fonts/PlusJakartaSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = VardaDienas/AppDelegate.swift; sourceTree = "<group>"; };
+		76A184952DFE111400532B5B /* PlusJakartaSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Bold.ttf"; sourceTree = "<group>"; };
+		76A184962DFE111400532B5B /* PlusJakartaSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-BoldItalic.ttf"; sourceTree = "<group>"; };
+		76A184972DFE111400532B5B /* PlusJakartaSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-ExtraBold.ttf"; sourceTree = "<group>"; };
+		76A184982DFE111400532B5B /* PlusJakartaSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		76A184992DFE111400532B5B /* PlusJakartaSans-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-ExtraLight.ttf"; sourceTree = "<group>"; };
+		76A1849A2DFE111400532B5B /* PlusJakartaSans-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		76A1849B2DFE111400532B5B /* PlusJakartaSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Italic.ttf"; sourceTree = "<group>"; };
+		76A1849C2DFE111400532B5B /* PlusJakartaSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Light.ttf"; sourceTree = "<group>"; };
+		76A1849D2DFE111400532B5B /* PlusJakartaSans-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-LightItalic.ttf"; sourceTree = "<group>"; };
+		76A1849E2DFE111400532B5B /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
+		76A1849F2DFE111400532B5B /* PlusJakartaSans-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-MediumItalic.ttf"; sourceTree = "<group>"; };
+		76A184A02DFE111400532B5B /* PlusJakartaSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Regular.ttf"; sourceTree = "<group>"; };
+		76A184A12DFE111400532B5B /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		76A184A22DFE111400532B5B /* PlusJakartaSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		76ABB0722DF5865D00B3C547 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		76ABB0782DFDB9FF00B3C547 /* VardaDienasWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VardaDienasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		76ABB0792DFDB9FF00B3C547 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		76ABB07B2DFDB9FF00B3C547 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VardaDienas/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		828046AF68684C27B477DF34 /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-Medium.ttf"; path = "../assets/fonts/PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
 		831EB905B66848728AD88E57 /* PlusJakartaSans-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-LightItalic.ttf"; path = "../assets/fonts/PlusJakartaSans-LightItalic.ttf"; sourceTree = "<group>"; };
 		8C59FD91DD60428DA9E503F0 /* PlusJakartaSans-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-ExtraBold.ttf"; path = "../assets/fonts/PlusJakartaSans-ExtraBold.ttf"; sourceTree = "<group>"; };
-		9FE913524F4C4C80B10CB5BA /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = VardaDienas/Colors.xcassets; sourceTree = "<group>"; };
+		9FE913524F4C4C80B10CB5BA /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = VardaDienas/Colors.xcassets; sourceTree = "<group>"; };
 		A49A7ED32DAA4791A983A1FE /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-SemiBold.ttf"; path = "../assets/fonts/PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
-		AAA1765BD88F407095C488EB /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = VardaDienas/BootSplash.storyboard; sourceTree = "<group>"; };
+		AAA1765BD88F407095C488EB /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = VardaDienas/BootSplash.storyboard; sourceTree = "<group>"; };
 		B7C6FEDC08AA4605B8EB54F9 /* PlusJakartaSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-BoldItalic.ttf"; path = "../assets/fonts/PlusJakartaSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		BE8B98943CD843F189ADF8C7 /* PlusJakartaSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-Bold.ttf"; path = "../assets/fonts/PlusJakartaSans-Bold.ttf"; sourceTree = "<group>"; };
 		BEDB62293CD4466A8DDDD229 /* PlusJakartaSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "PlusJakartaSans-SemiBoldItalic.ttf"; path = "../assets/fonts/PlusJakartaSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -61,12 +119,42 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		76ABB08D2DFDBA0200B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 76ABB0772DFDB9FF00B3C547 /* VardaDienasWidgetExtension */;
+		};
+		76ABB0922DFDBD0C00B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"vardūs.json",
+			);
+			target = 13B07F861A680F5B00A75B9A /* VardaDienas */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		76ABB07D2DFDB9FF00B3C547 /* VardaDienasWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (76ABB0922DFDBD0C00B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 76ABB08D2DFDBA0200B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = VardaDienasWidget; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-VardaDienas.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76ABB0752DFDB9FF00B3C547 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76ABB07C2DFDB9FF00B3C547 /* SwiftUI.framework in Frameworks */,
+				76ABB07A2DFDB9FF00B3C547 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,8 +201,31 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-VardaDienas.a */,
+				76ABB0792DFDB9FF00B3C547 /* WidgetKit.framework */,
+				76ABB07B2DFDB9FF00B3C547 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		76A184A32DFE111400532B5B /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				76A184952DFE111400532B5B /* PlusJakartaSans-Bold.ttf */,
+				76A184962DFE111400532B5B /* PlusJakartaSans-BoldItalic.ttf */,
+				76A184972DFE111400532B5B /* PlusJakartaSans-ExtraBold.ttf */,
+				76A184982DFE111400532B5B /* PlusJakartaSans-ExtraBoldItalic.ttf */,
+				76A184992DFE111400532B5B /* PlusJakartaSans-ExtraLight.ttf */,
+				76A1849A2DFE111400532B5B /* PlusJakartaSans-ExtraLightItalic.ttf */,
+				76A1849B2DFE111400532B5B /* PlusJakartaSans-Italic.ttf */,
+				76A1849C2DFE111400532B5B /* PlusJakartaSans-Light.ttf */,
+				76A1849D2DFE111400532B5B /* PlusJakartaSans-LightItalic.ttf */,
+				76A1849E2DFE111400532B5B /* PlusJakartaSans-Medium.ttf */,
+				76A1849F2DFE111400532B5B /* PlusJakartaSans-MediumItalic.ttf */,
+				76A184A02DFE111400532B5B /* PlusJakartaSans-Regular.ttf */,
+				76A184A12DFE111400532B5B /* PlusJakartaSans-SemiBold.ttf */,
+				76A184A22DFE111400532B5B /* PlusJakartaSans-SemiBoldItalic.ttf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -127,9 +238,11 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				76A184A32DFE111400532B5B /* fonts */,
 				76ABB0722DF5865D00B3C547 /* Images.xcassets */,
 				13B07FAE1A68108700A75B9A /* VardaDienas */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				76ABB07D2DFDB9FF00B3C547 /* VardaDienasWidget */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -144,6 +257,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* VardaDienas.app */,
+				76ABB0782DFDB9FF00B3C547 /* VardaDienasWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -171,15 +285,39 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				76ABB08A2DFDBA0200B3C547 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				76ABB0882DFDBA0200B3C547 /* PBXTargetDependency */,
 			);
 			name = VardaDienas;
 			productName = VardaDienas;
 			productReference = 13B07F961A680F5B00A75B9A /* VardaDienas.app */;
 			productType = "com.apple.product-type.application";
+		};
+		76ABB0772DFDB9FF00B3C547 /* VardaDienasWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 76ABB08E2DFDBA0200B3C547 /* Build configuration list for PBXNativeTarget "VardaDienasWidgetExtension" */;
+			buildPhases = (
+				76ABB0742DFDB9FF00B3C547 /* Sources */,
+				76ABB0752DFDB9FF00B3C547 /* Frameworks */,
+				76ABB0762DFDB9FF00B3C547 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				76ABB07D2DFDB9FF00B3C547 /* VardaDienasWidget */,
+			);
+			name = VardaDienasWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = VardaDienasWidgetExtension;
+			productReference = 76ABB0782DFDB9FF00B3C547 /* VardaDienasWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -187,10 +325,14 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1210;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
+					};
+					76ABB0772DFDB9FF00B3C547 = {
+						CreatedOnToolsVersion = 16.1;
 					};
 				};
 			};
@@ -208,6 +350,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* VardaDienas */,
+				76ABB0772DFDB9FF00B3C547 /* VardaDienasWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -237,6 +380,27 @@
 				90DE9B251F3E4B99B1ED5B6A /* PlusJakartaSans-SemiBoldItalic.ttf in Resources */,
 				A9D178E8EF2040F18114589B /* BootSplash.storyboard in Resources */,
 				5AA2533D8E9F4D019918C4B4 /* Colors.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76ABB0762DFDB9FF00B3C547 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76A184B22DFE111400532B5B /* PlusJakartaSans-SemiBold.ttf in Resources */,
+				76A184B32DFE111400532B5B /* PlusJakartaSans-MediumItalic.ttf in Resources */,
+				76A184B42DFE111400532B5B /* PlusJakartaSans-ExtraLightItalic.ttf in Resources */,
+				76A184B52DFE111400532B5B /* PlusJakartaSans-Light.ttf in Resources */,
+				76A184B62DFE111400532B5B /* PlusJakartaSans-ExtraLight.ttf in Resources */,
+				76A184B72DFE111400532B5B /* PlusJakartaSans-LightItalic.ttf in Resources */,
+				76A184B82DFE111400532B5B /* PlusJakartaSans-BoldItalic.ttf in Resources */,
+				76A184B92DFE111400532B5B /* PlusJakartaSans-Italic.ttf in Resources */,
+				76A184BA2DFE111400532B5B /* PlusJakartaSans-Bold.ttf in Resources */,
+				76A184BB2DFE111400532B5B /* PlusJakartaSans-ExtraBoldItalic.ttf in Resources */,
+				76A184BC2DFE111400532B5B /* PlusJakartaSans-ExtraBold.ttf in Resources */,
+				76A184BD2DFE111400532B5B /* PlusJakartaSans-SemiBoldItalic.ttf in Resources */,
+				76A184BE2DFE111400532B5B /* PlusJakartaSans-Medium.ttf in Resources */,
+				76A184BF2DFE111400532B5B /* PlusJakartaSans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,7 +490,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		76ABB0742DFDB9FF00B3C547 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		76ABB0882DFDBA0200B3C547 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 76ABB0772DFDB9FF00B3C547 /* VardaDienasWidgetExtension */;
+			targetProxy = 76ABB0872DFDBA0200B3C547 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -382,6 +561,91 @@
 				PRODUCT_NAME = VardaDienas;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		76ABB08B2DFDBA0200B3C547 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 95P8RUD7QB;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VardaDienasWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VardaDienasWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nialldbarber.vardadienas.VardaDienasWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		76ABB08C2DFDBA0200B3C547 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 95P8RUD7QB;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VardaDienasWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VardaDienasWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nialldbarber.vardadienas.VardaDienasWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -454,10 +718,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -526,10 +787,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -545,6 +803,15 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		76ABB08E2DFDBA0200B3C547 /* Build configuration list for PBXNativeTarget "VardaDienasWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76ABB08B2DFDBA0200B3C547 /* Debug */,
+				76ABB08C2DFDBA0200B3C547 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
