@@ -26,6 +26,10 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+require 'xcodeproj'
+Xcodeproj::Project::Object::AbstractObject.send(:remove_const, :COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
+Xcodeproj::Project::Object::AbstractObject.const_set(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION, Xcodeproj::Project::Object::AbstractObject::COMPATIBILITY_VERSION_BY_OBJECT_VERSION.merge('70' => :Xcode15))
+
 target 'VardaDienas' do
   config = use_native_modules!
 
