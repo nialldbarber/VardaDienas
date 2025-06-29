@@ -21,15 +21,19 @@ workflows:
         script: |
           npm install
 
-      - name: Install CocoaPods 1.14.3 and xcodeproj 1.27.0
+      - name: Install CocoaPods and xcodeproj with forced context
         script: |
           gem uninstall cocoapods xcodeproj -a -x || true
-          gem install cocoapods -v 1.14.3
           gem install xcodeproj -v 1.27.0
+          gem install cocoapods -v 1.14.3 --conservative
+          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+          pod _1.14.3_ --version
 
       - name: Install CocoaPods dependencies
         script: |
-          cd ios && pod install
+          cd ios
+          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+          pod _1.14.3_ install
 
       - name: Set up code signing settings on Xcode project
         script: |
@@ -96,15 +100,19 @@ workflows:
         script: |
           npm install
 
-      - name: Install CocoaPods 1.14.3 and xcodeproj 1.27.0
+      - name: Install CocoaPods and xcodeproj with forced context
         script: |
           gem uninstall cocoapods xcodeproj -a -x || true
-          gem install cocoapods -v 1.14.3
           gem install xcodeproj -v 1.27.0
+          gem install cocoapods -v 1.14.3 --conservative
+          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+          pod _1.14.3_ --version
 
       - name: Install CocoaPods dependencies
         script: |
-          cd ios && pod install
+          cd ios
+          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+          pod _1.14.3_ install
 
       - name: Set up code signing settings on Xcode project
         script: |
