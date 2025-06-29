@@ -21,10 +21,11 @@ workflows:
         script: |
           npm install
 
-      - name: Install compatible CocoaPods and xcodeproj
+      - name: Install CocoaPods 1.14.3 and xcodeproj 1.27.0
         script: |
-          gem install cocoapods -v 1.12.1
-          gem install xcodeproj -v 1.21.0
+          gem uninstall cocoapods xcodeproj -a -x || true
+          gem install cocoapods -v 1.14.3
+          gem install xcodeproj -v 1.27.0
 
       - name: Install CocoaPods dependencies
         script: |
@@ -95,10 +96,11 @@ workflows:
         script: |
           npm install
 
-      - name: Install compatible CocoaPods and xcodeproj
+      - name: Install CocoaPods 1.14.3 and xcodeproj 1.27.0
         script: |
-          gem install cocoapods -v 1.12.1
-          gem install xcodeproj -v 1.21.0
+          gem uninstall cocoapods xcodeproj -a -x || true
+          gem install cocoapods -v 1.14.3
+          gem install xcodeproj -v 1.27.0
 
       - name: Install CocoaPods dependencies
         script: |
