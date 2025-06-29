@@ -6,6 +6,7 @@ workflows:
     integrations:
       app_store_connect: Varda
     environment:
+      ruby: 3.2
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.nialldbarber.vardadienas
@@ -15,18 +16,15 @@ workflows:
         APP_ID: 6747011314
       node: v19.7.0
       xcode: latest
-      cocoapods: default
     scripts:
       - name: Install npm dependencies
         script: |
           npm install
 
-      - name: Downgrade CocoaPods and xcodeproj
+      - name: Install compatible CocoaPods and xcodeproj
         script: |
-          sudo gem uninstall cocoapods -a -x || true
-          sudo gem uninstall xcodeproj -a -x || true
-          sudo gem install cocoapods -v 1.12.1
-          sudo gem install xcodeproj -v 1.21.0
+          gem install cocoapods -v 1.12.1
+          gem install xcodeproj -v 1.21.0
 
       - name: Install CocoaPods dependencies
         script: |
@@ -82,6 +80,7 @@ workflows:
     integrations:
       app_store_connect: Varda
     environment:
+      ruby: 3.2
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.nialldbarber.vardadienas
@@ -91,18 +90,15 @@ workflows:
         APP_ID: 6747011314
       node: v19.7.0
       xcode: latest
-      cocoapods: default
     scripts:
       - name: Install npm dependencies
         script: |
           npm install
 
-      - name: Downgrade CocoaPods and xcodeproj
+      - name: Install compatible CocoaPods and xcodeproj
         script: |
-          sudo gem uninstall cocoapods -a -x || true
-          sudo gem uninstall xcodeproj -a -x || true
-          sudo gem install cocoapods -v 1.12.1
-          sudo gem install xcodeproj -v 1.21.0
+          gem install cocoapods -v 1.12.1
+          gem install xcodeproj -v 1.21.0
 
       - name: Install CocoaPods dependencies
         script: |
