@@ -21,13 +21,16 @@ workflows:
         script: |
           npm install
 
-      - name: Install CocoaPods and xcodeproj with forced context
+      - name: Install CocoaPods and xcodeproj
         script: |
           gem uninstall cocoapods xcodeproj -a -x || true
           gem install xcodeproj -v 1.27.0
           gem install cocoapods -v 1.14.3 --conservative
           export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-          pod _1.14.3_ --version
+
+      - name: Patch objectVersion to avoid Xcode 16 incompatibility
+        script: |
+          sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
 
       - name: Install CocoaPods dependencies
         script: |
@@ -35,7 +38,7 @@ workflows:
           export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
           pod _1.14.3_ install
 
-      - name: Set up code signing settings on Xcode project
+      - name: Set up code signing
         script: |
           xcode-project use-profiles --warn-only
 
@@ -100,13 +103,16 @@ workflows:
         script: |
           npm install
 
-      - name: Install CocoaPods and xcodeproj with forced context
+      - name: Install CocoaPods and xcodeproj
         script: |
           gem uninstall cocoapods xcodeproj -a -x || true
           gem install xcodeproj -v 1.27.0
           gem install cocoapods -v 1.14.3 --conservative
           export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-          pod _1.14.3_ --version
+
+      - name: Patch objectVersion to avoid Xcode 16 incompatibility
+        script: |
+          sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
 
       - name: Install CocoaPods dependencies
         script: |
@@ -114,7 +120,7 @@ workflows:
           export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
           pod _1.14.3_ install
 
-      - name: Set up code signing settings on Xcode project
+      - name: Set up code signing
         script: |
           xcode-project use-profiles --warn-only
 
