@@ -6,7 +6,7 @@ workflows:
     integrations:
       app_store_connect: Varda
     environment:
-      ruby: 3.2
+      ruby: 3.2.2
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.nialldbarber.vardadienas
@@ -80,7 +80,7 @@ workflows:
     integrations:
       app_store_connect: Varda
     environment:
-      ruby: 3.2
+      ruby: 3.2.2
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.nialldbarber.vardadienas
