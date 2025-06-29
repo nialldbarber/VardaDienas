@@ -21,10 +21,12 @@ workflows:
         script: |
           npm install
 
-      - name: Install xcodeproj 1.26.0 for compatibility
+      - name: Downgrade CocoaPods and xcodeproj
         script: |
+          sudo gem uninstall cocoapods -a -x || true
           sudo gem uninstall xcodeproj -a -x || true
-          sudo gem install xcodeproj -v 1.26.0
+          sudo gem install cocoapods -v 1.12.1
+          sudo gem install xcodeproj -v 1.21.0
 
       - name: Install CocoaPods dependencies
         script: |
@@ -95,10 +97,12 @@ workflows:
         script: |
           npm install
 
-      - name: Install xcodeproj 1.26.0 for compatibility
+      - name: Downgrade CocoaPods and xcodeproj
         script: |
+          sudo gem uninstall cocoapods -a -x || true
           sudo gem uninstall xcodeproj -a -x || true
-          sudo gem install xcodeproj -v 1.26.0
+          sudo gem install cocoapods -v 1.12.1
+          sudo gem install xcodeproj -v 1.21.0
 
       - name: Install CocoaPods dependencies
         script: |
