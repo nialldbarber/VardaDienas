@@ -162,27 +162,9 @@ struct NameDayWidgetEntryView: View {
         switch family {
         case .systemMedium:
             MediumNameDayView(nameDay: entry.nameDay)
-        case .systemSmall:
-            SmallNameDayView(nameDay: entry.nameDay)
         default:
             EmptyView()
         }
-    }
-}
-
-struct SmallNameDayView: View {
-    let nameDay: TodayNameDay
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(nameDay.vardi.joined(separator: ", "))
-                .font(.custom("PlusJakartaSans-Bold", size: 16))
-                .foregroundColor(.widgetForeground)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
@@ -231,6 +213,6 @@ struct NameDayWidget: Widget {
         }
         .configurationDisplayName("Vārda diena")
         .description("Rāda šodienas vārda dienas")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemMedium])
     }
 }
