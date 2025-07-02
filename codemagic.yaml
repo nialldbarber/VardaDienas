@@ -30,7 +30,13 @@ workflows:
 
       - name: Patch objectVersion to avoid Xcode 16 incompatibility
         script: |
-          sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
+          # Only patch if objectVersion is 70, otherwise leave as is
+          if grep -q "objectVersion = 70;" ios/*.xcodeproj/project.pbxproj; then
+            sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
+            echo "Patched objectVersion from 70 to 60"
+          else
+            echo "objectVersion is not 70, skipping patch"
+          fi
 
       - name: Install CocoaPods dependencies
         script: |
@@ -114,7 +120,13 @@ workflows:
 
       - name: Patch objectVersion to avoid Xcode 16 incompatibility
         script: |
-          sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
+          # Only patch if objectVersion is 70, otherwise leave as is
+          if grep -q "objectVersion = 70;" ios/*.xcodeproj/project.pbxproj; then
+            sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
+            echo "Patched objectVersion from 70 to 60"
+          else
+            echo "objectVersion is not 70, skipping patch"
+          fi
 
       - name: Install CocoaPods dependencies
         script: |
