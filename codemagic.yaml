@@ -67,9 +67,19 @@ workflows:
       - name: Build IPA
         script: |
           cd ios
-          xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+          # Use xcodebuild directly instead of xcode-project CLI
+          xcodebuild -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -destination generic/platform=iOS \
+            -archivePath build/VardaDienas.xcarchive \
+            archive
+          
+          # Create IPA from archive
+          xcodebuild -exportArchive \
+            -archivePath build/VardaDienas.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist exportOptions.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -157,9 +167,19 @@ workflows:
       - name: Build IPA
         script: |
           cd ios
-          xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+          # Use xcodebuild directly instead of xcode-project CLI
+          xcodebuild -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -destination generic/platform=iOS \
+            -archivePath build/VardaDienas.xcarchive \
+            archive
+          
+          # Create IPA from archive
+          xcodebuild -exportArchive \
+            -archivePath build/VardaDienas.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist exportOptions.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
