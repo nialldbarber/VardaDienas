@@ -75,11 +75,12 @@ workflows:
             -archivePath build/VardaDienas.xcarchive \
             archive
           
-          # Create IPA from archive
+          # Create IPA from archive with proper signing
           xcodebuild -exportArchive \
             -archivePath build/VardaDienas.xcarchive \
             -exportPath build/ios/ipa \
-            -exportOptionsPlist exportOptions.plist
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -175,11 +176,12 @@ workflows:
             -archivePath build/VardaDienas.xcarchive \
             archive
           
-          # Create IPA from archive
+          # Create IPA from archive with proper signing
           xcodebuild -exportArchive \
             -archivePath build/VardaDienas.xcarchive \
             -exportPath build/ios/ipa \
-            -exportOptionsPlist exportOptions.plist
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates
 
     artifacts:
       - build/ios/ipa/*.ipa
