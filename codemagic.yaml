@@ -58,16 +58,11 @@ workflows:
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
           agvtool new-version -all $NEW_BUILD_NUMBER
 
-      - name: Run xcodebuild manually to debug
+      - name: Build IPA
         script: |
-          cd ios
-          xcodebuild \
-            -workspace "$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -sdk iphoneos \
-            -derivedDataPath build \
-            clean build | tee /tmp/xcodebuild.log
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -146,16 +141,11 @@ workflows:
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
           agvtool new-version -all $NEW_BUILD_NUMBER
 
-      - name: Run xcodebuild manually to debug
+      - name: Build IPA
         script: |
-          cd ios
-          xcodebuild \
-            -workspace "$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -sdk iphoneos \
-            -derivedDataPath build \
-            clean build | tee /tmp/xcodebuild.log
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
 
     artifacts:
       - build/ios/ipa/*.ipa
