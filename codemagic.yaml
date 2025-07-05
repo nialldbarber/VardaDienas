@@ -1,194 +1,56 @@
 workflows:
   ios-testflight:
-    name: Varda Dienas iOS TestFlight
-    max_build_duration: 120
-    instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: Varda
+    name: iOS TestFlight Build
+    max_build_duration: 60
     environment:
+      vars:
+        XCODE_WORKSPACE: "VardaDienas.xcworkspace"
+        XCODE_SCHEME: "VardaDienas"
+        BUNDLE_ID_MAIN: "com.nialldbarber.vardadienas"
+        BUNDLE_ID_WIDGET: "com.nialldbarber.vardadienas.VardaDienasWidget"
+        APP_STORE_CONNECT_TEAM_ID: "95P8RUD7QB"
       groups:
-        - varda
-      ruby: 3.2.2
-      node: v19.7.0
+        - ios-credentials
       xcode: latest
+      cocoapods: default
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.nialldbarber.vardadienas
+        bundle_identifier:
+          - name: com.nialldbarber.vardadienas
+            provisioning_profile: varda-dist-pp
+          - name: com.nialldbarber.vardadienas.VardaDienasWidget
+            provisioning_profile: varda-dist-widget
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
     scripts:
-      - name: Install npm dependencies
-        script: npm install
-
-      - name: Install CocoaPods and xcodeproj
+      - name: Install dependencies
         script: |
-          gem uninstall cocoapods xcodeproj -a -x || true
-          gem install xcodeproj -v 1.27.0
-          gem install cocoapods -v 1.14.3 --conservative
-          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-
-      - name: Patch objectVersion to avoid Xcode 16 incompatibility
-        script: |
-          if grep -q "objectVersion = 70;" ios/*.xcodeproj/project.pbxproj; then
-            sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
-            echo "Patched objectVersion from 70 to 60"
-          else
-            echo "objectVersion is not 70, skipping patch"
-          fi
-
-      - name: Install CocoaPods dependencies
-        script: |
-          cd ios
-          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-          pod _1.14.3_ install
-
-      - name: Set up code signing
-        script: xcode-project use-profiles --warn-only
-
-      - name: Increment build number
-        script: |
-          cd $CM_BUILD_DIR/ios
-          echo "Fetching latest build number from TestFlight..."
-          if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
-            echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
-            if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-              echo "Warning: Invalid build number format received: $LATEST_BUILD_NUMBER"
-              LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
-            fi
-          else
-            LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
-          fi
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          agvtool new-version -all $NEW_BUILD_NUMBER
-
+          npm install
+          npx pod-install
       - name: Build IPA
         script: |
-          cd ios
           xcodebuild -workspace "$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -destination generic/platform=iOS \
-            -archivePath build/VardaDienas.xcarchive \
-            archive
+                     -scheme "$XCODE_SCHEME" \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -archivePath $CM_BUILD_DIR/Build/Archive.xcarchive \
+                     clean archive \
+                     DEVELOPMENT_TEAM=$APP_STORE_CONNECT_TEAM_ID \
+                     PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_ID_MAIN
+
           xcodebuild -exportArchive \
-            -archivePath build/VardaDienas.xcarchive \
-            -exportPath build/ios/ipa \
-            -exportOptionsPlist exportOptions.plist \
-            -allowProvisioningUpdates
-
+                     -archivePath $CM_BUILD_DIR/Build/Archive.xcarchive \
+                     -exportOptionsPlist ios/exportOptions.plist \
+                     -exportPath $CM_BUILD_DIR/Build/IPA
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - /tmp/xcodebuild.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-
+      - Build/IPA/*.ipa
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/**/*.dSYM
     publishing:
-      email:
-        recipients:
-          - nialldbarber@gmail.com
-        notify:
-          success: true
-          failure: false
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-
-  ios-production:
-    name: Varda Dienas iOS App Store
-    max_build_duration: 120
-    instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: Varda
-    environment:
-      groups:
-        - varda
-      ruby: 3.2.2
-      node: v19.7.0
-      xcode: latest
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.nialldbarber.vardadienas
-    scripts:
-      - name: Install npm dependencies
-        script: npm install
-
-      - name: Install CocoaPods and xcodeproj
-        script: |
-          gem uninstall cocoapods xcodeproj -a -x || true
-          gem install xcodeproj -v 1.27.0
-          gem install cocoapods -v 1.14.3 --conservative
-          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-
-      - name: Patch objectVersion to avoid Xcode 16 incompatibility
-        script: |
-          if grep -q "objectVersion = 70;" ios/*.xcodeproj/project.pbxproj; then
-            sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
-            echo "Patched objectVersion from 70 to 60"
-          else
-            echo "objectVersion is not 70, skipping patch"
-          fi
-
-      - name: Install CocoaPods dependencies
-        script: |
-          cd ios
-          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-          pod _1.14.3_ install
-
-      - name: Set up code signing
-        script: xcode-project use-profiles --warn-only
-
-      - name: Increment build number
-        script: |
-          cd $CM_BUILD_DIR/ios
-          echo "Fetching latest build number from TestFlight..."
-          if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
-            echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
-            if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-              echo "Warning: Invalid build number format received: $LATEST_BUILD_NUMBER"
-              LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
-            fi
-          else
-            LATEST_BUILD_NUMBER=$(agvtool what-version -terse 2>/dev/null || echo "0")
-          fi
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          agvtool new-version -all $NEW_BUILD_NUMBER
-
-      - name: Build IPA
-        script: |
-          cd ios
-          xcodebuild -workspace "$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -destination generic/platform=iOS \
-            -archivePath build/VardaDienas.xcarchive \
-            archive
-          xcodebuild -exportArchive \
-            -archivePath build/VardaDienas.xcarchive \
-            -exportPath build/ios/ipa \
-            -exportOptionsPlist exportOptions.plist \
-            -allowProvisioningUpdates
-
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - /tmp/xcodebuild.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-
-    publishing:
-      email:
-        recipients:
-          - nialldbarber@gmail.com
-        notify:
-          success: true
-          failure: false
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: false
-        submit_to_app_store: true
-
-    triggering:
-      events:
-        - tag
-      tag_patterns:
-        - pattern: 'v*.*.*'
-          include: true
