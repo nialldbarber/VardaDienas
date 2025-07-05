@@ -6,18 +6,20 @@ workflows:
     integrations:
       app_store_connect: Varda
     environment:
+      groups:
+        - varda
       ruby: 3.2.2
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier:
-          com.nialldbarber.vardadienas: VardaDienas
-          com.nialldbarber.vardadienas.VardaDienasWidget: VardaDienasWidget
-      vars:
-        XCODE_WORKSPACE: "VardaDienas.xcworkspace"
-        XCODE_SCHEME: "VardaDienas"
-        APP_ID: 6747011314
       node: v19.7.0
       xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        signing:
+          - bundle_identifier: com.nialldbarber.vardadienas
+            type: distribution
+            team_id: $TEAM_ID
+          - bundle_identifier: com.nialldbarber.vardadienas.VardaDienasWidget
+            type: distribution
+            team_id: $TEAM_ID
     scripts:
       - name: Install npm dependencies
         script: |
@@ -106,18 +108,20 @@ workflows:
     integrations:
       app_store_connect: Varda
     environment:
+      groups:
+        - varda
       ruby: 3.2.2
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier:
-          com.nialldbarber.vardadienas: VardaDienas
-          com.nialldbarber.vardadienas.VardaDienasWidget: VardaDienasWidget
-      vars:
-        XCODE_WORKSPACE: "VardaDienas.xcworkspace"
-        XCODE_SCHEME: "VardaDienas"
-        APP_ID: 6747011314
       node: v19.7.0
       xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        signing:
+          - bundle_identifier: com.nialldbarber.vardadienas
+            type: distribution
+            team_id: $TEAM_ID
+          - bundle_identifier: com.nialldbarber.vardadienas.VardaDienasWidget
+            type: distribution
+            team_id: $TEAM_ID
     scripts:
       - name: Install npm dependencies
         script: |
