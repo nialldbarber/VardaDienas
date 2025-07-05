@@ -82,11 +82,11 @@ workflows:
             -allowProvisioningUpdates
 
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - /tmp/xcodebuild.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+          - ios/build/ios/ipa/*.ipa  # Updated path
+          - /tmp/xcodebuild_logs/*.log
+          - /tmp/xcodebuild.log
+          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 
     publishing:
       email:
@@ -182,11 +182,11 @@ workflows:
             -allowProvisioningUpdates
 
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - /tmp/xcodebuild.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+          - ios/build/ios/ipa/*.ipa
+          - /tmp/xcodebuild_logs/*.log
+          - /tmp/xcodebuild.log
+          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+          - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 
     publishing:
       email:
