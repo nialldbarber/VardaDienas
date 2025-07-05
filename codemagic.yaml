@@ -40,6 +40,13 @@ workflows:
           export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
           pod _1.14.3_ install
 
+      - name: Debug code signing
+        script: |
+          echo "Available certificates:"
+          security find-identity -v -p codesigning
+          echo "Available provisioning profiles:"
+          find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec echo {} \; -exec security cms -D -i {} \; 2>/dev/null | grep -A 5 -B 5 "Name\|UUID\|TeamIdentifier"
+
       - name: Set up code signing
         script: xcode-project use-profiles --warn-only
 
@@ -132,6 +139,13 @@ workflows:
           cd ios
           export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
           pod _1.14.3_ install
+
+      - name: Debug code signing
+        script: |
+          echo "Available certificates:"
+          security find-identity -v -p codesigning
+          echo "Available provisioning profiles:"
+          find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec echo {} \; -exec security cms -D -i {} \; 2>/dev/null | grep -A 5 -B 5 "Name\|UUID\|TeamIdentifier"
 
       - name: Set up code signing
         script: xcode-project use-profiles --warn-only
