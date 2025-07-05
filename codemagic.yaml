@@ -9,7 +9,9 @@ workflows:
       ruby: 3.2.2
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.nialldbarber.vardadienas
+        bundle_identifier:
+          com.nialldbarber.vardadienas: VardaDienas
+          com.nialldbarber.vardadienas.VardaDienasWidget: VardaDienasWidget
       vars:
         XCODE_WORKSPACE: "VardaDienas.xcworkspace"
         XCODE_SCHEME: "VardaDienas"
@@ -30,7 +32,6 @@ workflows:
 
       - name: Patch objectVersion to avoid Xcode 16 incompatibility
         script: |
-          # Only patch if objectVersion is 70, otherwise leave as is
           if grep -q "objectVersion = 70;" ios/*.xcodeproj/project.pbxproj; then
             sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
             echo "Patched objectVersion from 70 to 60"
@@ -67,7 +68,6 @@ workflows:
       - name: Build IPA
         script: |
           cd ios
-          # Use xcodebuild directly instead of xcode-project CLI
           xcodebuild -workspace "$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
@@ -75,7 +75,6 @@ workflows:
             -archivePath build/VardaDienas.xcarchive \
             archive
           
-          # Create IPA from archive with proper signing
           xcodebuild -exportArchive \
             -archivePath build/VardaDienas.xcarchive \
             -exportPath build/ios/ipa \
@@ -110,7 +109,9 @@ workflows:
       ruby: 3.2.2
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.nialldbarber.vardadienas
+        bundle_identifier:
+          com.nialldbarber.vardadienas: VardaDienas
+          com.nialldbarber.vardadienas.VardaDienasWidget: VardaDienasWidget
       vars:
         XCODE_WORKSPACE: "VardaDienas.xcworkspace"
         XCODE_SCHEME: "VardaDienas"
@@ -131,7 +132,6 @@ workflows:
 
       - name: Patch objectVersion to avoid Xcode 16 incompatibility
         script: |
-          # Only patch if objectVersion is 70, otherwise leave as is
           if grep -q "objectVersion = 70;" ios/*.xcodeproj/project.pbxproj; then
             sed -i '' 's/objectVersion = 70;/objectVersion = 60;/g' ios/*.xcodeproj/project.pbxproj
             echo "Patched objectVersion from 70 to 60"
@@ -168,7 +168,6 @@ workflows:
       - name: Build IPA
         script: |
           cd ios
-          # Use xcodebuild directly instead of xcode-project CLI
           xcodebuild -workspace "$XCODE_WORKSPACE" \
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
@@ -176,7 +175,6 @@ workflows:
             -archivePath build/VardaDienas.xcarchive \
             archive
           
-          # Create IPA from archive with proper signing
           xcodebuild -exportArchive \
             -archivePath build/VardaDienas.xcarchive \
             -exportPath build/ios/ipa \
