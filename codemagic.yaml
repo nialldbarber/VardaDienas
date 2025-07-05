@@ -14,13 +14,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.nialldbarber.vardadienas
-        signing:
-          - bundle_identifier: com.nialldbarber.vardadienas
-            type: distribution
-            team_id: $TEAM_ID
-          - bundle_identifier: com.nialldbarber.vardadienas.VardaDienasWidget
-            type: distribution
-            team_id: $TEAM_ID
     scripts:
       - name: Install npm dependencies
         script: npm install
@@ -114,13 +107,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.nialldbarber.vardadienas
-        signing:
-          - bundle_identifier: com.nialldbarber.vardadienas
-            type: distribution
-            team_id: $TEAM_ID
-          - bundle_identifier: com.nialldbarber.vardadienas.VardaDienasWidget
-            type: distribution
-            team_id: $TEAM_ID
     scripts:
       - name: Install npm dependencies
         script: npm install
