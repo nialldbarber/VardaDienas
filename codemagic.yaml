@@ -13,6 +13,7 @@ workflows:
       xcode: latest
       ios_signing:
         distribution_type: app_store
+        bundle_identifier: com.nialldbarber.vardadienas
         signing:
           - bundle_identifier: com.nialldbarber.vardadienas
             type: distribution
@@ -22,8 +23,7 @@ workflows:
             team_id: $TEAM_ID
     scripts:
       - name: Install npm dependencies
-        script: |
-          npm install
+        script: npm install
 
       - name: Install CocoaPods and xcodeproj
         script: |
@@ -48,8 +48,7 @@ workflows:
           pod _1.14.3_ install
 
       - name: Set up code signing
-        script: |
-          xcode-project use-profiles --warn-only
+        script: xcode-project use-profiles --warn-only
 
       - name: Increment build number
         script: |
@@ -76,7 +75,6 @@ workflows:
             -destination generic/platform=iOS \
             -archivePath build/VardaDienas.xcarchive \
             archive
-          
           xcodebuild -exportArchive \
             -archivePath build/VardaDienas.xcarchive \
             -exportPath build/ios/ipa \
@@ -115,6 +113,7 @@ workflows:
       xcode: latest
       ios_signing:
         distribution_type: app_store
+        bundle_identifier: com.nialldbarber.vardadienas
         signing:
           - bundle_identifier: com.nialldbarber.vardadienas
             type: distribution
@@ -124,8 +123,7 @@ workflows:
             team_id: $TEAM_ID
     scripts:
       - name: Install npm dependencies
-        script: |
-          npm install
+        script: npm install
 
       - name: Install CocoaPods and xcodeproj
         script: |
@@ -150,8 +148,7 @@ workflows:
           pod _1.14.3_ install
 
       - name: Set up code signing
-        script: |
-          xcode-project use-profiles --warn-only
+        script: xcode-project use-profiles --warn-only
 
       - name: Increment build number
         script: |
@@ -178,7 +175,6 @@ workflows:
             -destination generic/platform=iOS \
             -archivePath build/VardaDienas.xcarchive \
             archive
-          
           xcodebuild -exportArchive \
             -archivePath build/VardaDienas.xcarchive \
             -exportPath build/ios/ipa \
