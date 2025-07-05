@@ -3,9 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>method</key>
-	<string>app-store-connect</string>
-	<key>teamID</key>
-	<string>$(DEVELOPMENT_TEAM)</string>
+	<string>app-store</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.nialldbarber.vardadienas</key>
+		<string>c9d12a99-f626-4ea7-a36d-bbe8bb83c60c</string>
+		<key>com.nialldbarber.vardadienas.VardaDienasWidget</key>
+		<string>41ef9d58-ceae-4583-a6eb-e960cd6c377b</string>
+	</dict>
 	<key>uploadBitcode</key>
 	<false/>
 	<key>uploadSymbols</key>
@@ -13,4 +18,4 @@
 	<key>compileBitcode</key>
 	<false/>
 </dict>
-</plist> 
+</plist>
