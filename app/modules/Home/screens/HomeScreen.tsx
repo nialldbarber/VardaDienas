@@ -13,8 +13,10 @@ import {SearchBottomSheet} from "@/app/modules/Home/components/SearchBottomSheet
 import {setHomeScrollToToday} from "@/app/navigation/components/TabBar";
 import type {NamesRowScreenNavigationProp} from "@/app/navigation/navigation";
 import type {DayData} from "@/app/types";
+import {SkiaSpinner} from "@/app/ui/components/SkiaSpinner";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
+import {colors} from "@/app/ui/config/colors";
 import {getTodaysIndex} from "@/app/utils/dates";
 
 type VardusItem = DayData;
@@ -73,6 +75,8 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const {navigate} = useNavigation<NamesRowScreenNavigationProp>();
 	const {height} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
+	const [loading, setLoading] = React.useState(true); // Restore loader
+	const hasScrolledRef = React.useRef(false);
 
 	// Expose scrollToToday method via ref
 	React.useImperativeHandle(ref, () => ({
@@ -266,6 +270,30 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 			? getFirstDayIndexAfter(rawInitialIndex, vardūs)
 			: rawInitialIndex;
 
+	React.useEffect(() => {
+		let isMounted = true;
+		async function doScrollHack() {
+			if (!hasScrolledRef.current && flashListRef.current) {
+				hasScrolledRef.current = true;
+				await new Promise((res) => setTimeout(res, 200));
+				flashListRef.current.scrollToIndex({index: 0, animated: false});
+				await new Promise((res) => setTimeout(res, 200));
+				flashListRef.current.scrollToIndex({
+					index: initialScrollIndex,
+					animated: false,
+				});
+				await new Promise((res) => setTimeout(res, 200));
+				if (isMounted) setLoading(false);
+			} else {
+				if (isMounted) setLoading(false);
+			}
+		}
+		doScrollHack();
+		return () => {
+			isMounted = false;
+		};
+	}, [initialScrollIndex]);
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerContainer}>
@@ -315,6 +343,23 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 					/>
 				</View>
 			</View>
+			{loading && (
+				<View
+					style={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: 0,
+						backgroundColor: colors.white,
+						justifyContent: "center",
+						alignItems: "center",
+						zIndex: 9999,
+					}}
+				>
+					<SkiaSpinner />
+				</View>
+			)}
 		</View>
 	);
 });
