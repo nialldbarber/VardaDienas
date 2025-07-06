@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -120,14 +120,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		76ABB08D2DFDBA0200B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		76ABB08D2DFDBA0200B3C547 /* Exceptions for "VardaDienasWidget" folder in "VardaDienasWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 76ABB0772DFDB9FF00B3C547 /* VardaDienasWidgetExtension */;
 		};
-		76ABB0922DFDBD0C00B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		76ABB0922DFDBD0C00B3C547 /* Exceptions for "VardaDienasWidget" folder in "VardaDienas" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"vardūs.json",
@@ -137,7 +137,19 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		76ABB07D2DFDB9FF00B3C547 /* VardaDienasWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (76ABB0922DFDBD0C00B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 76ABB08D2DFDBA0200B3C547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = VardaDienasWidget; sourceTree = "<group>"; };
+		76ABB07D2DFDB9FF00B3C547 /* VardaDienasWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				76ABB0922DFDBD0C00B3C547 /* Exceptions for "VardaDienasWidget" folder in "VardaDienas" target */,
+				76ABB08D2DFDBA0200B3C547 /* Exceptions for "VardaDienasWidget" folder in "VardaDienasWidgetExtension" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = VardaDienasWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -313,8 +325,6 @@
 				76ABB07D2DFDB9FF00B3C547 /* VardaDienasWidget */,
 			);
 			name = VardaDienasWidgetExtension;
-			packageProductDependencies = (
-			);
 			productName = VardaDienasWidgetExtension;
 			productReference = 76ABB0782DFDB9FF00B3C547 /* VardaDienasWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -718,7 +728,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -787,7 +800,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

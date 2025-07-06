@@ -73,7 +73,11 @@
 		"permissionMessage": "To receive reminders about name days, please enable notifications in your device settings.",
 		"notificationsDisabled": "Notifications Disabled",
 		"notificationsBlockedMessage": "Notifications are currently disabled. Please enable them in your device settings to receive name day reminders.",
-		"openSettings": "Open Settings"
+		"openSettings": "Open Settings",
+		"nameDayToday": "🎉 Name Day Today!",
+		"nameDayTodayBody": "Today is {{name}}'s name day ({{day}} {{month}})",
+		"nameDayTomorrow": "🔔 Name Day Tomorrow!",
+		"nameDayTomorrowBody": "Tomorrow is {{name}}'s name day ({{day}} {{month}})"
 	},
 	"months": {
 		"Janvāris": "January",

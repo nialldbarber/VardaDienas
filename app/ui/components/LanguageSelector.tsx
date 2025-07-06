@@ -4,12 +4,17 @@ import {useTranslation} from "react-i18next";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import {StyleSheet} from "react-native-unistyles";
 
+import {favourites$} from "@/app/store/favourites";
 import {language$, type Language} from "@/app/store/language";
 import {settings$} from "@/app/store/settings";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
+import {
+	cancelAllNotifications,
+	scheduleNameDayNotifications,
+} from "@/app/utils/notifications";
 
 interface LanguageOption {
 	code: Language;
@@ -26,12 +31,44 @@ export function LanguageSelector() {
 		{code: "lv", name: t("settings.languages.lv")},
 	];
 
-	const handleLanguageChange = (languageCode: Language) => {
+	const handleLanguageChange = async (languageCode: Language) => {
 		if (currentLanguage !== languageCode) {
 			if (hapticsEnabled) {
 				haptics.impactMedium();
 			}
+
+			// Change the language
 			language$.setLanguage(languageCode);
+
+			// Reschedule notifications with the new language
+			try {
+				// Cancel all existing notifications
+				await cancelAllNotifications();
+
+				// Get all favourites that have notifications enabled
+				const favourites = favourites$.favourites.get();
+				const favouritesWithNotifications = favourites.filter(
+					(fav) => fav.notifyMe,
+				);
+
+				// Reschedule notifications for each favourite
+				for (const favourite of favouritesWithNotifications) {
+					await scheduleNameDayNotifications(
+						favourite.name,
+						favourite.day,
+						favourite.month,
+					);
+				}
+
+				console.log(
+					`Rescheduled ${favouritesWithNotifications.length} notifications for language change to ${languageCode}`,
+				);
+			} catch (error) {
+				console.error(
+					"Error rescheduling notifications for language change:",
+					error,
+				);
+			}
 		}
 	};
 

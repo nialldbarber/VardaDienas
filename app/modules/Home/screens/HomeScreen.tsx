@@ -261,14 +261,15 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 	},
 	diena: {
 		fontSize: 30,
-		fontWeight: "700",
-		fontFamily: "PlusJakartaSans-ExtraBold",
+		fontWeight: "800",
+		fontFamily: "Plus Jakarta Sans",
 	},
 	vardi: {
 		fontSize: 18,
 		color: colors.primary,
 		marginTop: sizes["5px"],
-		fontFamily: "PlusJakartaSans-Bold",
+		fontWeight: "700",
+		fontFamily: "Plus Jakarta Sans",
 	},
 	citiVardi: {
 		fontSize: 14,

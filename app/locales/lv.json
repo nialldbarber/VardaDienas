@@ -73,7 +73,11 @@
 		"permissionMessage": "Lai saņemtu atgādinājumus par vārda dienām, lūdzu, ieslēdziet paziņojumus ierīces iestatījumos.",
 		"notificationsDisabled": "Paziņojumi izslēgti",
 		"notificationsBlockedMessage": "Paziņojumi pašlaik ir izslēgti. Lūdzu, ieslēdziet tos ierīces iestatījumos, lai saņemtu vārda dienu atgādinājumus.",
-		"openSettings": "Atvērt iestatījumus"
+		"openSettings": "Atvērt iestatījumus",
+		"nameDayToday": "🎉 Vārda diena šodien!",
+		"nameDayTodayBody": "Šodien ir {{name}} vārda diena ({{day}} {{month}})",
+		"nameDayTomorrow": "🔔 Vārda diena rīt!",
+		"nameDayTomorrowBody": "Rīt ir {{name}} vārda diena ({{day}} {{month}})"
 	},
 	"months": {
 		"Janvāris": "janvāris",

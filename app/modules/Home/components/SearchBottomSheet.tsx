@@ -10,7 +10,7 @@ import {CloseCircle} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
-import {StyleSheet} from "react-native-unistyles";
+import {StyleSheet, UnistylesRuntime} from "react-native-unistyles";
 
 import {settings$} from "@/app/store/settings";
 import type {DayData} from "@/app/types";
@@ -86,6 +86,9 @@ export const SearchBottomSheet = React.forwardRef<
 			snapPoints={snapPoints}
 			backgroundStyle={styles.modal}
 			backdropComponent={renderBackdrop}
+			maxDynamicContentSize={
+				UnistylesRuntime.screen.height - UnistylesRuntime.insets.bottom * 2
+			}
 		>
 			<BottomSheetView style={styles.header}>
 				<Text style={styles.title}>{t("search.title")}</Text>
@@ -161,7 +164,8 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		paddingVertical: sizes["12px"],
 		fontSize: 16,
 		backgroundColor: tokens.background.textInput,
-		fontFamily: "PlusJakartaSans-Medium",
+		fontFamily: "Plus Jakarta Sans",
+		fontWeight: "500",
 		color: tokens.text.primary,
 	},
 	flatListContent: {

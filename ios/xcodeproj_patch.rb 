@@ -1,0 +1,14 @@
+require 'xcodeproj'
+
+module Xcodeproj
+  class Project
+    module Object
+      class AbstractObject
+        unless const_defined?(:COMPATIBILITY_VERSION_BY_OBJECT_VERSION)
+          COMPATIBILITY_VERSION_BY_OBJECT_VERSION = {}
+        end
+        COMPATIBILITY_VERSION_BY_OBJECT_VERSION['70'] ||= :Xcode16_0
+      end
+    end
+  end
+end

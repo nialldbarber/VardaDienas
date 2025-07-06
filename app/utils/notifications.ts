@@ -1,3 +1,4 @@
+import {language$} from "@/app/store/language";
 import notifee, {
 	TriggerType,
 	type TriggerNotification,
@@ -49,6 +50,7 @@ export async function scheduleNameDayNotifications(
 	day: string,
 	month: string,
 ): Promise<void> {
+	const currentLanguage = language$.currentLanguage.get();
 	try {
 		const hasPermission = await checkNotificationPermissions();
 		if (!hasPermission) {
@@ -58,8 +60,14 @@ export async function scheduleNameDayNotifications(
 
 		const channelId = await notifee.createChannel({
 			id: "nameday-notifications",
-			name: "Name Day Notifications",
-			description: "Notifications for your favourite name days",
+			name:
+				currentLanguage === "lv"
+					? "Vārda dienu paziņojumi"
+					: "Name Day Notifications",
+			description:
+				currentLanguage === "lv"
+					? "Paziņojumi par jūsu mīļākajām vārda dienām"
+					: "Notifications for your favourite name days",
 			sound: "default",
 			vibration: true,
 		});
@@ -78,8 +86,14 @@ export async function scheduleNameDayNotifications(
 		await notifee.createTriggerNotification(
 			{
 				id: dayOfId,
-				title: "🎉 Name Day Today!",
-				body: `Today is ${name}'s name day (${day} ${month})`,
+				title:
+					currentLanguage === "lv"
+						? "🎉 Vārda diena šodien!"
+						: "🎉 Name Day Today!",
+				body:
+					currentLanguage === "lv"
+						? `Šodien ir ${name} vārda diena (${day} ${month})`
+						: `Today is ${name}'s name day (${day} ${month})`,
 				android: {
 					channelId,
 					pressAction: {
@@ -107,8 +121,14 @@ export async function scheduleNameDayNotifications(
 		await notifee.createTriggerNotification(
 			{
 				id: dayBeforeId,
-				title: "🔔 Name Day Tomorrow!",
-				body: `Tomorrow is ${name}'s name day (${day} ${month})`,
+				title:
+					currentLanguage === "lv"
+						? "🔔 Vārda diena rīt!"
+						: "🔔 Name Day Tomorrow!",
+				body:
+					currentLanguage === "lv"
+						? `Rīt ir ${name} vārda diena (${day} ${month})`
+						: `Tomorrow is ${name}'s name day (${day} ${month})`,
 				android: {
 					channelId,
 					pressAction: {

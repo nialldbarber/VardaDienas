@@ -35,13 +35,15 @@ const styles = StyleSheet.create(({colors}) => {
 				variant: {
 					header: {
 						fontSize: 24,
-						fontFamily: "PlusJakartaSans-ExtraBold",
+						fontFamily: "Plus Jakarta Sans",
+						fontWeight: "800",
 						lineHeight: 30,
 						color: colors.white,
 					},
 					body: {
 						fontSize: 16,
-						fontFamily: "PlusJakartaSans-Medium",
+						fontFamily: "Plus Jakarta Sans",
+						fontWeight: "500",
 						color: colors.black,
 					},
 				},
