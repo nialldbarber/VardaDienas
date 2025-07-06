@@ -2,12 +2,13 @@ import {use$} from "@legendapp/state/react";
 import {ExportCurve} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Alert, Linking, Pressable} from "react-native";
+import {Alert, Linking, Pressable, type ScrollView} from "react-native";
 import DeviceInfo from "react-native-device-info";
 import * as Permissions from "react-native-permissions";
 import Share from "react-native-share";
 import {StyleSheet} from "react-native-unistyles";
 
+import {setSettingsScrollToTop} from "@/app/navigation/components/TabBar";
 import {settings$} from "@/app/store/settings";
 import {Header} from "@/app/ui/components/Header";
 import {LanguageSelector} from "@/app/ui/components/LanguageSelector";
@@ -18,172 +19,203 @@ import {Layout} from "@/app/ui/components/layout";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 
-export function SettingsScreen() {
-	const {t} = useTranslation();
-	const hapticsEnabled = use$(settings$.haptics);
-	const notificationsEnabled = use$(settings$.notifications);
+type SettingsScreenRef = {
+	scrollToTop: () => void;
+};
 
-	React.useEffect(() => {
-		checkNotificationPermission();
-	}, []);
+export const SettingsScreen = React.forwardRef<SettingsScreenRef>(
+	(props, ref) => {
+		const {t} = useTranslation();
+		const hapticsEnabled = use$(settings$.haptics);
+		const notificationsEnabled = use$(settings$.notifications);
+		const layoutRef = React.useRef<ScrollView>(null);
 
-	const checkNotificationPermission = async () => {
-		try {
-			const {status} = await Permissions.checkNotifications();
-			settings$.notificationPermissionStatus.set(status);
-		} catch (error) {
-			console.error("Error checking notification permission:", error);
-		}
-	};
-
-	const handleNotificationToggle = async (value: boolean) => {
-		if (hapticsEnabled) {
-			haptics.impactMedium();
-		}
-
-		if (value) {
-			const currentStatus = settings$.notificationPermissionStatus.get();
-
-			if (currentStatus === Permissions.RESULTS.GRANTED) {
-				settings$.notifications.set(true);
-			} else if (
-				currentStatus === Permissions.RESULTS.DENIED ||
-				currentStatus === "unavailable"
-			) {
-				try {
-					const {status} = await Permissions.requestNotifications([
-						"alert",
-						"sound",
-						"badge",
-					]);
-					settings$.notificationPermissionStatus.set(status);
-
-					if (status === Permissions.RESULTS.GRANTED) {
-						settings$.notifications.set(true);
-					} else {
-						Alert.alert(
-							t("notifications.permissionRequired"),
-							t("notifications.permissionMessage"),
-							[
-								{text: t("common.cancel"), style: "cancel"},
-								{
-									text: t("notifications.openSettings"),
-									onPress: () => Permissions.openSettings("notifications"),
-								},
-							],
-						);
-					}
-				} catch (error) {
-					console.error("Error requesting notification permission:", error);
+		// Expose scrollToTop method via ref
+		React.useImperativeHandle(ref, () => ({
+			scrollToTop: () => {
+				if (layoutRef.current) {
+					layoutRef.current.scrollTo({y: 0, animated: true});
 				}
-			} else if (currentStatus === Permissions.RESULTS.BLOCKED) {
-				Alert.alert(
-					t("notifications.notificationsDisabled"),
-					t("notifications.notificationsBlockedMessage"),
-					[
-						{text: t("common.cancel"), style: "cancel"},
-						{
-							text: t("notifications.openSettings"),
-							onPress: () => Permissions.openSettings("notifications"),
-						},
-					],
-				);
+			},
+		}));
+
+		// Register the scroll function with the global state
+		React.useEffect(() => {
+			const scrollToTop = () => {
+				if (layoutRef.current) {
+					layoutRef.current.scrollTo({y: 0, animated: true});
+				}
+			};
+
+			setSettingsScrollToTop(scrollToTop);
+
+			// Cleanup when component unmounts
+			return () => {
+				setSettingsScrollToTop(() => {});
+			};
+		}, []);
+
+		React.useEffect(() => {
+			checkNotificationPermission();
+		}, []);
+
+		const checkNotificationPermission = async () => {
+			try {
+				const {status} = await Permissions.checkNotifications();
+				settings$.notificationPermissionStatus.set(status);
+			} catch (error) {
+				console.error("Error checking notification permission:", error);
 			}
-		} else {
-			settings$.notifications.set(false);
-		}
-	};
+		};
 
-	const getNotificationStatusText = () => {
-		const status = settings$.notificationPermissionStatus.get();
-		const enabled = settings$.notifications.get();
-
-		if (!enabled) return t("settings.notificationStatuses.disabled");
-
-		switch (status) {
-			case Permissions.RESULTS.GRANTED:
-				return t("settings.notificationStatuses.enabled");
-			case Permissions.RESULTS.DENIED:
-				return t("settings.notificationStatuses.permissionNeeded");
-			case Permissions.RESULTS.BLOCKED:
-				return t("settings.notificationStatuses.blockedInSettings");
-			case Permissions.RESULTS.LIMITED:
-				return t("settings.notificationStatuses.limitedAccess");
-			default:
-				return t("settings.notificationStatuses.unknown");
-		}
-	};
-
-	const handleShare = async () => {
-		try {
+		const handleNotificationToggle = async (value: boolean) => {
 			if (hapticsEnabled) {
 				haptics.impactMedium();
 			}
-			await Share.open({
-				message: "Check out this app",
-				url: "https://www.google.com", // TODO: add app url
-			});
-		} catch (error) {
-			console.error(error);
-		}
-	};
 
-	const handleWriteReview = async () => {
-		try {
-			if (hapticsEnabled) {
-				haptics.impactMedium();
-			}
-			const iosUrl =
-				"itms-apps://itunes.apple.com/app/id[YOUR_APP_ID]?action=write-review";
+			if (value) {
+				const currentStatus = settings$.notificationPermissionStatus.get();
 
-			const supported = await Linking.canOpenURL(iosUrl);
+				if (currentStatus === Permissions.RESULTS.GRANTED) {
+					settings$.notifications.set(true);
+				} else if (
+					currentStatus === Permissions.RESULTS.DENIED ||
+					currentStatus === "unavailable"
+				) {
+					try {
+						const {status} = await Permissions.requestNotifications([
+							"alert",
+							"sound",
+							"badge",
+						]);
+						settings$.notificationPermissionStatus.set(status);
 
-			if (supported) {
-				await Linking.openURL(iosUrl);
+						if (status === Permissions.RESULTS.GRANTED) {
+							settings$.notifications.set(true);
+						} else {
+							Alert.alert(
+								t("notifications.permissionRequired"),
+								t("notifications.permissionMessage"),
+								[
+									{text: t("common.cancel"), style: "cancel"},
+									{
+										text: t("notifications.openSettings"),
+										onPress: () => Permissions.openSettings("notifications"),
+									},
+								],
+							);
+						}
+					} catch (error) {
+						console.error("Error requesting notification permission:", error);
+					}
+				} else if (currentStatus === Permissions.RESULTS.BLOCKED) {
+					Alert.alert(
+						t("notifications.notificationsDisabled"),
+						t("notifications.notificationsBlockedMessage"),
+						[
+							{text: t("common.cancel"), style: "cancel"},
+							{
+								text: t("notifications.openSettings"),
+								onPress: () => Permissions.openSettings("notifications"),
+							},
+						],
+					);
+				}
 			} else {
-				console.log("Cannot open app store");
+				settings$.notifications.set(false);
 			}
-		} catch (error) {
-			console.error("Error opening app store:", error);
-		}
-	};
+		};
 
-	const handleContactUs = async () => {
-		try {
-			if (hapticsEnabled) {
-				haptics.impactMedium();
+		const getNotificationStatusText = () => {
+			const status = settings$.notificationPermissionStatus.get();
+			const enabled = settings$.notifications.get();
+
+			if (!enabled) return t("settings.notificationStatuses.disabled");
+
+			switch (status) {
+				case Permissions.RESULTS.GRANTED:
+					return t("settings.notificationStatuses.enabled");
+				case Permissions.RESULTS.DENIED:
+					return t("settings.notificationStatuses.permissionNeeded");
+				case Permissions.RESULTS.BLOCKED:
+					return t("settings.notificationStatuses.blockedInSettings");
+				case Permissions.RESULTS.LIMITED:
+					return t("settings.notificationStatuses.limitedAccess");
+				default:
+					return t("settings.notificationStatuses.unknown");
 			}
-			const email = "support@vardadienas.com";
-			const subject = "VardaDienas App - Contact";
-			const body =
-				"Hi there,\n\nI'm contacting you about the VardaDienas app.\n\n";
+		};
 
-			const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-			const supported = await Linking.canOpenURL(url);
-
-			if (supported) {
-				await Linking.openURL(url);
-			} else {
-				console.log("Cannot open email client");
+		const handleShare = async () => {
+			try {
+				if (hapticsEnabled) {
+					haptics.impactMedium();
+				}
+				await Share.open({
+					message: "Check out this app",
+					url: "https://www.google.com", // TODO: add app url
+				});
+			} catch (error) {
+				console.error(error);
 			}
-		} catch (error) {
-			console.error("Error opening email:", error);
-		}
-	};
+		};
 
-	const handleReportIssue = async () => {
-		try {
-			if (hapticsEnabled) {
-				haptics.impactMedium();
+		const handleWriteReview = async () => {
+			try {
+				if (hapticsEnabled) {
+					haptics.impactMedium();
+				}
+				const iosUrl =
+					"itms-apps://itunes.apple.com/app/id[YOUR_APP_ID]?action=write-review";
+
+				const supported = await Linking.canOpenURL(iosUrl);
+
+				if (supported) {
+					await Linking.openURL(iosUrl);
+				} else {
+					console.log("Cannot open app store");
+				}
+			} catch (error) {
+				console.error("Error opening app store:", error);
 			}
-			const email = "support@vardadienas.com";
-			const subject = "VardaDienas App - Issue Report";
-			const appVersion = DeviceInfo.getVersion();
-			const buildNumber = DeviceInfo.getBuildNumber();
-			const systemVersion = DeviceInfo.getSystemVersion();
-			const deviceModel = DeviceInfo.getModel();
+		};
 
-			const body = `Hi there,
+		const handleContactUs = async () => {
+			try {
+				if (hapticsEnabled) {
+					haptics.impactMedium();
+				}
+				const email = "support@vardadienas.com";
+				const subject = "VardaDienas App - Contact";
+				const body =
+					"Hi there,\n\nI'm contacting you about the VardaDienas app.\n\n";
+
+				const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+				const supported = await Linking.canOpenURL(url);
+
+				if (supported) {
+					await Linking.openURL(url);
+				} else {
+					console.log("Cannot open email client");
+				}
+			} catch (error) {
+				console.error("Error opening email:", error);
+			}
+		};
+
+		const handleReportIssue = async () => {
+			try {
+				if (hapticsEnabled) {
+					haptics.impactMedium();
+				}
+				const email = "support@vardadienas.com";
+				const subject = "VardaDienas App - Issue Report";
+				const appVersion = DeviceInfo.getVersion();
+				const buildNumber = DeviceInfo.getBuildNumber();
+				const systemVersion = DeviceInfo.getSystemVersion();
+				const deviceModel = DeviceInfo.getModel();
+
+				const body = `Hi there,
 
 I'm reporting an issue with the Vārdu Kalendārs app.
 
@@ -208,97 +240,105 @@ Actual Behavior:
 
 Thank you!`;
 
-			const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-			const supported = await Linking.canOpenURL(url);
+				const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+				const supported = await Linking.canOpenURL(url);
 
-			if (supported) {
-				await Linking.openURL(url);
-			} else {
-				console.log("Cannot open email client");
+				if (supported) {
+					await Linking.openURL(url);
+				} else {
+					console.log("Cannot open email client");
+				}
+			} catch (error) {
+				console.error("Error opening email:", error);
 			}
-		} catch (error) {
-			console.error("Error opening email:", error);
-		}
-	};
+		};
 
-	return (
-		<Layout
-			header={<Header title={t("settings.title")} />}
-			withScroll="vertical"
-		>
-			<View style={styles.container}>
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>{t("settings.general")}</Text>
-					<LanguageSelector />
-					<View style={{height: 8}} />
-					<View style={styles.row}>
-						<View style={styles.rowContent}>
-							<Text style={styles.rowText}>{t("settings.haptics")}</Text>
-							<Text style={styles.rowSubtext}>
-								{hapticsEnabled ? t("haptics.enabled") : t("haptics.disabled")}
-							</Text>
+		return (
+			<Layout
+				ref={layoutRef}
+				header={<Header title={t("settings.title")} />}
+				withScroll="vertical"
+			>
+				<View style={styles.container}>
+					<View style={styles.section}>
+						<Text style={styles.sectionTitle}>{t("settings.general")}</Text>
+						<LanguageSelector />
+						<View style={{height: 8}} />
+						<View style={styles.row}>
+							<View style={styles.rowContent}>
+								<Text style={styles.rowText}>{t("settings.haptics")}</Text>
+								<Text style={styles.rowSubtext}>
+									{hapticsEnabled
+										? t("haptics.enabled")
+										: t("haptics.disabled")}
+								</Text>
+							</View>
+							<Switch
+								value={hapticsEnabled}
+								onValueChange={(value) => settings$.haptics.set(value)}
+							/>
 						</View>
-						<Switch
-							value={hapticsEnabled}
-							onValueChange={(value) => settings$.haptics.set(value)}
-						/>
+
+						<View style={styles.row}>
+							<View style={styles.rowContent}>
+								<Text style={styles.rowText}>
+									{t("settings.notifications")}
+								</Text>
+								<Text style={styles.rowSubtext}>
+									{getNotificationStatusText()}
+								</Text>
+							</View>
+							<Switch
+								value={notificationsEnabled}
+								onValueChange={handleNotificationToggle}
+							/>
+						</View>
 					</View>
 
-					<View style={styles.row}>
-						<View style={styles.rowContent}>
-							<Text style={styles.rowText}>{t("settings.notifications")}</Text>
-							<Text style={styles.rowSubtext}>
-								{getNotificationStatusText()}
+					<View style={styles.section}>
+						<Text style={styles.sectionTitle}>{t("settings.support")}</Text>
+						{/* <Pressable style={styles.row} onPress={handleWriteReview}>
+							<Text style={styles.rowText}>{t("settings.writeReview")}</Text>
+							<View style={styles.iconButton}>
+								<Star1 size="20" color={colors.primary} variant="Bold" />
+							</View>
+						</Pressable>
+
+						<Pressable style={styles.row} onPress={handleContactUs}>
+							<Text style={styles.rowText}>{t("settings.contactUs")}</Text>
+							<View style={styles.iconButton}>
+								<Message size="20" color={colors.primary} variant="Bold" />
+							</View>
+						</Pressable>
+
+						<Pressable style={styles.row} onPress={handleReportIssue}>
+							<Text style={styles.rowText}>{t("settings.reportIssue")}</Text>
+							<View style={styles.iconButton}>
+								<Message size="20" color={colors.primary} variant="Bold" />
+							</View>
+						</Pressable> */}
+
+						<Pressable style={styles.row} onPress={handleShare}>
+							<Text style={styles.rowText}>
+								{t("settings.shareWithFriends")}
 							</Text>
-						</View>
-						<Switch
-							value={notificationsEnabled}
-							onValueChange={handleNotificationToggle}
-						/>
+							<View style={styles.iconButton}>
+								<ExportCurve size="20" color={colors.primary} variant="Bold" />
+							</View>
+						</Pressable>
+					</View>
+
+					<View style={styles.versionContainer}>
+						<Text style={styles.versionText}>
+							{t("settings.version")} {DeviceInfo.getVersion()} (
+							{DeviceInfo.getBuildNumber()})
+						</Text>
 					</View>
 				</View>
-
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>{t("settings.support")}</Text>
-					{/* <Pressable style={styles.row} onPress={handleWriteReview}>
-						<Text style={styles.rowText}>{t("settings.writeReview")}</Text>
-						<View style={styles.iconButton}>
-							<Star1 size="20" color={colors.primary} variant="Bold" />
-						</View>
-					</Pressable>
-
-					<Pressable style={styles.row} onPress={handleContactUs}>
-						<Text style={styles.rowText}>{t("settings.contactUs")}</Text>
-						<View style={styles.iconButton}>
-							<Message size="20" color={colors.primary} variant="Bold" />
-						</View>
-					</Pressable>
-
-					<Pressable style={styles.row} onPress={handleReportIssue}>
-						<Text style={styles.rowText}>{t("settings.reportIssue")}</Text>
-						<View style={styles.iconButton}>
-							<Message size="20" color={colors.primary} variant="Bold" />
-						</View>
-					</Pressable> */}
-
-					<Pressable style={styles.row} onPress={handleShare}>
-						<Text style={styles.rowText}>{t("settings.shareWithFriends")}</Text>
-						<View style={styles.iconButton}>
-							<ExportCurve size="20" color={colors.primary} variant="Bold" />
-						</View>
-					</Pressable>
-				</View>
-
-				<View style={styles.versionContainer}>
-					<Text style={styles.versionText}>
-						{t("settings.version")} {DeviceInfo.getVersion()} (
-						{DeviceInfo.getBuildNumber()})
-					</Text>
-				</View>
-			</View>
-		</Layout>
-	);
-}
+			</Layout>
+		);
+	},
+);
 
 const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	container: {

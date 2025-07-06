@@ -1,8 +1,27 @@
 import type {BottomTabBarProps} from "@react-navigation/bottom-tabs";
+import React from "react";
 import {StyleSheet} from "react-native-unistyles";
 
 import {Bar} from "@/app/navigation/components/Bar";
 import {View} from "@/app/ui/components/View";
+
+// Global state for scroll functions
+let homeScrollToToday: (() => void) | null = null;
+let favouritesScrollToTop: (() => void) | null = null;
+let settingsScrollToTop: (() => void) | null = null;
+
+// Functions to set the scroll handlers
+export const setHomeScrollToToday = (fn: () => void) => {
+	homeScrollToToday = fn;
+};
+
+export const setFavouritesScrollToTop = (fn: () => void) => {
+	favouritesScrollToTop = fn;
+};
+
+export const setSettingsScrollToTop = (fn: () => void) => {
+	settingsScrollToTop = fn;
+};
 
 export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
 	return (
@@ -27,6 +46,18 @@ export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
 
 					if (!isFocused && !event.defaultPrevented) {
 						navigation.navigate(route.name, route.params);
+					} else if (isFocused && !event.defaultPrevented) {
+						// Handle scroll to top when tab is already focused
+						if (route.name === "HomeStack" && homeScrollToToday) {
+							// For home screen, scroll to today's date
+							homeScrollToToday();
+						} else if (route.name === "Favourites" && favouritesScrollToTop) {
+							// For favourites screen, scroll to top
+							favouritesScrollToTop();
+						} else if (route.name === "Settings" && settingsScrollToTop) {
+							// For settings screen, scroll to top
+							settingsScrollToTop();
+						}
 					}
 				};
 

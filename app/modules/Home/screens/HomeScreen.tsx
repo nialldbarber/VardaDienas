@@ -10,6 +10,7 @@ import {vardūs} from "@/app/constants/vardūs.json";
 import {FastScrollIndex} from "@/app/modules/Home/components/FastScrollIndex";
 import {Search} from "@/app/modules/Home/components/Search";
 import {SearchBottomSheet} from "@/app/modules/Home/components/SearchBottomSheet";
+import {setHomeScrollToToday} from "@/app/navigation/components/TabBar";
 import type {NamesRowScreenNavigationProp} from "@/app/navigation/navigation";
 import type {DayData} from "@/app/types";
 import {Text} from "@/app/ui/components/Text";
@@ -25,7 +26,45 @@ type SearchResult = {
 	matchedName: string;
 };
 
-export function HomeScreen() {
+type HomeScreenRef = {
+	scrollToToday: () => void;
+};
+
+function getFirstDayIndexAfter(
+	index: number,
+	vardus: (string | VardusItem)[],
+): number {
+	for (let i = index; i < vardus.length; i++) {
+		if (typeof vardus[i] !== "string") {
+			return i;
+		}
+	}
+	// fallback to first day if not found
+	for (let i = 0; i < vardus.length; i++) {
+		if (typeof vardus[i] !== "string") {
+			return i;
+		}
+	}
+	return 0;
+}
+
+const ITEM_HEIGHT = 70;
+
+function getItemLayout(data: (string | VardusItem)[], index: number) {
+	let offset = 0;
+	for (let i = 0; i < index; i++) {
+		if (typeof data[i] !== "string") {
+			offset += ITEM_HEIGHT;
+		}
+	}
+	return {
+		length: typeof data[index] === "string" ? 0 : ITEM_HEIGHT,
+		offset,
+		index,
+	};
+}
+
+export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const bottomSheetRef = React.useRef<BottomSheetModal>(null);
 	const flashListRef = React.useRef<FlashList<string | VardusItem>>(null);
 	const [currentMonth, setCurrentMonth] = React.useState<string | null>(null);
@@ -34,6 +73,39 @@ export function HomeScreen() {
 	const {navigate} = useNavigation<NamesRowScreenNavigationProp>();
 	const {height} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
+
+	// Expose scrollToToday method via ref
+	React.useImperativeHandle(ref, () => ({
+		scrollToToday: () => {
+			if (flashListRef.current) {
+				const todaysIndex = getTodaysIndex(vardūs);
+				flashListRef.current.scrollToIndex({
+					index: todaysIndex,
+					animated: true,
+				});
+			}
+		},
+	}));
+
+	// Register the scroll function with the global state
+	React.useEffect(() => {
+		const scrollToToday = () => {
+			if (flashListRef.current) {
+				const todaysIndex = getTodaysIndex(vardūs);
+				flashListRef.current.scrollToIndex({
+					index: todaysIndex,
+					animated: true,
+				});
+			}
+		};
+
+		setHomeScrollToToday(scrollToToday);
+
+		// Cleanup when component unmounts
+		return () => {
+			setHomeScrollToToday(() => {});
+		};
+	}, []);
 
 	const handleOpenSearch = React.useCallback(() => {
 		bottomSheetRef.current?.present();
@@ -164,6 +236,7 @@ export function HomeScreen() {
 
 	const renderItem = React.useCallback(
 		({item}: {item: string | VardusItem}) => {
+			console.log("Rendering item:", item);
 			if (typeof item === "string") return null;
 			return (
 				<Pressable
@@ -186,6 +259,12 @@ export function HomeScreen() {
 	);
 
 	const listContainerHeight = height - insets.top - 120;
+
+	const rawInitialIndex = getTodaysIndex(vardūs);
+	const initialScrollIndex =
+		typeof vardūs[rawInitialIndex] === "string"
+			? getFirstDayIndexAfter(rawInitialIndex, vardūs)
+			: rawInitialIndex;
 
 	return (
 		<View style={styles.container}>
@@ -222,8 +301,11 @@ export function HomeScreen() {
 							return `day-${month}-${item.diena}`;
 						}}
 						showsVerticalScrollIndicator={false}
-						estimatedItemSize={70}
-						initialScrollIndex={getTodaysIndex(vardūs)}
+						estimatedItemSize={ITEM_HEIGHT}
+						initialScrollIndex={initialScrollIndex}
+						getItemType={(item) =>
+							typeof item === "string" ? "header" : "day"
+						}
 						onViewableItemsChanged={onViewableItemsChanged}
 					/>
 					<FastScrollIndex
@@ -235,7 +317,7 @@ export function HomeScreen() {
 			</View>
 		</View>
 	);
-}
+});
 
 const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 	container: {

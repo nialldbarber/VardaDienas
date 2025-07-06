@@ -1,4 +1,5 @@
 import type {PropsWithChildren} from "react";
+import React from "react";
 import {ScrollView} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -9,29 +10,35 @@ type Props = {
 	withScroll?: "vertical" | "horizontal" | "none";
 };
 
-export function Layout({
-	header,
-	withScroll = "none",
-	children,
-}: PropsWithChildren<Props>) {
-	const Container = withScroll === "none" ? View : ScrollView;
+export const Layout = React.forwardRef<ScrollView, PropsWithChildren<Props>>(
+	({header, withScroll = "none", children}, ref) => {
+		const Container = withScroll === "none" ? View : ScrollView;
 
-	return (
-		<View style={styles.container}>
-			{header && <View>{header}</View>}
-			<Container
-				horizontal={withScroll === "horizontal"}
-				showsVerticalScrollIndicator={false}
-				contentContainerStyle={
-					withScroll === "none" ? styles.inner : styles.scrollContent
-				}
-				style={styles.inner}
-			>
-				<View>{children}</View>
-			</Container>
-		</View>
-	);
-}
+		if (withScroll === "none") {
+			return (
+				<View style={styles.container}>
+					{header && <View>{header}</View>}
+					<View style={styles.inner}>{children}</View>
+				</View>
+			);
+		}
+
+		return (
+			<View style={styles.container}>
+				{header && <View>{header}</View>}
+				<ScrollView
+					ref={ref}
+					horizontal={withScroll === "horizontal"}
+					showsVerticalScrollIndicator={false}
+					contentContainerStyle={styles.scrollContent}
+					style={styles.inner}
+				>
+					<View>{children}</View>
+				</ScrollView>
+			</View>
+		);
+	},
+);
 
 const styles = StyleSheet.create(({colors, tokens, sizes}, {insets}) => ({
 	container: {

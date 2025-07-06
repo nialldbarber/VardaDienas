@@ -8,9 +8,10 @@ import {useNavigation} from "@react-navigation/native";
 import {Home, InfoCircle} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Pressable} from "react-native";
+import {Pressable, type ScrollView} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
+import {setFavouritesScrollToTop} from "@/app/navigation/components/TabBar";
 import {favourites$} from "@/app/store/favourites";
 import {settings$} from "@/app/store/settings";
 import {Button} from "@/app/ui/components/Button";
@@ -22,91 +23,126 @@ import {Layout} from "@/app/ui/components/layout";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
 
-export function FavouritesScreen() {
-	const {t} = useTranslation();
-	const favourites = use$(favourites$.favourites);
-	const hapticsEnabled = use$(settings$.haptics);
-	const navigation = useNavigation();
-	const haptic = hapticToTrigger("impactMedium");
-	const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
+type FavouritesScreenRef = {
+	scrollToTop: () => void;
+};
 
-	const handleNavigateToHome = () => {
-		if (hapticsEnabled) {
-			haptic.impactMedium();
-		}
-		navigation.navigate("HomeStack" as never);
-	};
+export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
+	(props, ref) => {
+		const {t} = useTranslation();
+		const favourites = use$(favourites$.favourites);
+		const hapticsEnabled = use$(settings$.haptics);
+		const navigation = useNavigation();
+		const haptic = hapticToTrigger("impactMedium");
+		const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
+		const layoutRef = React.useRef<ScrollView>(null);
 
-	const handleOpenInfo = () => {
-		if (hapticsEnabled) {
-			haptic.impactMedium();
-		}
-		infoBottomSheetRef.current?.present();
-	};
+		// Expose scrollToTop method via ref
+		React.useImperativeHandle(ref, () => ({
+			scrollToTop: () => {
+				if (layoutRef.current) {
+					layoutRef.current.scrollTo({y: 0, animated: true});
+				}
+			},
+		}));
 
-	const renderBackdrop = React.useCallback(
-		(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
-			<BottomSheetBackdrop
-				{...props}
-				disappearsOnIndex={-1}
-				appearsOnIndex={0}
-			/>
-		),
-		[],
-	);
+		// Register the scroll function with the global state
+		React.useEffect(() => {
+			const scrollToTop = () => {
+				if (layoutRef.current) {
+					layoutRef.current.scrollTo({y: 0, animated: true});
+				}
+			};
 
-	const EmptyState = () => (
-		<View style={styles.emptyState}>
-			<Home size="64" color="#E5E5E5" variant="Outline" />
-			<Text variant="header" style={styles.emptyStateTitle}>
-				{t("favourites.empty.title")}
-			</Text>
-			<Text style={styles.emptyStateSubtext}>
-				{t("favourites.empty.subtitle")}
-			</Text>
-			<Button onPress={handleNavigateToHome}>
-				<Text style={styles.addButtonText}>{t("favourites.empty.button")}</Text>
-			</Button>
-		</View>
-	);
+			setFavouritesScrollToTop(scrollToTop);
 
-	return (
-		<View style={styles.container}>
-			<Layout
-				withScroll="vertical"
-				header={<Header title={t("favourites.title")} />}
-			>
-				{favourites.length === 0 ? (
-					<EmptyState />
-				) : (
-					<GroupedNamesAccordion favourites={favourites} />
-				)}
-			</Layout>
+			// Cleanup when component unmounts
+			return () => {
+				setFavouritesScrollToTop(() => {});
+			};
+		}, []);
 
-			<Pressable onPress={handleOpenInfo} style={styles.infoButton}>
-				<InfoCircle size="20" color={colors.primary} variant="Outline" />
-			</Pressable>
+		const handleNavigateToHome = () => {
+			if (hapticsEnabled) {
+				haptic.impactMedium();
+			}
+			navigation.navigate("HomeStack" as never);
+		};
 
-			<BottomSheetModal
-				ref={infoBottomSheetRef}
-				snapPoints={["40%"]}
-				enablePanDownToClose
-				backdropComponent={renderBackdrop}
-			>
-				<BottomSheetView style={styles.infoContent}>
-					<Text style={styles.infoTitle}>{t("favourites.info.title")}</Text>
-					<Text style={styles.infoText}>
-						{t("favourites.info.description")}
+		const handleOpenInfo = () => {
+			if (hapticsEnabled) {
+				haptic.impactMedium();
+			}
+			infoBottomSheetRef.current?.present();
+		};
+
+		const renderBackdrop = React.useCallback(
+			(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
+				<BottomSheetBackdrop
+					{...props}
+					disappearsOnIndex={-1}
+					appearsOnIndex={0}
+				/>
+			),
+			[],
+		);
+
+		const EmptyState = () => (
+			<View style={styles.emptyState}>
+				<Home size="64" color="#E5E5E5" variant="Outline" />
+				<Text variant="header" style={styles.emptyStateTitle}>
+					{t("favourites.empty.title")}
+				</Text>
+				<Text style={styles.emptyStateSubtext}>
+					{t("favourites.empty.subtitle")}
+				</Text>
+				<Button onPress={handleNavigateToHome}>
+					<Text style={styles.addButtonText}>
+						{t("favourites.empty.button")}
 					</Text>
-					<Text style={styles.infoText}>{t("favourites.info.features")}</Text>
-					<Text style={styles.infoText}>
-						{t("favourites.info.notifications")}
-					</Text>
-				</BottomSheetView>
-			</BottomSheetModal>
-		</View>
-	);
-}
+				</Button>
+			</View>
+		);
+
+		return (
+			<View style={styles.container}>
+				<Layout
+					ref={layoutRef}
+					withScroll="vertical"
+					header={<Header title={t("favourites.title")} />}
+				>
+					{favourites.length === 0 ? (
+						<EmptyState />
+					) : (
+						<GroupedNamesAccordion favourites={favourites} />
+					)}
+				</Layout>
+
+				<Pressable onPress={handleOpenInfo} style={styles.infoButton}>
+					<InfoCircle size="20" color={colors.primary} variant="Outline" />
+				</Pressable>
+
+				<BottomSheetModal
+					ref={infoBottomSheetRef}
+					snapPoints={["40%"]}
+					enablePanDownToClose
+					backdropComponent={renderBackdrop}
+				>
+					<BottomSheetView style={styles.infoContent}>
+						<Text style={styles.infoTitle}>{t("favourites.info.title")}</Text>
+						<Text style={styles.infoText}>
+							{t("favourites.info.description")}
+						</Text>
+						<Text style={styles.infoText}>{t("favourites.info.features")}</Text>
+						<Text style={styles.infoText}>
+							{t("favourites.info.notifications")}
+						</Text>
+					</BottomSheetView>
+				</BottomSheetModal>
+			</View>
+		);
+	},
+);
 
 const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 	container: {

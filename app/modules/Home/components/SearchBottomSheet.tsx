@@ -9,7 +9,7 @@ import type {BottomSheetModalMethods} from "@gorhom/bottom-sheet/lib/typescript/
 import {CloseCircle} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Pressable} from "react-native";
+import {Keyboard, Pressable} from "react-native";
 import {StyleSheet, UnistylesRuntime} from "react-native-unistyles";
 
 import {settings$} from "@/app/store/settings";
@@ -42,6 +42,38 @@ export const SearchBottomSheet = React.forwardRef<
 	const snapPoints = React.useMemo(() => ["35%", "70%"], []);
 	const haptic = hapticToTrigger("impactMedium");
 	const hapticsEnabled = use$(settings$.haptics);
+	const [keyboardHeight, setKeyboardHeight] = React.useState(0);
+
+	// Listen to keyboard events
+	React.useEffect(() => {
+		const keyboardDidShowListener = Keyboard.addListener(
+			"keyboardDidShow",
+			(e) => {
+				setKeyboardHeight(e.endCoordinates.height);
+			},
+		);
+		const keyboardDidHideListener = Keyboard.addListener(
+			"keyboardDidHide",
+			() => {
+				setKeyboardHeight(0);
+			},
+		);
+
+		return () => {
+			keyboardDidShowListener?.remove();
+			keyboardDidHideListener?.remove();
+		};
+	}, []);
+
+	// Calculate max content size accounting for keyboard
+	const maxContentSize = React.useMemo(() => {
+		const screenHeight = UnistylesRuntime.screen.height;
+		const bottomInset = UnistylesRuntime.insets.bottom;
+		const availableHeight = screenHeight - bottomInset * 2 - keyboardHeight;
+
+		// Ensure we don't go below a minimum height
+		return Math.max(availableHeight, 200);
+	}, [keyboardHeight]);
 
 	const renderBackdrop = React.useCallback(
 		(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
@@ -86,9 +118,9 @@ export const SearchBottomSheet = React.forwardRef<
 			snapPoints={snapPoints}
 			backgroundStyle={styles.modal}
 			backdropComponent={renderBackdrop}
-			maxDynamicContentSize={
-				UnistylesRuntime.screen.height - UnistylesRuntime.insets.bottom * 2
-			}
+			maxDynamicContentSize={maxContentSize}
+			keyboardBehavior="extend"
+			keyboardBlurBehavior="restore"
 		>
 			<BottomSheetView style={styles.header}>
 				<Text style={styles.title}>{t("search.title")}</Text>
