@@ -191,6 +191,11 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 		[navigate],
 	);
 
+	const handleSearchDismiss = React.useCallback(() => {
+		setSearchQuery("");
+		setSearchResults([]);
+	}, []);
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const monthIndexMap = React.useMemo(() => {
 		return vardūs.reduce<{index: number; name: string}[]>(
@@ -306,6 +311,7 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 					onSearchQueryChange={handleSearchQueryChange}
 					searchResults={searchResults}
 					onResultPress={handleSearchResultPress}
+					onDismiss={handleSearchDismiss}
 				/>
 				<View style={styles.listContainer}>
 					<FlashList
