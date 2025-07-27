@@ -16,7 +16,6 @@ import type {DayData} from "@/app/types";
 import {SkiaSpinner} from "@/app/ui/components/SkiaSpinner";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
-import {colors} from "@/app/ui/config/colors";
 import {getTodaysIndex} from "@/app/utils/dates";
 
 type VardusItem = DayData;
@@ -31,6 +30,18 @@ type SearchResult = {
 type HomeScreenRef = {
 	scrollToToday: () => void;
 };
+
+// Helper function to format names with proper punctuation
+function formatNames(names: string[]): string {
+	if (names.length === 0) return "";
+	if (names.length === 1) return names[0];
+	if (names.length === 2) return `${names[0]} and ${names[1]}`;
+
+	// For 3 or more names, use commas and "and" before the last one
+	const allButLast = names.slice(0, -1);
+	const last = names[names.length - 1];
+	return `${allButLast.join(", ")} and ${last}`;
+}
 
 function getFirstDayIndexAfter(
 	index: number,
@@ -252,14 +263,14 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 					onPress={() =>
 						navigate("NamesRow", {data: item, month: currentMonth})
 					}
-					style={{paddingBottom: 10}}
+					style={styles.itemContainer}
 				>
 					<Text variant="header" style={styles.headerText}>
 						{item.diena}
 					</Text>
 					<View>
-						<Text style={styles.vardi}>{item.vardi.join(" ")}</Text>
-						<Text style={styles.citiVardi}>{item.citiVardi.join(" ")}</Text>
+						<Text style={styles.vardi}>{formatNames(item.vardi)}</Text>
+						<Text style={styles.citiVardi}>{formatNames(item.citiVardi)}</Text>
 					</View>
 				</Pressable>
 			);
@@ -350,19 +361,7 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 				</View>
 			</View>
 			{loading && (
-				<View
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						backgroundColor: colors.white,
-						justifyContent: "center",
-						alignItems: "center",
-						zIndex: 9999,
-					}}
-				>
+				<View style={styles.loadingOverlay}>
 					<SkiaSpinner />
 				</View>
 			)}
@@ -391,6 +390,20 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 		paddingHorizontal: 10,
 		paddingRight: 45,
 		backgroundColor: tokens.background.primary,
+	},
+	itemContainer: {
+		paddingBottom: 10,
+	},
+	loadingOverlay: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		backgroundColor: colors.white,
+		justifyContent: "center",
+		alignItems: "center",
+		zIndex: 9999,
 	},
 	diena: {
 		fontSize: 30,

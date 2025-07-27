@@ -2,7 +2,13 @@ import {use$} from "@legendapp/state/react";
 import {ExportCurve} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Alert, Linking, Pressable, type ScrollView} from "react-native";
+import {
+	Alert,
+	Linking,
+	Platform,
+	Pressable,
+	type ScrollView,
+} from "react-native";
 import DeviceInfo from "react-native-device-info";
 import * as Permissions from "react-native-permissions";
 import Share from "react-native-share";
@@ -151,9 +157,19 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>(
 				if (hapticsEnabled) {
 					haptics.impactMedium();
 				}
+
+				// Get platform-specific app store URLs
+				const isIOS = Platform.OS === "ios";
+				const appStoreUrl = isIOS
+					? "https://apps.apple.com/app/id6747011314" // Vārdu Kalendārs iOS App Store
+					: "https://play.google.com/store/apps/details?id=com.vardadienas.app"; // Replace with your actual package name
+
 				await Share.open({
-					message: "Check out this app",
-					url: "https://www.google.com", // TODO: add app url
+					message: t("settings.shareMessage", {
+						appName: "Vārdu Kalendārs",
+						storeUrl: appStoreUrl,
+					}),
+					url: appStoreUrl,
 				});
 			} catch (error) {
 				console.error(error);

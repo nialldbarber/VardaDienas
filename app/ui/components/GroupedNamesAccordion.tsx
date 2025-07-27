@@ -2,6 +2,7 @@ import {Accordion} from "@animatereactnative/accordion";
 import {ArrowDown2} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
+import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
 import type {Favourite} from "@/app/store/favourites";
@@ -108,13 +109,12 @@ export function GroupedNamesAccordion({favourites}: Props) {
 			}
 
 			if (enabled) {
-				// Check if global notifications are enabled
 				const globalNotificationsEnabled = settings$.notifications.get();
 				if (!globalNotificationsEnabled) {
 					Toast.show({
 						type: "error",
 						text1: t("notifications.permissionRequired"),
-						text2: "Please enable notifications in Settings first",
+						text2: t("notifications.enableInSettings"),
 						position: "bottom",
 					});
 					return;
@@ -130,7 +130,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 					Toast.show({
 						type: "success",
-						text1: "Notification scheduled",
+						text1: t("notifications.notificationScheduled"),
 						text2: `You'll be reminded about ${favourite.name}'s name day`,
 						position: "bottom",
 					});
@@ -150,7 +150,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 				Toast.show({
 					type: "info",
-					text1: "Notification cancelled",
+					text1: t("notifications.notificationCancelled"),
 					text2: `No more reminders for ${favourite.name}`,
 					position: "bottom",
 				});
@@ -161,8 +161,8 @@ export function GroupedNamesAccordion({favourites}: Props) {
 			console.error("Error toggling notification:", error);
 			Toast.show({
 				type: "error",
-				text1: "Error",
-				text2: "Failed to update notification settings",
+				text1: t("common.error"),
+				text2: t("notifications.updateSettingsError"),
 				position: "bottom",
 			});
 			favourites$.toggleNotification(favourite.name, false);
@@ -211,7 +211,12 @@ export function GroupedNamesAccordion({favourites}: Props) {
 												</Accordion.Header>
 
 												<Accordion.Expanded style={styles.accordionContent}>
-													<View style={styles.checkboxRow}>
+													<Pressable
+														style={styles.checkboxRow}
+														onPress={() =>
+															handleRemoveFavourite(favourite.name)
+														}
+													>
 														<Text style={styles.checkboxDescription}>
 															{t("favourites.actions.unfavourite")}
 														</Text>
@@ -222,9 +227,17 @@ export function GroupedNamesAccordion({favourites}: Props) {
 															}
 															onCheckedChange={() => {}}
 														/>
-													</View>
+													</Pressable>
 
-													<View style={styles.checkboxRow}>
+													<Pressable
+														style={styles.checkboxRow}
+														onPress={() =>
+															handleNotificationToggle(
+																favourite,
+																!favourite.notifyMe,
+															)
+														}
+													>
 														<Text style={styles.checkboxDescription}>
 															{favourite.notifyMe
 																? t("favourites.actions.dontNotifyMe")
@@ -239,7 +252,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 																handleNotificationToggle(favourite, false)
 															}
 														/>
-													</View>
+													</Pressable>
 												</Accordion.Expanded>
 											</Accordion.Accordion>
 										</Accordion.Sibling>

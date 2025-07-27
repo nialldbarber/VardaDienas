@@ -5,16 +5,24 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 
 import {Navigation} from "./app/navigation/RootStack";
+import {AnimatedSplash} from "./app/ui/components/AnimatedSplash";
 import {Toast} from "./app/ui/components/Toast";
 import "./app/utils/i18n";
 
 export default function App() {
+	const [showSplash, setShowSplash] = React.useState(true);
+
 	React.useEffect(() => {
 		const init = async () => {
-			await RNBootSplash.hide({fade: true});
+			// Hide the native splash screen immediately
+			await RNBootSplash.hide();
 		};
 		init();
 	}, []);
+
+	const handleSplashComplete = () => {
+		setShowSplash(false);
+	};
 
 	return (
 		<>
@@ -26,6 +34,9 @@ export default function App() {
 				</BottomSheetModalProvider>
 			</GestureHandlerRootView>
 			<Toast />
+			{showSplash && (
+				<AnimatedSplash onAnimationComplete={handleSplashComplete} />
+			)}
 		</>
 	);
 }

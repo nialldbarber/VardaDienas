@@ -42,6 +42,7 @@
 		"contactUs": "Contact Us",
 		"reportIssue": "Report Issue",
 		"shareWithFriends": "Share with Friends",
+		"shareMessage": "Check out {{appName}} - a beautiful name day calendar app! {{storeUrl}}",
 		"version": "Version"
 	},
 	"home": {
@@ -63,9 +64,9 @@
 			"notifications": "Notifications will be sent on the morning of the name day to remind you of the important day."
 		},
 		"actions": {
-			"unfavourite": "Unfavourite",
+			"unfavourite": "Favourite",
 			"notifyMe": "Notify me",
-			"dontNotifyMe": "Don't notify me"
+			"dontNotifyMe": "Notify me"
 		}
 	},
 	"notifications": {
@@ -77,7 +78,11 @@
 		"nameDayToday": "🎉 Name Day Today!",
 		"nameDayTodayBody": "Today is {{name}}'s name day ({{day}} {{month}})",
 		"nameDayTomorrow": "🔔 Name Day Tomorrow!",
-		"nameDayTomorrowBody": "Tomorrow is {{name}}'s name day ({{day}} {{month}})"
+		"nameDayTomorrowBody": "Tomorrow is {{name}}'s name day ({{day}} {{month}})",
+		"enableInSettings": "Enable notifications first",
+		"notificationScheduled": "Reminder set",
+		"notificationCancelled": "Reminder removed",
+		"updateSettingsError": "Settings update failed"
 	},
 	"months": {
 		"Janvāris": "January",
@@ -105,7 +110,10 @@
 		"permissionMessage": "To receive reminders about name days, please enable notifications in your device settings.",
 		"notificationsDisabled": "Notifications Disabled",
 		"notificationsBlockedMessage": "Notifications are currently disabled. Please enable them in your device settings to receive name day reminders.",
-		"openSettings": "Open Settings"
+		"openSettings": "Open Settings",
+		"addedWithReminder": "{{name}} added with reminder",
+		"added": "{{name}} added",
+		"removed": "{{name}} removed"
 	},
 	"haptics": {
 		"enabled": "Enabled",

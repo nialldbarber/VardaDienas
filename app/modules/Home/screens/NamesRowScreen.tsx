@@ -18,6 +18,18 @@ type Props = StaticScreenProps<{
 	month: string | null;
 }>;
 
+// Helper function to format names with proper punctuation
+function formatNames(names: string[]): string {
+	if (names.length === 0) return "";
+	if (names.length === 1) return names[0];
+	if (names.length === 2) return `${names[0]} and ${names[1]}`;
+
+	// For 3 or more names, use commas and "and" before the last one
+	const allButLast = names.slice(0, -1);
+	const last = names[names.length - 1];
+	return `${allButLast.join(", ")} and ${last}`;
+}
+
 export function NamesRowScreen({
 	route: {
 		params: {data, month},
@@ -43,46 +55,54 @@ export function NamesRowScreen({
 				</View>
 			}
 		>
-			<View style={{padding: 10}}>
-				<View>
-					<Text style={styles.header}>{t("home.names")}</Text>
-					<View style={styles.sectionBlock}>
-						{data.vardi.map((vards, index) => {
-							const isChecked = favourites.some((fav) => fav.name === vards);
-							const isLast = index === data.vardi.length - 1;
-							return (
-								<CheckboxRow
-									key={`vardi-${vards}`}
-									vards={vards}
-									isChecked={isChecked}
-									data={data}
-									month={month}
-									isLast={isLast}
-								/>
-							);
-						})}
+			<View style={styles.container}>
+				{data.vardi.length > 0 && (
+					<View>
+						<Text style={styles.header}>{t("home.names")}</Text>
+						<View style={styles.sectionBlock}>
+							{data.vardi.map((vards, index) => {
+								const isChecked = favourites.some((fav) => fav.name === vards);
+								const isLast = index === data.vardi.length - 1;
+								return (
+									<CheckboxRow
+										key={`vardi-${vards}`}
+										vards={vards}
+										isChecked={isChecked}
+										data={data}
+										month={month}
+										isLast={isLast}
+									/>
+								);
+							})}
+						</View>
 					</View>
-				</View>
-				<View style={{height: 20}} />
-				<View>
-					<Text style={styles.header}>{t("home.otherNames")}</Text>
-					<View style={styles.sectionBlock}>
-						{data.citiVardi.map((vards, index) => {
-							const isChecked = favourites.some((fav) => fav.name === vards);
-							const isLast = index === data.citiVardi.length - 1;
-							return (
-								<CheckboxRow
-									key={`citi-vardi-${vards}`}
-									vards={vards}
-									isChecked={isChecked}
-									data={data}
-									month={month}
-									isLast={isLast}
-								/>
-							);
-						})}
+				)}
+
+				{data.vardi.length > 0 && data.citiVardi.length > 0 && (
+					<View style={styles.spacer} />
+				)}
+
+				{data.citiVardi.length > 0 && (
+					<View>
+						<Text style={styles.header}>{t("home.otherNames")}</Text>
+						<View style={styles.sectionBlock}>
+							{data.citiVardi.map((vards, index) => {
+								const isChecked = favourites.some((fav) => fav.name === vards);
+								const isLast = index === data.citiVardi.length - 1;
+								return (
+									<CheckboxRow
+										key={`citi-vardi-${vards}`}
+										vards={vards}
+										isChecked={isChecked}
+										data={data}
+										month={month}
+										isLast={isLast}
+									/>
+								);
+							})}
+						</View>
 					</View>
-				</View>
+				)}
 			</View>
 		</Layout>
 	);
@@ -105,6 +125,9 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	headerText: {
 		color: colors.white,
 	},
+	container: {
+		padding: sizes["10px"],
+	},
 	sectionBlock: {
 		backgroundColor: tokens.background.row,
 		borderRadius: sizes["8px"],
@@ -112,5 +135,8 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		borderColor: colors.lightGrey,
 		padding: sizes["12px"],
 		marginVertical: sizes["8px"],
+	},
+	spacer: {
+		height: 20,
 	},
 }));

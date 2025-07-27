@@ -42,6 +42,7 @@
 		"contactUs": "Sazināties ar mums",
 		"reportIssue": "Ziņot par problēmu",
 		"shareWithFriends": "Dalīties ar draugiem",
+		"shareMessage": "Apskatiet {{appName}} - skaistu vārdu dienu kalendāra lietotni! {{storeUrl}}",
 		"version": "Versija"
 	},
 	"home": {
@@ -63,9 +64,9 @@
 			"notifications": "Paziņojumi tiks nosūtīti vārda dienas rītā, lai atgādinātu par svarīgo dienu."
 		},
 		"actions": {
-			"unfavourite": "Noņemt no izlases",
+			"unfavourite": "Favorīts",
 			"notifyMe": "Paziņot man",
-			"dontNotifyMe": "Nepaziņot man"
+			"dontNotifyMe": "Paziņot man"
 		}
 	},
 	"notifications": {
@@ -77,7 +78,11 @@
 		"nameDayToday": "🎉 Vārda diena šodien!",
 		"nameDayTodayBody": "Šodien ir {{name}} vārda diena ({{day}} {{month}})",
 		"nameDayTomorrow": "🔔 Vārda diena rīt!",
-		"nameDayTomorrowBody": "Rīt ir {{name}} vārda diena ({{day}} {{month}})"
+		"nameDayTomorrowBody": "Rīt ir {{name}} vārda diena ({{day}} {{month}})",
+		"enableInSettings": "Ieslēdziet paziņojumus",
+		"notificationScheduled": "Atgādinājums iestatīts",
+		"notificationCancelled": "Atgādinājums noņemts",
+		"updateSettingsError": "Iestatījumu kļūda"
 	},
 	"months": {
 		"Janvāris": "janvāris",
@@ -105,7 +110,10 @@
 		"permissionMessage": "Lai saņemtu atgādinājumus par vārda dienām, lūdzu, ieslēdziet paziņojumus ierīces iestatījumos.",
 		"notificationsDisabled": "Paziņojumi izslēgti",
 		"notificationsBlockedMessage": "Paziņojumi pašlaik ir izslēgti. Lūdzu, ieslēdziet tos ierīces iestatījumos, lai saņemtu vārda dienu atgādinājumus.",
-		"openSettings": "Atvērt iestatījumus"
+		"openSettings": "Atvērt iestatījumus",
+		"addedWithReminder": "{{name}} pievienots ar atgādinājumu",
+		"added": "{{name}} pievienots",
+		"removed": "{{name}} izņemts"
 	},
 	"haptics": {
 		"enabled": "Ieslēgti",
