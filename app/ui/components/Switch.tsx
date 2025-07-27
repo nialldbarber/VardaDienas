@@ -11,6 +11,7 @@ import {StyleSheet} from "react-native-unistyles";
 import {settings$} from "@/app/store/settings";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
+import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {use$} from "@legendapp/state/react";
 
@@ -98,7 +99,7 @@ export function Switch({
 		const backgroundColor = interpolateColor(
 			animatedValue.value,
 			[0, 1],
-			disabled ? ["#E5E5E5", "#B0B0B0"] : ["#E5E5E5", "#22C55E"],
+			disabled ? ["#E5E5E5", "#B0B0B0"] : ["#E5E5E5", colors.primary],
 		);
 
 		return {

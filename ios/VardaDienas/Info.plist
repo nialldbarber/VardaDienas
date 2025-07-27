@@ -34,7 +34,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Vārdu Kalendārs would like to access your location to provide location-based name day reminders and local features.</string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>Vārdu Kalendārs would like to send you push notifications to remind you about important name days and celebrations.</string>
+	<string>Vārdu Kalendārs would like to send you push notifications to remind you about important name days.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Vārdu Kalendārs would like to access your photo library to allow you to share name day celebrations and memories with friends and family.</string>
 	<key>UIAppFonts</key>

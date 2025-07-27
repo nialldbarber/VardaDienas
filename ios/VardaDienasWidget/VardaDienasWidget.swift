@@ -12,6 +12,11 @@ extension Color {
     static let widgetBackground = Color(red: 0xA4 / 255, green: 0x34 / 255, blue: 0x3A / 255)
     static let widgetForeground = Color.white
     static let widgetSecondary = Color(red: 0xFC / 255, green: 0xFC / 255, blue: 0xFC / 255)
+    
+    // Inverted colors for the second widget variant
+    static let widgetBackgroundInverted = Color.white
+    static let widgetForegroundInverted = Color(red: 0xA4 / 255, green: 0x34 / 255, blue: 0x3A / 255)
+    static let widgetSecondaryInverted = Color(red: 0x66 / 255, green: 0x66 / 255, blue: 0x66 / 255)
 }
 
 // MARK: - Data Models
@@ -147,6 +152,17 @@ func getShortMonth(_ month: String) -> String {
     return shortMonths[month] ?? month
 }
 
+func formatNames(_ names: [String]) -> String {
+    if names.isEmpty { return "" }
+    if names.count == 1 { return names[0] }
+    if names.count == 2 { return "\(names[0]) un \(names[1])" }
+    
+    // For 3 or more names, use commas and "un" before the last one
+    let allButLast = names.dropLast()
+    let last = names.last!
+    return "\(allButLast.joined(separator: ", ")) un \(last)"
+}
+
 // MARK: - Widget Views
 struct NameDayWidgetEntryView: View {
     var entry: Provider.Entry
@@ -168,13 +184,33 @@ struct NameDayWidgetEntryView: View {
     }
 }
 
+struct NameDayWidgetInvertedEntryView: View {
+    var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        content
+            .containerBackground(Color.widgetBackgroundInverted, for: .widget)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch family {
+        case .systemMedium:
+            MediumNameDayViewInverted(nameDay: entry.nameDay)
+        default:
+            EmptyView()
+        }
+    }
+}
+
 struct MediumNameDayView: View {
     let nameDay: TodayNameDay
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
-                Text(nameDay.vardi.joined(separator: ", "))
+                Text(formatNames(nameDay.vardi))
                     .font(.custom("PlusJakartaSans-Bold", size: 18))
                     .foregroundColor(.widgetForeground)
                     .multilineTextAlignment(.leading)
@@ -191,10 +227,45 @@ struct MediumNameDayView: View {
                 HStack(alignment: .top, spacing: 4) {
                     Text("Citi:")
                         .font(.custom("PlusJakartaSans-Bold", size: 12))
-                    Text(nameDay.citiVardi.prefix(6).joined(separator: ", "))
-                        .font(.custom("PlusJakartaSans-Regular", size: 12))
+                    Text(formatNames(Array(nameDay.citiVardi.prefix(6))))
+                        .font(.custom("PlusJakartaSans-Bold", size: 12))
                 }
                 .foregroundColor(.widgetSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+}
+
+struct MediumNameDayViewInverted: View {
+    let nameDay: TodayNameDay
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                Text(formatNames(nameDay.vardi))
+                    .font(.custom("PlusJakartaSans-Bold", size: 18))
+                    .foregroundColor(.widgetForegroundInverted)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer()
+
+                Text("\(nameDay.day). \(getShortMonth(nameDay.month))")
+                    .font(.custom("PlusJakartaSans-Bold", size: 14))
+                    .foregroundColor(.widgetSecondaryInverted)
+            }
+
+            if !nameDay.citiVardi.isEmpty {
+                HStack(alignment: .top, spacing: 4) {
+                    Text("Citi:")
+                        .font(.custom("PlusJakartaSans-Bold", size: 12))
+                    Text(formatNames(Array(nameDay.citiVardi.prefix(6))))
+                        .font(.custom("PlusJakartaSans-Bold", size: 12))
+                }
+                .foregroundColor(.widgetSecondaryInverted)
                 .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -213,6 +284,19 @@ struct NameDayWidget: Widget {
         }
         .configurationDisplayName("Vārda diena")
         .description("Rāda šodienas vārda dienas")
+        .supportedFamilies([.systemMedium])
+    }
+}
+
+struct NameDayWidgetInverted: Widget {
+    let kind: String = "NameDayWidgetInverted"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+            NameDayWidgetInvertedEntryView(entry: entry)
+        }
+        .configurationDisplayName("Vārda diena (balta)")
+        .description("Rāda šodienas vārda dienas ar baltu fonu")
         .supportedFamilies([.systemMedium])
     }
 }
