@@ -36,7 +36,6 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>(
 		const notificationsEnabled = use$(settings$.notifications);
 		const layoutRef = React.useRef<ScrollView>(null);
 
-		// Expose scrollToTop method via ref
 		React.useImperativeHandle(ref, () => ({
 			scrollToTop: () => {
 				if (layoutRef.current) {
@@ -45,7 +44,6 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>(
 			},
 		}));
 
-		// Register the scroll function with the global state
 		React.useEffect(() => {
 			const scrollToTop = () => {
 				if (layoutRef.current) {
@@ -55,7 +53,6 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>(
 
 			setSettingsScrollToTop(scrollToTop);
 
-			// Cleanup when component unmounts
 			return () => {
 				setSettingsScrollToTop(() => {});
 			};
@@ -158,11 +155,10 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>(
 					haptics.impactMedium();
 				}
 
-				// Get platform-specific app store URLs
 				const isIOS = Platform.OS === "ios";
 				const appStoreUrl = isIOS
-					? "https://apps.apple.com/app/id6747011314" // Vārdu Kalendārs iOS App Store
-					: "https://play.google.com/store/apps/details?id=com.vardadienas.app"; // Replace with your actual package name
+					? "https://apps.apple.com/app/id6747011314"
+					: "https://play.google.com/store/apps/details?id=com.vardadienas.app";
 
 				await Share.open({
 					message: t("settings.shareMessage", {
@@ -344,6 +340,12 @@ Thank you!`;
 						</Pressable>
 					</View>
 
+					<View style={styles.madeWith}>
+						<Text style={styles.madeWithText} withEmoji>
+							{t("settings.madeWith")}
+						</Text>
+					</View>
+
 					<View style={styles.versionContainer}>
 						<Text style={styles.versionText}>
 							{t("settings.version")} {DeviceInfo.getVersion()} (
@@ -415,11 +417,21 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	versionContainer: {
 		alignItems: "center",
 		marginTop: "auto",
-		paddingVertical: sizes["20px"],
+		paddingTop: sizes["10px"],
 	},
 	versionText: {
 		fontSize: 12,
 		color: tokens.text.fadedText,
+		fontWeight: "400",
+	},
+	madeWith: {
+		alignItems: "center",
+		marginTop: "auto",
+		paddingTop: sizes["20px"],
+	},
+	madeWithText: {
+		fontSize: 12,
+		color: colors.grey,
 		fontWeight: "400",
 	},
 }));

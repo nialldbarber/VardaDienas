@@ -12,7 +12,8 @@
 		"next": "Nākamais",
 		"loading": "Ielādē...",
 		"error": "Kļūda",
-		"success": "Veiksmīgi"
+		"success": "Veiksmīgi",
+		"and": "un"
 	},
 	"navigation": {
 		"home": "Sākums",
@@ -27,6 +28,7 @@
 			"en": "Angļu",
 			"lv": "Latviešu"
 		},
+		"madeWith": "Ar ❤️ Dančukam no Nīla",
 		"haptics": "Taktilā atbildes",
 		"notifications": "Paziņojumi",
 		"notificationStatuses": {
@@ -82,7 +84,12 @@
 		"enableInSettings": "Ieslēdziet paziņojumus",
 		"notificationScheduled": "Atgādinājums iestatīts",
 		"notificationCancelled": "Atgādinājums noņemts",
-		"updateSettingsError": "Iestatījumu kļūda"
+		"updateSettingsError": "Iestatījumu kļūda",
+		"addedWithReminder": "{{name}} pievienots ar atgādinājumu",
+		"added": "{{name}} pievienots",
+		"removed": "{{name}} izņemts",
+		"reminderSet": "Jūs saņemsiet atgādinājumu par {{name}} vārda dienu",
+		"reminderRemoved": "Vairs nav atgādinājumu {{name}}"
 	},
 	"months": {
 		"Janvāris": "janvāris",

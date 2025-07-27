@@ -4,7 +4,10 @@ import {Text as NativeText} from "react-native";
 import type {UnistylesVariants} from "react-native-unistyles";
 import {StyleSheet} from "react-native-unistyles";
 
+import {renderStringWithEmoji} from "@/app/ui/utils/renderStringWithEmoji";
+
 interface Props extends TextProps, UnistylesVariants<typeof styles> {
+	withEmoji?: boolean;
 	style?: StyleProp<TextStyle>;
 }
 
@@ -12,14 +15,34 @@ export function Text({
 	variant = "body",
 	color,
 	children,
+	withEmoji = false,
 	style,
 	...rest
 }: Props) {
 	styles.useVariants({variant, color});
 
+	const renderChildren = () => {
+		return React.Children.map(children, (child) => {
+			if (typeof child === "string") {
+				return withEmoji ? renderStringWithEmoji(child) : child;
+			}
+			if (React.isValidElement(child)) {
+				return React.cloneElement(child, {
+					// @ts-expect-error
+					style: {
+						// @ts-expect-error
+						...child.props.style,
+						alignSelf: "baseline",
+					},
+				});
+			}
+			return child;
+		});
+	};
+
 	return (
 		<NativeText style={[styles.container, style]} {...rest}>
-			{children}
+			{renderChildren()}
 		</NativeText>
 	);
 }

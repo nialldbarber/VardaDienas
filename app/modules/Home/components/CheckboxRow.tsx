@@ -9,6 +9,7 @@ import type {DayData} from "@/app/types";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
+import {hapticToTrigger} from "@/app/utils/haptics";
 import {scheduleNameDayNotifications} from "@/app/utils/notifications";
 import {use$} from "@legendapp/state/react";
 import notifee from "@notifee/react-native";
@@ -24,6 +25,8 @@ type Props = {
 export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 	const {t} = useTranslation();
 	const globalNotificationsEnabled = use$(settings$.notifications);
+	const haptic = hapticToTrigger("impactMedium");
+	const hapticsEnabled = use$(settings$.haptics);
 
 	const handleCheckedChange = async () => {
 		console.log("=== FAVORITE ADDED ===");
@@ -89,6 +92,10 @@ export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 	};
 
 	const handleRowPress = () => {
+		if (hapticsEnabled) {
+			haptic.impactMedium();
+		}
+
 		if (isChecked) {
 			handleUnCheckedChange();
 		} else {

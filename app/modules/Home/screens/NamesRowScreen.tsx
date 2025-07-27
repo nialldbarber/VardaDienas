@@ -18,18 +18,6 @@ type Props = StaticScreenProps<{
 	month: string | null;
 }>;
 
-// Helper function to format names with proper punctuation
-function formatNames(names: string[]): string {
-	if (names.length === 0) return "";
-	if (names.length === 1) return names[0];
-	if (names.length === 2) return `${names[0]} and ${names[1]}`;
-
-	// For 3 or more names, use commas and "and" before the last one
-	const allButLast = names.slice(0, -1);
-	const last = names[names.length - 1];
-	return `${allButLast.join(", ")} and ${last}`;
-}
-
 export function NamesRowScreen({
 	route: {
 		params: {data, month},
@@ -38,6 +26,18 @@ export function NamesRowScreen({
 	const {t} = useTranslation();
 	const {goBack} = useNavigation();
 	const favourites = use$(favourites$.favourites);
+
+	// Helper function to format names with proper punctuation
+	function formatNames(names: string[]): string {
+		if (names.length === 0) return "";
+		if (names.length === 1) return names[0];
+		if (names.length === 2) return `${names[0]} ${t("common.and")} ${names[1]}`;
+
+		// For 3 or more names, use commas and "and" before the last one
+		const allButLast = names.slice(0, -1);
+		const last = names[names.length - 1];
+		return `${allButLast.join(", ")} ${t("common.and")} ${last}`;
+	}
 
 	return (
 		<Layout

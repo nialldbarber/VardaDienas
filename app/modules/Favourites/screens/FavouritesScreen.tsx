@@ -134,7 +134,7 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 							{t("favourites.info.description")}
 						</Text>
 						<Text style={styles.infoText}>{t("favourites.info.features")}</Text>
-						<Text style={styles.infoText}>
+						<Text style={styles.infoText} withEmoji>
 							{t("favourites.info.notifications")}
 						</Text>
 					</BottomSheetView>
@@ -198,15 +198,16 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 		paddingBottom: sizes["42px"],
 	},
 	infoTitle: {
-		fontSize: 20,
+		fontSize: 18,
 		fontWeight: "600",
 		color: colors.black,
 		marginBottom: sizes["16px"],
 		textAlign: "center",
 	},
 	infoText: {
+		fontSize: 14,
 		color: colors.black,
-		lineHeight: 24,
+		lineHeight: 20,
 		marginBottom: sizes["12px"],
 	},
 }));

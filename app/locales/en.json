@@ -12,7 +12,8 @@
 		"next": "Next",
 		"loading": "Loading...",
 		"error": "Error",
-		"success": "Success"
+		"success": "Success",
+		"and": "and"
 	},
 	"navigation": {
 		"home": "Home",
@@ -27,6 +28,7 @@
 			"en": "English",
 			"lv": "Latvian"
 		},
+		"madeWith": "Made with ❤️ for Dana, by Niall",
 		"haptics": "Haptic Feedback",
 		"notifications": "Notifications",
 		"notificationStatuses": {
@@ -59,9 +61,9 @@
 		},
 		"info": {
 			"title": "About favourites",
-			"description": "Here you can view all your favourite names, organized by months and days.",
+			"description": "Here you can view all your favourite names.",
 			"features": "For each name you can:\n• Add or remove from favourites\n• Turn notifications on or off for the name day",
-			"notifications": "Notifications will be sent on the morning of the name day to remind you of the important day."
+			"notifications": "Notifications will be sent on the morning of the name day to remind you of the important day! 🎉"
 		},
 		"actions": {
 			"unfavourite": "Favourite",
@@ -82,7 +84,12 @@
 		"enableInSettings": "Enable notifications first",
 		"notificationScheduled": "Reminder set",
 		"notificationCancelled": "Reminder removed",
-		"updateSettingsError": "Settings update failed"
+		"updateSettingsError": "Settings update failed",
+		"addedWithReminder": "{{name}} added with reminder",
+		"added": "{{name}} added",
+		"removed": "{{name}} removed",
+		"reminderSet": "You'll be reminded about {{name}}'s name day",
+		"reminderRemoved": "No more reminders for {{name}}"
 	},
 	"months": {
 		"Janvāris": "January",

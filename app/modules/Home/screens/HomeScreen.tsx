@@ -2,6 +2,7 @@ import type {BottomSheetModal} from "@gorhom/bottom-sheet";
 import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
 import React from "react";
+import {useTranslation} from "react-i18next";
 import {Pressable, useWindowDimensions} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {StyleSheet} from "react-native-unistyles";
@@ -30,18 +31,6 @@ type SearchResult = {
 type HomeScreenRef = {
 	scrollToToday: () => void;
 };
-
-// Helper function to format names with proper punctuation
-function formatNames(names: string[]): string {
-	if (names.length === 0) return "";
-	if (names.length === 1) return names[0];
-	if (names.length === 2) return `${names[0]} and ${names[1]}`;
-
-	// For 3 or more names, use commas and "and" before the last one
-	const allButLast = names.slice(0, -1);
-	const last = names[names.length - 1];
-	return `${allButLast.join(", ")} and ${last}`;
-}
 
 function getFirstDayIndexAfter(
 	index: number,
@@ -78,6 +67,7 @@ function getItemLayout(data: (string | VardusItem)[], index: number) {
 }
 
 export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
+	const {t} = useTranslation();
 	const bottomSheetRef = React.useRef<BottomSheetModal>(null);
 	const flashListRef = React.useRef<FlashList<string | VardusItem>>(null);
 	const [currentMonth, setCurrentMonth] = React.useState<string | null>(null);
@@ -88,6 +78,22 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const insets = useSafeAreaInsets();
 	const [loading, setLoading] = React.useState(true); // Restore loader
 	const hasScrolledRef = React.useRef(false);
+
+	// Helper function to format names with proper punctuation
+	const formatNames = React.useCallback(
+		(names: string[]): string => {
+			if (names.length === 0) return "";
+			if (names.length === 1) return names[0];
+			if (names.length === 2)
+				return `${names[0]} ${t("common.and")} ${names[1]}`;
+
+			// For 3 or more names, use commas and "and" before the last one
+			const allButLast = names.slice(0, -1);
+			const last = names[names.length - 1];
+			return `${allButLast.join(", ")} ${t("common.and")} ${last}`;
+		},
+		[t],
+	);
 
 	// Expose scrollToToday method via ref
 	React.useImperativeHandle(ref, () => ({
@@ -275,7 +281,7 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 				</Pressable>
 			);
 		},
-		[navigate, currentMonth],
+		[navigate, currentMonth, formatNames],
 	);
 
 	const listContainerHeight = height - insets.top - 120;

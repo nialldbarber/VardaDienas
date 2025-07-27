@@ -131,7 +131,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 					Toast.show({
 						type: "success",
 						text1: t("notifications.notificationScheduled"),
-						text2: `You'll be reminded about ${favourite.name}'s name day`,
+						text2: t("notifications.reminderSet", {name: favourite.name}),
 						position: "bottom",
 					});
 				} else {
@@ -151,7 +151,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 				Toast.show({
 					type: "info",
 					text1: t("notifications.notificationCancelled"),
-					text2: `No more reminders for ${favourite.name}`,
+					text2: t("notifications.reminderRemoved", {name: favourite.name}),
 					position: "bottom",
 				});
 			}
