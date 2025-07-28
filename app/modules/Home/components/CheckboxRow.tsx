@@ -13,6 +13,12 @@ import {hapticToTrigger} from "@/app/utils/haptics";
 import {scheduleNameDayNotifications} from "@/app/utils/notifications";
 import {use$} from "@legendapp/state/react";
 import notifee from "@notifee/react-native";
+import React from "react";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withTiming,
+} from "react-native-reanimated";
 
 type Props = {
 	vards: string;
@@ -20,30 +26,51 @@ type Props = {
 	data: DayData;
 	month: string | null;
 	isLast: boolean;
+	isHighlighted?: boolean;
 };
 
-export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
+export function CheckboxRow({
+	vards,
+	isChecked,
+	data,
+	month,
+	isLast,
+	isHighlighted = false,
+}: Props) {
 	const {t} = useTranslation();
 	const globalNotificationsEnabled = use$(settings$.notifications);
 	const haptic = hapticToTrigger("impactMedium");
 	const hapticsEnabled = use$(settings$.haptics);
 
-	const handleCheckedChange = async () => {
-		console.log("=== FAVORITE ADDED ===");
-		console.log("Global notifications enabled:", globalNotificationsEnabled);
+	const borderOpacity = useSharedValue(0);
 
-		// Add to favourites first
+	React.useEffect(() => {
+		if (isHighlighted) {
+			borderOpacity.value = withTiming(1, {duration: 300});
+			const timer = setTimeout(() => {
+				borderOpacity.value = withTiming(0, {duration: 300});
+			}, 3000);
+
+			return () => clearTimeout(timer);
+		}
+	}, [isHighlighted, borderOpacity]);
+
+	const highlightStyle = useAnimatedStyle(() => ({
+		borderWidth: 2,
+		borderColor: `rgba(164, 52, 58, ${borderOpacity.value})`,
+		borderRadius: 8,
+	}));
+
+	const handleCheckedChange = async () => {
 		favourites$.addFavourite({
 			name: vards,
 			day: data.diena,
 			month: month ?? "",
 		});
 
-		// Always try to enable notifications when favoriting (for testing)
 		try {
 			console.log("Attempting to enable notifications for:", vards);
 
-			// Use notifee directly to ensure native permission dialog appears
 			const settings = await notifee.requestPermission();
 			const hasPermission = settings.authorizationStatus >= 1;
 			console.log(
@@ -56,7 +83,6 @@ export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 			if (hasPermission) {
 				console.log("Scheduling notification for:", vards);
 				await scheduleNameDayNotifications(vards, data.diena, month ?? "");
-				// Update the favourite to have notifications enabled
 				favourites$.toggleNotification(vards, true);
 
 				Toast.show({
@@ -104,16 +130,20 @@ export function CheckboxRow({vards, isChecked, data, month, isLast}: Props) {
 	};
 
 	return (
-		<Pressable onPress={handleRowPress} style={styles.container(isLast)}>
-			<Text style={styles.text}>{vards}</Text>
-			<View>
-				<Checkbox
-					checked={isChecked}
-					onCheckedChange={handleCheckedChange}
-					onUnCheckedChange={handleUnCheckedChange}
-				/>
-			</View>
-		</Pressable>
+		<View style={styles.container(isLast)}>
+			<Animated.View style={[styles.pressableContent, highlightStyle]}>
+				<Pressable onPress={handleRowPress} style={styles.pressableInner}>
+					<Text style={styles.text}>{vards}</Text>
+					<View>
+						<Checkbox
+							checked={isChecked}
+							onCheckedChange={handleCheckedChange}
+							onUnCheckedChange={handleUnCheckedChange}
+						/>
+					</View>
+				</Pressable>
+			</Animated.View>
+		</View>
 	);
 }
 
@@ -129,6 +159,23 @@ const styles = StyleSheet.create(({sizes, colors, tokens}) => ({
 		borderBottomColor: isLast ? "transparent" : colors.grey3,
 		borderBottomWidth: isLast ? 0 : StyleSheet.hairlineWidth,
 	}),
+	pressableContent: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		width: "100%",
+		flex: 1,
+		paddingHorizontal: sizes["12px"],
+		paddingVertical: sizes["8px"],
+		borderRadius: 8,
+	},
+	pressableInner: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		width: "100%",
+		flex: 1,
+	},
 	text: {
 		color: tokens.text.primary,
 	},

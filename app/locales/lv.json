@@ -60,10 +60,10 @@
 			"button": "Pārlūkot vārdus"
 		},
 		"info": {
-			"title": "Par favorītiem",
-			"description": "Šeit jūs varat apskatīt visus savus iecienītākos vārdus, kas ir sakārtoti pēc mēnešiem un dienām.",
-			"features": "Katram vārdam jūs varat:\n• Pievienot vai noņemt no izlases\n• Ieslēgt vai izslēgt paziņojumus vārda dienai",
-			"notifications": "Paziņojumi tiks nosūtīti vārda dienas rītā, lai atgādinātu par svarīgo dienu."
+			"title": "Par mīļākajiem",
+			"description": "Šeit jūs varat apskatīt visus savus mīļākos vārdus.",
+			"features": "Katru vārdu jūs varat:\n• pievienot un izņemt no favorītiem\n• Ieslēgt vai izslēgt paziņojumus vārda dienai",
+			"notifications": "Paziņojumi tiks nosūtīti vārda dienas rītā, lai atgādinātu par svarīgo dienu! 🎉"
 		},
 		"actions": {
 			"unfavourite": "Favorīts",

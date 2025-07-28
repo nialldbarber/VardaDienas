@@ -203,7 +203,11 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const handleSearchResultPress = React.useCallback(
 		(result: SearchResult) => {
 			bottomSheetRef.current?.dismiss();
-			navigate("NamesRow", {data: result.day, month: result.month});
+			navigate("NamesRow", {
+				data: result.day,
+				month: result.month,
+				selectedName: result.matchedName,
+			});
 		},
 		[navigate],
 	);
@@ -267,7 +271,11 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 			return (
 				<Pressable
 					onPress={() =>
-						navigate("NamesRow", {data: item, month: currentMonth})
+						navigate("NamesRow", {
+							data: item,
+							month: currentMonth,
+							selectedName: null,
+						})
 					}
 					style={styles.itemContainer}
 				>

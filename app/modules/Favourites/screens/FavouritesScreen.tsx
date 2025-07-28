@@ -37,7 +37,6 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 		const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
 		const layoutRef = React.useRef<ScrollView>(null);
 
-		// Expose scrollToTop method via ref
 		React.useImperativeHandle(ref, () => ({
 			scrollToTop: () => {
 				if (layoutRef.current) {
@@ -46,7 +45,6 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 			},
 		}));
 
-		// Register the scroll function with the global state
 		React.useEffect(() => {
 			const scrollToTop = () => {
 				if (layoutRef.current) {
@@ -56,7 +54,6 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 
 			setFavouritesScrollToTop(scrollToTop);
 
-			// Cleanup when component unmounts
 			return () => {
 				setFavouritesScrollToTop(() => {});
 			};

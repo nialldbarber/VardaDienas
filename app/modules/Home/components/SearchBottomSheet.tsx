@@ -63,7 +63,12 @@ export const SearchBottomSheet = React.forwardRef<
 			({item}: {item: SearchResult}) => (
 				<Pressable
 					style={styles.resultItem}
-					onPress={() => onResultPress(item)}
+					onPress={() => {
+						// Add a small delay to ensure keyboard dismissal doesn't interfere
+						setTimeout(() => {
+							onResultPress(item);
+						}, 50);
+					}}
 				>
 					<View style={styles.resultContent}>
 						<Text style={styles.resultName}>{item.matchedName}</Text>
@@ -131,6 +136,7 @@ export const SearchBottomSheet = React.forwardRef<
 						keyExtractor={keyExtractor}
 						showsVerticalScrollIndicator={false}
 						contentContainerStyle={styles.flatListContent}
+						keyboardShouldPersistTaps="handled"
 					/>
 				) : searchQuery.length > 0 && searchQuery.length < 2 ? (
 					<BottomSheetView style={styles.emptyState}>

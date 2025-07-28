@@ -15,7 +15,6 @@ import Animated, {
 import {StyleSheet} from "react-native-unistyles";
 
 import {settings$} from "@/app/store/settings";
-import {Text} from "@/app/ui/components/Text";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
 import {use$} from "@legendapp/state/react";
@@ -113,7 +112,6 @@ export function Bar({
 					variant={isFocused ? "Bold" : "Outline"}
 				/>
 			) : null}
-			<Text style={styles.bottomTabText}>{getTabText(label as string)}</Text>
 		</AnimatedPressable>
 	);
 }
@@ -124,14 +122,13 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rt) => ({
 	},
 	bottomTabContainer: {
 		flex: 1,
-		paddingTop: sizes["3px"],
 		backgroundColor: tokens.background.primary,
 		alignItems: "center",
-		paddingBottom: rt.insets.bottom,
+		paddingBottom: rt.insets.bottom + sizes["3px"],
+		paddingTop: sizes["10px"],
 	},
 	bottomTabText: {
 		color: tokens.text.primary,
 		fontSize: 12,
-		marginTop: sizes["3px"],
 	},
 }));
