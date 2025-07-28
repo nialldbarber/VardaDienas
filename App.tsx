@@ -14,7 +14,6 @@ export default function App() {
 
 	React.useEffect(() => {
 		const init = async () => {
-			// Hide the native splash screen immediately
 			await RNBootSplash.hide();
 		};
 		init();
