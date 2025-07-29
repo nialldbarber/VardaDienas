@@ -1,14 +1,7 @@
 import {use$} from "@legendapp/state/react";
-import {ExportCurve} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {
-	Alert,
-	Linking,
-	Platform,
-	Pressable,
-	type ScrollView,
-} from "react-native";
+import {Alert, Linking, Platform, type ScrollView} from "react-native";
 import DeviceInfo from "react-native-device-info";
 import * as Permissions from "react-native-permissions";
 import Share from "react-native-share";
@@ -22,7 +15,6 @@ import {Switch} from "@/app/ui/components/Switch";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {Layout} from "@/app/ui/components/layout";
-import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 
 type SettingsScreenRef = {
@@ -307,9 +299,9 @@ Thank you!`;
 						</View>
 					</View>
 
-					<View style={styles.section}>
-						<Text style={styles.sectionTitle}>{t("settings.support")}</Text>
-						{/* <Pressable style={styles.row} onPress={handleWriteReview}>
+					{/* <View style={styles.section}>
+						<Text style={styles.sectionTitle}>{t("settings.support")}</Text> */}
+					{/* <Pressable style={styles.row} onPress={handleWriteReview}>
 							<Text style={styles.rowText}>{t("settings.writeReview")}</Text>
 							<View style={styles.iconButton}>
 								<Star1 size="20" color={colors.primary} variant="Bold" />
@@ -330,15 +322,15 @@ Thank you!`;
 							</View>
 						</Pressable> */}
 
-						<Pressable style={styles.row} onPress={handleShare}>
+					{/* <Pressable style={styles.row} onPress={handleShare}>
 							<Text style={styles.rowText}>
 								{t("settings.shareWithFriends")}
 							</Text>
 							<View style={styles.iconButton}>
 								<ExportCurve size="20" color={colors.primary} variant="Bold" />
 							</View>
-						</Pressable>
-					</View>
+						</Pressable> */}
+					{/* </View> */}
 
 					<View style={styles.madeWith}>
 						<Text style={styles.madeWithText} withEmoji>

@@ -63,7 +63,7 @@
 			"title": "Par mīļākajiem",
 			"description": "Šeit jūs varat apskatīt visus savus mīļākos vārdus.",
 			"features": "Katru vārdu jūs varat:\n• pievienot un izņemt no favorītiem\n• Ieslēgt vai izslēgt paziņojumus vārda dienai",
-			"notifications": "Paziņojumi tiks nosūtīti vārda dienas rītā, lai atgādinātu par svarīgo dienu! 🎉"
+			"notifications": "Paziņojumi tiks nosūtīti 9:00 vārda dienas rītā, lai atgādinātu par svarīgo dienu! 🎉"
 		},
 		"actions": {
 			"unfavourite": "Favorīts",
@@ -78,9 +78,7 @@
 		"notificationsBlockedMessage": "Paziņojumi pašlaik ir izslēgti. Lūdzu, ieslēdziet tos ierīces iestatījumos, lai saņemtu vārda dienu atgādinājumus.",
 		"openSettings": "Atvērt iestatījumus",
 		"nameDayToday": "🎉 Vārda diena šodien!",
-		"nameDayTodayBody": "Šodien ir {{name}} vārda diena ({{day}} {{month}})",
-		"nameDayTomorrow": "🔔 Vārda diena rīt!",
-		"nameDayTomorrowBody": "Rīt ir {{name}} vārda diena ({{day}} {{month}})",
+		"nameDayTodayBody": "Šodien ir {{name}} vārda diena! Neaizmirsti teikt sveiciens!",
 		"enableInSettings": "Ieslēdziet paziņojumus",
 		"notificationScheduled": "Atgādinājums iestatīts",
 		"notificationCancelled": "Atgādinājums noņemts",
@@ -88,7 +86,7 @@
 		"addedWithReminder": "{{name}} pievienots ar atgādinājumu",
 		"added": "{{name}} pievienots",
 		"removed": "{{name}} izņemts",
-		"reminderSet": "Jūs saņemsiet atgādinājumu par {{name}} vārda dienu",
+		"reminderSet": "Atgādinājums par {{name}}",
 		"reminderRemoved": "Vairs nav atgādinājumu {{name}}"
 	},
 	"months": {

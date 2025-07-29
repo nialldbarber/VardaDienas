@@ -1,6 +1,8 @@
 import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
+import * as Sentry from "@sentry/react-native";
 import React from "react";
 import RNBootSplash from "react-native-bootsplash";
+import Config from "react-native-config";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 
@@ -9,7 +11,12 @@ import {AnimatedSplash} from "./app/ui/components/AnimatedSplash";
 import {Toast} from "./app/ui/components/Toast";
 import "./app/utils/i18n";
 
-export default function App() {
+Sentry.init({
+	dsn: Config.SENTRY_DSN,
+	sendDefaultPii: true,
+});
+
+export default Sentry.wrap(function App() {
 	const [showSplash, setShowSplash] = React.useState(true);
 
 	React.useEffect(() => {
@@ -38,4 +45,4 @@ export default function App() {
 			)}
 		</>
 	);
-}
+});

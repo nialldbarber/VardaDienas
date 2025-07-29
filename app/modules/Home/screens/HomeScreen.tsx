@@ -41,7 +41,6 @@ function getFirstDayIndexAfter(
 			return i;
 		}
 	}
-	// fallback to first day if not found
 	for (let i = 0; i < vardus.length; i++) {
 		if (typeof vardus[i] !== "string") {
 			return i;
@@ -51,20 +50,6 @@ function getFirstDayIndexAfter(
 }
 
 const ITEM_HEIGHT = 70;
-
-function getItemLayout(data: (string | VardusItem)[], index: number) {
-	let offset = 0;
-	for (let i = 0; i < index; i++) {
-		if (typeof data[i] !== "string") {
-			offset += ITEM_HEIGHT;
-		}
-	}
-	return {
-		length: typeof data[index] === "string" ? 0 : ITEM_HEIGHT,
-		offset,
-		index,
-	};
-}
 
 export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const {t} = useTranslation();
@@ -76,10 +61,9 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const {navigate} = useNavigation<NamesRowScreenNavigationProp>();
 	const {height} = useWindowDimensions();
 	const insets = useSafeAreaInsets();
-	const [loading, setLoading] = React.useState(true); // Restore loader
+	const [loading, setLoading] = React.useState(true);
 	const hasScrolledRef = React.useRef(false);
 
-	// Helper function to format names with proper punctuation
 	const formatNames = React.useCallback(
 		(names: string[]): string => {
 			if (names.length === 0) return "";
@@ -87,7 +71,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 			if (names.length === 2)
 				return `${names[0]} ${t("common.and")} ${names[1]}`;
 
-			// For 3 or more names, use commas and "and" before the last one
 			const allButLast = names.slice(0, -1);
 			const last = names[names.length - 1];
 			return `${allButLast.join(", ")} ${t("common.and")} ${last}`;
@@ -95,7 +78,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 		[t],
 	);
 
-	// Expose scrollToToday method via ref
 	React.useImperativeHandle(ref, () => ({
 		scrollToToday: () => {
 			if (flashListRef.current) {
@@ -108,7 +90,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 		},
 	}));
 
-	// Register the scroll function with the global state
 	React.useEffect(() => {
 		const scrollToToday = () => {
 			if (flashListRef.current) {
@@ -122,7 +103,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 
 		setHomeScrollToToday(scrollToToday);
 
-		// Cleanup when component unmounts
 		return () => {
 			setHomeScrollToToday(() => {});
 		};

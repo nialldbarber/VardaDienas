@@ -2106,6 +2106,31 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNSentry (6.18.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Sentry/HybridSDK (= 8.53.2)
+    - Yoga
   - RNShare (12.0.11):
     - DoubleConversion
     - glog
@@ -2179,6 +2204,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - Sentry/HybridSDK (8.53.2)
   - SocketRocket (0.7.1)
   - Unistyles (3.0.0-rc.4):
     - DoubleConversion
@@ -2292,6 +2318,7 @@ DEPENDENCIES:
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Unistyles (from `../node_modules/react-native-unistyles`)
@@ -2299,6 +2326,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Sentry
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -2467,6 +2495,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNShare:
     :path: "../node_modules/react-native-share"
   RNSVG:
@@ -2559,11 +2589,13 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 851adf794e1fcdc0664d80820fa3272ee8a6a538
   RNReanimated: 722d67dfde539bfe29b572878f4bc805f727726b
   RNScreens: 482e9707f9826230810c92e765751af53826d509
+  RNSentry: e135445c3d98d521d5172f5007d6356621154630
   RNShare: 5b06f403277d55c1e7a56b8edd3076236bc84745
   RNSVG: 8a1054afe490b5d63b9792d7ae3c1fde8c05cdd0
+  Sentry: 59993bffde4a1ac297ba6d268dc4bbce068d7c1b
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Unistyles: e2b1a35f9cf2b18d610387e486a60039387dd73b
-  Yoga: c758bfb934100bb4bf9cbaccb52557cee35e8bdf
+  Yoga: 9f110fc4b7aa538663cba3c14cbb1c335f43c13f
 
 PODFILE CHECKSUM: 7aa132acb63eb1cee83ea41e835dc6906052b79e
 

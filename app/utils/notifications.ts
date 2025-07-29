@@ -5,6 +5,22 @@ import notifee, {
 } from "@notifee/react-native";
 import {PermissionsAndroid, Platform} from "react-native";
 
+// Helper function to get translations without hooks
+function getNotificationText(language: string, key: string, name: string) {
+	const translations = {
+		en: {
+			title: "🎉 Name Day Today!",
+			body: `It's ${name}'s name day! Don't forget to say sveiciens!`,
+		},
+		lv: {
+			title: "🎉 Vārda diena šodien!",
+			body: `Šodien ir ${name} vārda diena! Neaizmirsti teikt sveiciens!`,
+		},
+	};
+
+	return translations[language as keyof typeof translations] || translations.en;
+}
+
 export async function requestNotificationPermissions(): Promise<boolean> {
 	try {
 		if (Platform.OS === "android") {
@@ -79,21 +95,20 @@ export async function scheduleNameDayNotifications(
 			return;
 		}
 
-		// Cancel any existing notifications for this name first
 		await cancelNameDayNotifications(name, day, month);
 
 		const dayOfId = generateDayOfNotificationId(name, day, month);
+		const notificationText = getNotificationText(
+			currentLanguage,
+			"nameDayToday",
+			name,
+		);
+
 		await notifee.createTriggerNotification(
 			{
 				id: dayOfId,
-				title:
-					currentLanguage === "lv"
-						? "🎉 Vārda diena šodien!"
-						: "🎉 Name Day Today!",
-				body:
-					currentLanguage === "lv"
-						? `Šodien ir ${name} vārda diena (${day} ${month})`
-						: `Today is ${name}'s name day (${day} ${month})`,
+				title: notificationText.title,
+				body: notificationText.body,
 				android: {
 					channelId,
 					pressAction: {
@@ -114,43 +129,8 @@ export async function scheduleNameDayNotifications(
 			},
 		);
 
-		const dayBeforeDate = new Date(nextDate);
-		dayBeforeDate.setDate(dayBeforeDate.getDate() - 1);
-
-		const dayBeforeId = generateDayBeforeNotificationId(name, day, month);
-		await notifee.createTriggerNotification(
-			{
-				id: dayBeforeId,
-				title:
-					currentLanguage === "lv"
-						? "🔔 Vārda diena rīt!"
-						: "🔔 Name Day Tomorrow!",
-				body:
-					currentLanguage === "lv"
-						? `Rīt ir ${name} vārda diena (${day} ${month})`
-						: `Tomorrow is ${name}'s name day (${day} ${month})`,
-				android: {
-					channelId,
-					pressAction: {
-						id: "default",
-					},
-					smallIcon: "ic_launcher",
-				},
-				ios: {
-					sound: "default",
-				},
-			},
-			{
-				type: TriggerType.TIMESTAMP,
-				timestamp: dayBeforeDate.getTime(),
-				alarmManager: {
-					allowWhileIdle: true,
-				},
-			},
-		);
-
 		console.log(
-			`Scheduled notifications for ${name}: day before (${dayBeforeDate.toLocaleDateString()}) and day of (${nextDate.toLocaleDateString()})`,
+			`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am`,
 		);
 	} catch (error) {
 		console.error("Error scheduling notifications:", error);
@@ -164,12 +144,10 @@ export async function cancelNameDayNotifications(
 ): Promise<void> {
 	try {
 		const dayOfId = generateDayOfNotificationId(name, day, month);
-		const dayBeforeId = generateDayBeforeNotificationId(name, day, month);
 
 		await notifee.cancelNotification(dayOfId);
-		await notifee.cancelNotification(dayBeforeId);
 
-		console.log(`Cancelled notifications for ${name}`);
+		console.log(`Cancelled notification for ${name}`);
 	} catch (error) {
 		console.error("Error cancelling notifications:", error);
 	}
@@ -237,16 +215,6 @@ export function generateDayOfNotificationId(
 	month: string,
 ): string {
 	return `nameday-${name}-${day}-${month}`.replace(/\s+/g, "-").toLowerCase();
-}
-
-export function generateDayBeforeNotificationId(
-	name: string,
-	day: string,
-	month: string,
-): string {
-	return `daybefore-nameday-${name}-${day}-${month}`
-		.replace(/\s+/g, "-")
-		.toLowerCase();
 }
 
 export async function getScheduledNotifications(): Promise<

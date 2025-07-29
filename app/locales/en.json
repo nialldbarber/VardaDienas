@@ -63,7 +63,7 @@
 			"title": "About favourites",
 			"description": "Here you can view all your favourite names.",
 			"features": "For each name you can:\n• Add or remove from favourites\n• Turn notifications on or off for the name day",
-			"notifications": "Notifications will be sent on the morning of the name day to remind you of the important day! 🎉"
+			"notifications": "Notifications will be sent at 9am on the morning of the name day to remind you of the important day! 🎉"
 		},
 		"actions": {
 			"unfavourite": "Favourite",
@@ -78,9 +78,7 @@
 		"notificationsBlockedMessage": "Notifications are currently disabled. Please enable them in your device settings to receive name day reminders.",
 		"openSettings": "Open Settings",
 		"nameDayToday": "🎉 Name Day Today!",
-		"nameDayTodayBody": "Today is {{name}}'s name day ({{day}} {{month}})",
-		"nameDayTomorrow": "🔔 Name Day Tomorrow!",
-		"nameDayTomorrowBody": "Tomorrow is {{name}}'s name day ({{day}} {{month}})",
+		"nameDayTodayBody": "It's {{name}}'s name day! Don't forget to say sveiciens!",
 		"enableInSettings": "Enable notifications first",
 		"notificationScheduled": "Reminder set",
 		"notificationCancelled": "Reminder removed",
@@ -88,7 +86,7 @@
 		"addedWithReminder": "{{name}} added with reminder",
 		"added": "{{name}} added",
 		"removed": "{{name}} removed",
-		"reminderSet": "You'll be reminded about {{name}}'s name day",
+		"reminderSet": "Reminder set for {{name}}",
 		"reminderRemoved": "No more reminders for {{name}}"
 	},
 	"months": {

@@ -37,8 +37,11 @@ export function LanguageSelector() {
 				haptics.impactMedium();
 			}
 
-			// Change the language
+			// Change the language first
 			language$.setLanguage(languageCode);
+
+			// Wait a moment for the language change to propagate
+			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Reschedule notifications with the new language
 			try {
