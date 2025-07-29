@@ -65,6 +65,7 @@ export async function scheduleNameDayNotifications(
 	name: string,
 	day: string,
 	month: string,
+	daysBefore = 0,
 ): Promise<void> {
 	const currentLanguage = language$.currentLanguage.get();
 	try {
@@ -88,16 +89,24 @@ export async function scheduleNameDayNotifications(
 			vibration: true,
 		});
 
-		const nextDate = getNextOccurrenceDate(day, month);
+		await cancelNameDayNotifications(name, day, month);
+
+		// Schedule notification for the selected day
+		const nextDate = getNextOccurrenceDate(day, month, daysBefore);
 
 		if (!nextDate) {
-			console.warn(`Could not calculate next date for ${day} ${month}`);
+			console.warn(
+				`Could not calculate next date for ${day} ${month} with ${daysBefore} days before`,
+			);
 			return;
 		}
 
-		await cancelNameDayNotifications(name, day, month);
-
-		const dayOfId = generateDayOfNotificationId(name, day, month);
+		const notificationId = generateDayOfNotificationId(
+			name,
+			day,
+			month,
+			daysBefore,
+		);
 		const notificationText = getNotificationText(
 			currentLanguage,
 			"nameDayToday",
@@ -106,7 +115,7 @@ export async function scheduleNameDayNotifications(
 
 		await notifee.createTriggerNotification(
 			{
-				id: dayOfId,
+				id: notificationId,
 				title: notificationText.title,
 				body: notificationText.body,
 				android: {
@@ -130,7 +139,7 @@ export async function scheduleNameDayNotifications(
 		);
 
 		console.log(
-			`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am`,
+			`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${daysBefore} days before name day)`,
 		);
 	} catch (error) {
 		console.error("Error scheduling notifications:", error);
@@ -143,11 +152,18 @@ export async function cancelNameDayNotifications(
 	month: string,
 ): Promise<void> {
 	try {
-		const dayOfId = generateDayOfNotificationId(name, day, month);
+		// Cancel notifications for all possible days (0-5)
+		for (let daysBefore = 0; daysBefore <= 5; daysBefore++) {
+			const notificationId = generateDayOfNotificationId(
+				name,
+				day,
+				month,
+				daysBefore,
+			);
+			await notifee.cancelNotification(notificationId);
+		}
 
-		await notifee.cancelNotification(dayOfId);
-
-		console.log(`Cancelled notification for ${name}`);
+		console.log(`Cancelled all notifications for ${name}`);
 	} catch (error) {
 		console.error("Error cancelling notifications:", error);
 	}
@@ -162,7 +178,11 @@ export async function cancelAllNotifications(): Promise<void> {
 	}
 }
 
-function getNextOccurrenceDate(day: string, month: string): Date | null {
+function getNextOccurrenceDate(
+	day: string,
+	month: string,
+	daysBefore = 0,
+): Date | null {
 	const monthMap: Record<string, number> = {
 		Janvāris: 0,
 		Februāris: 1,
@@ -199,12 +219,11 @@ function getNextOccurrenceDate(day: string, month: string): Date | null {
 		targetDate = new Date(currentYear + 1, monthIndex, dayNumber, 9, 0, 0);
 	}
 
-	if (targetDate.getDate() !== dayNumber) {
-		console.warn(
-			`Invalid date: ${dayNumber} ${month} (adjusted to ${targetDate.getDate()})`,
-		);
-		return null;
-	}
+	// Subtract the days before to get the notification date
+	targetDate.setDate(targetDate.getDate() - daysBefore);
+
+	// Don't validate the notification date against the name day date
+	// since we intentionally subtracted days from it
 
 	return targetDate;
 }
@@ -213,8 +232,11 @@ export function generateDayOfNotificationId(
 	name: string,
 	day: string,
 	month: string,
+	daysBefore = 0,
 ): string {
-	return `nameday-${name}-${day}-${month}`.replace(/\s+/g, "-").toLowerCase();
+	return `nameday-${name}-${day}-${month}-${daysBefore}`
+		.replace(/\s+/g, "-")
+		.toLowerCase();
 }
 
 export async function getScheduledNotifications(): Promise<

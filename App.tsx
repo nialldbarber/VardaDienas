@@ -6,6 +6,7 @@ import Config from "react-native-config";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 
+import {LogBox} from "react-native";
 import {Navigation} from "./app/navigation/RootStack";
 import {AnimatedSplash} from "./app/ui/components/AnimatedSplash";
 import {Toast} from "./app/ui/components/Toast";
@@ -18,6 +19,8 @@ Sentry.init({
 
 export default Sentry.wrap(function App() {
 	const [showSplash, setShowSplash] = React.useState(true);
+
+	LogBox.ignoreAllLogs();
 
 	React.useEffect(() => {
 		const init = async () => {

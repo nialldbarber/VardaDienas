@@ -83,8 +83,14 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 
 export function GroupedNamesAccordion({favourites}: Props) {
 	const {t} = useTranslation();
-	const groupedData = groupFavouritesByMonthAndDay(favourites);
+	// Use reactive state directly instead of props to ensure UI updates
+	const reactiveFavourites = use$(favourites$.favourites);
 	const hapticsEnabled = use$(settings$.haptics);
+
+	// Create grouped data from reactive favourites
+	const groupedData = React.useMemo(() => {
+		return groupFavouritesByMonthAndDay(reactiveFavourites);
+	}, [reactiveFavourites]);
 
 	const handleAccordionChange = (isOpen: boolean) => {
 		if (hapticsEnabled) {
@@ -99,7 +105,6 @@ export function GroupedNamesAccordion({favourites}: Props) {
 		let hasPermission = false;
 
 		try {
-			// Debug logging - remove this after testing
 			if (enabled) {
 				await debugNotificationSetup(
 					favourite.name,
@@ -122,10 +127,12 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 				hasPermission = await requestNotificationPermissions();
 				if (hasPermission) {
+					// Schedule default notification for "On the day" (0 days before)
 					await scheduleNameDayNotifications(
 						favourite.name,
 						favourite.day,
 						favourite.month,
+						0, // Default to "On the day"
 					);
 
 					Toast.show({
@@ -171,6 +178,105 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 	const handleRemoveFavourite = (name: string) => {
 		favourites$.removeFavourite(name);
+	};
+
+	const handleDaysBeforeToggle = async (favourite: Favourite, day: number) => {
+		try {
+			const wasSelected = favourite.daysBefore === day;
+			console.log(
+				`Toggling day ${day} for ${favourite.name}, was selected: ${wasSelected}`,
+			);
+
+			favourites$.toggleDaysBefore(favourite.name, day);
+
+			// Cancel existing notifications for this favourite
+			await cancelNameDayNotifications(
+				favourite.name,
+				favourite.day,
+				favourite.month,
+			);
+
+			// If it was selected, now it's deselected (and vice versa)
+			const isNowSelected = !wasSelected;
+			console.log(
+				"After toggle - wasSelected:",
+				wasSelected,
+				"isNowSelected:",
+				isNowSelected,
+			);
+
+			if (isNowSelected) {
+				// Day was added - schedule new notification
+				// Schedule notification for the selected day
+				await scheduleNameDayNotifications(
+					favourite.name,
+					favourite.day,
+					favourite.month,
+					day,
+				);
+
+				// Show toast for the specific day that was just added
+				if (day === 0) {
+					// "On the day" was added
+					Toast.show({
+						type: "success",
+						text1: t("notifications.notificationScheduled"),
+						text2: t("notifications.reminderSet", {name: favourite.name}),
+						position: "bottom",
+					});
+				} else {
+					// Specific day before was added
+					const daysText =
+						day === 1
+							? t("notifications.reminderSetDay", {name: favourite.name})
+							: t("notifications.reminderSetSpecificDay", {
+									name: favourite.name,
+									days: day,
+								});
+
+					Toast.show({
+						type: "success",
+						text1: t("notifications.notificationScheduled"),
+						text2: daysText,
+						position: "bottom",
+					});
+				}
+			} else {
+				// Day was removed - show removal message
+				if (day === 0) {
+					Toast.show({
+						type: "info",
+						text1: t("notifications.notificationCancelled"),
+						text2: t("notifications.reminderRemoved", {name: favourite.name}),
+						position: "bottom",
+					});
+				} else {
+					// Show specific removal message for the day that was removed
+					const daysText =
+						day === 1
+							? t("notifications.reminderRemovedDay", {name: favourite.name})
+							: t("notifications.reminderRemovedDays", {
+									name: favourite.name,
+									days: day,
+								});
+
+					Toast.show({
+						type: "info",
+						text1: t("notifications.notificationCancelled"),
+						text2: daysText,
+						position: "bottom",
+					});
+				}
+			}
+		} catch (error) {
+			console.error("Error updating days before:", error);
+			Toast.show({
+				type: "error",
+				text1: t("common.error"),
+				text2: t("notifications.updateSettingsError"),
+				position: "bottom",
+			});
+		}
 	};
 
 	return (
@@ -253,6 +359,62 @@ export function GroupedNamesAccordion({favourites}: Props) {
 															}
 														/>
 													</Pressable>
+
+													{favourite.notifyMe && (
+														<>
+															<Text style={styles.daysBeforeLabel}>
+																{t("favourites.daysBefore")}:
+															</Text>
+															<View style={styles.timingButtonsContainer}>
+																<Pressable
+																	style={[
+																		styles.timingButton,
+																		favourite.daysBefore === 0 &&
+																			styles.timingButtonSelected,
+																	]}
+																	onPress={() =>
+																		handleDaysBeforeToggle(favourite, 0)
+																	}
+																>
+																	<Text
+																		style={[
+																			styles.timingButtonText,
+																			favourite.daysBefore === 0 && {
+																				color: "white",
+																			},
+																		]}
+																	>
+																		{t("favourites.onTheDay")}
+																	</Text>
+																</Pressable>
+																<View style={styles.daysBeforeButtons}>
+																	{[1, 2, 3, 4, 5].map((day) => (
+																		<Pressable
+																			key={day}
+																			style={[
+																				styles.dayButton,
+																				favourite.daysBefore === day &&
+																					styles.dayButtonSelected,
+																			]}
+																			onPress={() =>
+																				handleDaysBeforeToggle(favourite, day)
+																			}
+																		>
+																			<Text
+																				style={[
+																					styles.dayButtonText,
+																					favourite.daysBefore === day &&
+																						styles.dayButtonTextSelected,
+																				]}
+																			>
+																				{day}
+																			</Text>
+																		</Pressable>
+																	))}
+																</View>
+															</View>
+														</>
+													)}
 												</Accordion.Expanded>
 											</Accordion.Accordion>
 										</Accordion.Sibling>
@@ -336,5 +498,62 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		flex: 1,
 		backgroundColor: "transparent",
 		paddingVertical: sizes["4px"],
+	},
+	daysBeforeLabel: {
+		fontSize: sizes["16px"],
+		fontWeight: "600",
+		marginTop: sizes["8px"],
+		marginBottom: sizes["8px"],
+		color: tokens.text.primary,
+	},
+	timingButtonsContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: sizes["8px"],
+		width: "100%",
+	},
+	timingButton: {
+		backgroundColor: "white",
+		borderWidth: 1,
+		borderColor: colors.primary,
+		paddingHorizontal: sizes["12px"],
+		paddingVertical: sizes["8px"],
+		borderRadius: sizes["8px"],
+	},
+	timingButtonText: {
+		color: colors.primary,
+		fontSize: sizes["15px"],
+		fontWeight: "600",
+	},
+	timingButtonSelected: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
+	},
+	daysBeforeButtons: {
+		flexDirection: "row",
+		gap: sizes["4px"],
+		flex: 1,
+	},
+	dayButton: {
+		flex: 1,
+		height: sizes["32px"],
+		borderRadius: sizes["6px"],
+		borderWidth: 1,
+		borderColor: colors.primary,
+		backgroundColor: "white",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	dayButtonText: {
+		color: colors.primary,
+		fontSize: sizes["15px"],
+		fontWeight: "600",
+	},
+	dayButtonSelected: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
+	},
+	dayButtonTextSelected: {
+		color: "white",
 	},
 }));

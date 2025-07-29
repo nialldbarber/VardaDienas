@@ -69,7 +69,9 @@
 			"unfavourite": "Favorīts",
 			"notifyMe": "Paziņot man",
 			"dontNotifyMe": "Paziņot man"
-		}
+		},
+		"daysBefore": "Dienas iepriekš",
+		"onTheDay": "Dienā"
 	},
 	"notifications": {
 		"permissionRequired": "Nepieciešama atļauja",
@@ -87,7 +89,12 @@
 		"added": "{{name}} pievienots",
 		"removed": "{{name}} izņemts",
 		"reminderSet": "Atgādinājums par {{name}}",
-		"reminderRemoved": "Vairs nav atgādinājumu {{name}}"
+		"reminderSetDay": "Atgādinājums par {{name}} 1 dienu pirms vārda dienas",
+		"reminderSetDays": "Atgādinājums par {{name}} {{days}} dienas pirms vārda dienas",
+		"reminderSetSpecificDay": "Atgādinājums par {{name}} {{days}} dienas pirms vārda dienas",
+		"reminderRemoved": "Vairs nav atgādinājumu {{name}}",
+		"reminderRemovedDay": "Atgādinājums noņemts par {{name}} 1 dienu pirms vārda dienas",
+		"reminderRemovedDays": "Atgādinājums noņemts par {{name}} {{days}} dienas pirms vārda dienas"
 	},
 	"months": {
 		"Janvāris": "janvāris",

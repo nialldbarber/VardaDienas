@@ -69,7 +69,9 @@
 			"unfavourite": "Favourite",
 			"notifyMe": "Notify me",
 			"dontNotifyMe": "Notify me"
-		}
+		},
+		"daysBefore": "Days before",
+		"onTheDay": "On the day"
 	},
 	"notifications": {
 		"permissionRequired": "Permission Required",
@@ -87,7 +89,12 @@
 		"added": "{{name}} added",
 		"removed": "{{name}} removed",
 		"reminderSet": "Reminder set for {{name}}",
-		"reminderRemoved": "No more reminders for {{name}}"
+		"reminderSetDay": "For {{name}} 1 day before name day",
+		"reminderSetDays": "For {{name}} {{days}} days before name day",
+		"reminderSetSpecificDay": "For {{name}} {{days}} days before name day",
+		"reminderRemoved": "No more reminders for {{name}}",
+		"reminderRemovedDay": "For {{name}} 1 day before name day",
+		"reminderRemovedDays": "For {{name}} {{days}} days before name day"
 	},
 	"months": {
 		"Janvāris": "January",
