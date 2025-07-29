@@ -15,6 +15,7 @@ import {setFavouritesScrollToTop} from "@/app/navigation/components/TabBar";
 import {favourites$} from "@/app/store/favourites";
 import {settings$} from "@/app/store/settings";
 import {Button} from "@/app/ui/components/Button";
+
 import {GroupedNamesAccordion} from "@/app/ui/components/GroupedNamesAccordion";
 import {Header} from "@/app/ui/components/Header";
 import {Text} from "@/app/ui/components/Text";
@@ -145,6 +146,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 	container: {
 		flex: 1,
 	},
+
 	infoButton: {
 		position: "absolute",
 		top: insets.top + 60,

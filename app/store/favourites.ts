@@ -12,7 +12,7 @@ export type Favourite = {
 	day: string;
 	month: string;
 	notifyMe?: boolean;
-	daysBefore?: number;
+	daysBefore?: number[]; // Changed to array to support multiple selections
 };
 
 type FavouritesStore = {
@@ -20,7 +20,7 @@ type FavouritesStore = {
 	addFavourite: (favourite: Favourite) => void;
 	removeFavourite: (name: string) => void;
 	toggleNotification: (name: string, enabled: boolean) => void;
-	setDaysBefore: (name: string, daysBefore: number) => void;
+	setDaysBefore: (name: string, daysBefore: number[]) => void;
 	toggleDaysBefore: (name: string, day: number) => void;
 };
 
@@ -77,14 +77,14 @@ export const favourites$ = observable<FavouritesStore>({
 				return {
 					...fav,
 					notifyMe: enabled,
-					daysBefore: enabled ? 0 : undefined,
+					daysBefore: enabled ? [0] : undefined,
 				};
 			}
 			return fav;
 		});
 		favourites$.favourites.set(updatedFavourites);
 	},
-	setDaysBefore: (name: string, daysBefore: number) => {
+	setDaysBefore: (name: string, daysBefore: number[]) => {
 		const favourites = favourites$.favourites.get();
 		const updatedFavourites = favourites.map((fav) =>
 			fav.name === name ? {...fav, daysBefore} : fav,
@@ -103,13 +103,23 @@ export const favourites$ = observable<FavouritesStore>({
 		);
 		const updatedFavourites = favourites.map((fav) => {
 			if (fav.name === name) {
-				// Simple toggle: if the day is already set, clear it; otherwise set it
-				const newDaysBefore = fav.daysBefore === day ? undefined : day;
+				const currentDays = fav.daysBefore || [];
+				const isSelected = currentDays.includes(day);
+
+				let newDaysBefore: number[];
+				if (isSelected) {
+					// Remove the day if it's already selected
+					newDaysBefore = currentDays.filter((d) => d !== day);
+				} else {
+					// Add the day if it's not selected
+					newDaysBefore = [...currentDays, day];
+				}
+
 				console.log(
 					"Updated days for",
 					name,
 					"from",
-					fav.daysBefore,
+					currentDays,
 					"to",
 					newDaysBefore,
 				);

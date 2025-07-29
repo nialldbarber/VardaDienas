@@ -18,13 +18,22 @@ const HomeStack = createNativeStackNavigator({
 	},
 });
 
+const SettingsStack = createNativeStackNavigator({
+	screens: {
+		Settings: SettingsScreen,
+	},
+	screenOptions: {
+		headerShown: false,
+	},
+});
+
 const RootStack = createBottomTabNavigator({
 	initialRouteName: "HomeStack",
 	tabBar: (props) => <TabBar {...props} />,
 	screens: {
 		HomeStack,
 		Favourites: FavouritesScreen,
-		Settings: SettingsScreen,
+		SettingsStack,
 	},
 	screenOptions: {
 		headerShown: false,

@@ -25,8 +25,8 @@
 		"general": "Vispārīgi",
 		"language": "Valoda",
 		"languages": {
-			"en": "Angļu",
-			"lv": "Latviešu"
+			"en": "🇬🇧 Angļu",
+			"lv": "🇱🇻 Latviešu"
 		},
 		"madeWith": "Ar ❤️ Dančukam no Nīla",
 		"haptics": "Taktilā atbildes",
@@ -44,6 +44,7 @@
 		"contactUs": "Sazināties ar mums",
 		"reportIssue": "Ziņot par problēmu",
 		"shareWithFriends": "Dalīties ar draugiem",
+		"privacyPolicy": "Privātuma politika",
 		"shareMessage": "Apskatiet {{appName}} - skaistu vārdu dienu kalendāra lietotni! {{storeUrl}}",
 		"version": "Versija"
 	},
@@ -89,12 +90,12 @@
 		"added": "{{name}} pievienots",
 		"removed": "{{name}} izņemts",
 		"reminderSet": "Atgādinājums par {{name}}",
-		"reminderSetDay": "Atgādinājums par {{name}} 1 dienu pirms vārda dienas",
-		"reminderSetDays": "Atgādinājums par {{name}} {{days}} dienas pirms vārda dienas",
-		"reminderSetSpecificDay": "Atgādinājums par {{name}} {{days}} dienas pirms vārda dienas",
-		"reminderRemoved": "Vairs nav atgādinājumu {{name}}",
-		"reminderRemovedDay": "Atgādinājums noņemts par {{name}} 1 dienu pirms vārda dienas",
-		"reminderRemovedDays": "Atgādinājums noņemts par {{name}} {{days}} dienas pirms vārda dienas"
+		"reminderSetDay": "{{name}} - 1 diena pirms",
+		"reminderSetDays": "{{name}} - {{days}} dienas pirms",
+		"reminderSetSpecificDay": "{{name}} - {{days}} dienas pirms",
+		"reminderRemoved": "Atgādinājums noņemts",
+		"reminderRemovedDay": "{{name}} - 1 diena noņemta",
+		"reminderRemovedDays": "{{name}} - {{days}} dienas noņemtas"
 	},
 	"months": {
 		"Janvāris": "janvāris",

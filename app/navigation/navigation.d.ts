@@ -7,6 +7,8 @@ export type NamesRowScreenNavigationProp = NativeStackNavigationProp<
 	"NamesRow"
 >;
 
+export type SettingsStackParamList = StaticParamList<typeof SettingsStack>;
+
 export type RootStackParamList = StaticParamList<typeof RootStack>;
 
 declare global {

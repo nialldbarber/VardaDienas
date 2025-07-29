@@ -57,7 +57,7 @@ export function Bar({
 				return t("navigation.home");
 			case "Favourites":
 				return t("navigation.favourites");
-			case "Settings":
+			case "SettingsStack":
 				return t("navigation.settings");
 			default:
 				return routeName;
@@ -105,7 +105,7 @@ export function Bar({
 					color={colors.primary}
 					variant={isFocused ? "Bold" : "Outline"}
 				/>
-			) : label === "Settings" ? (
+			) : label === "SettingsStack" ? (
 				<Setting4
 					size="27"
 					color={colors.primary}

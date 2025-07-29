@@ -25,8 +25,8 @@
 		"general": "General",
 		"language": "Language",
 		"languages": {
-			"en": "English",
-			"lv": "Latvian"
+			"en": "🇬🇧 English",
+			"lv": "🇱🇻 Latvian"
 		},
 		"madeWith": "Made with ❤️ for Dana, by Niall",
 		"haptics": "Haptic Feedback",
@@ -44,6 +44,7 @@
 		"contactUs": "Contact Us",
 		"reportIssue": "Report Issue",
 		"shareWithFriends": "Share with Friends",
+		"privacyPolicy": "Privacy Policy",
 		"shareMessage": "Check out {{appName}} - a beautiful name day calendar app! {{storeUrl}}",
 		"version": "Version"
 	},
@@ -89,12 +90,12 @@
 		"added": "{{name}} added",
 		"removed": "{{name}} removed",
 		"reminderSet": "Reminder set for {{name}}",
-		"reminderSetDay": "For {{name}} 1 day before name day",
-		"reminderSetDays": "For {{name}} {{days}} days before name day",
-		"reminderSetSpecificDay": "For {{name}} {{days}} days before name day",
-		"reminderRemoved": "No more reminders for {{name}}",
-		"reminderRemovedDay": "For {{name}} 1 day before name day",
-		"reminderRemovedDays": "For {{name}} {{days}} days before name day"
+		"reminderSetDay": "{{name}} - 1 day before",
+		"reminderSetDays": "{{name}} - {{days}} days before",
+		"reminderSetSpecificDay": "{{name}} - {{days}} days before",
+		"reminderRemoved": "Reminder removed",
+		"reminderRemovedDay": "{{name}} - 1 day removed",
+		"reminderRemovedDays": "{{name}} - {{days}} days removed"
 	},
 	"months": {
 		"Janvāris": "January",

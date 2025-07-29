@@ -85,7 +85,9 @@ export function LanguageSelector() {
 						index === languages.length - 1 && styles.lastOption,
 					]}
 				>
-					<Text style={styles.optionText}>{lang.name}</Text>
+					<Text style={styles.optionText} withEmoji>
+						{lang.name}
+					</Text>
 					<View>
 						<BouncyCheckbox
 							size={20}

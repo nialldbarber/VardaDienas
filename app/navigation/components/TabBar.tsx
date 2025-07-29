@@ -49,7 +49,7 @@ export function TabBar({state, descriptors, navigation}: BottomTabBarProps) {
 							homeScrollToToday();
 						} else if (route.name === "Favourites" && favouritesScrollToTop) {
 							favouritesScrollToTop();
-						} else if (route.name === "Settings" && settingsScrollToTop) {
+						} else if (route.name === "SettingsStack" && settingsScrollToTop) {
 							settingsScrollToTop();
 						}
 					}

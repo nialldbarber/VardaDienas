@@ -81,7 +81,7 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 		});
 }
 
-export function GroupedNamesAccordion({favourites}: Props) {
+export const GroupedNamesAccordion = ({favourites}: Props) => {
 	const {t} = useTranslation();
 	// Use reactive state directly instead of props to ensure UI updates
 	const reactiveFavourites = use$(favourites$.favourites);
@@ -181,22 +181,21 @@ export function GroupedNamesAccordion({favourites}: Props) {
 	};
 
 	const handleDaysBeforeToggle = async (favourite: Favourite, day: number) => {
+		haptics.impactMedium();
 		try {
-			const wasSelected = favourite.daysBefore === day;
+			const wasSelected = favourite.daysBefore?.includes(day) || false;
 			console.log(
 				`Toggling day ${day} for ${favourite.name}, was selected: ${wasSelected}`,
 			);
 
 			favourites$.toggleDaysBefore(favourite.name, day);
 
-			// Cancel existing notifications for this favourite
 			await cancelNameDayNotifications(
 				favourite.name,
 				favourite.day,
 				favourite.month,
 			);
 
-			// If it was selected, now it's deselected (and vice versa)
 			const isNowSelected = !wasSelected;
 			console.log(
 				"After toggle - wasSelected:",
@@ -206,18 +205,31 @@ export function GroupedNamesAccordion({favourites}: Props) {
 			);
 
 			if (isNowSelected) {
-				// Day was added - schedule new notification
-				// Schedule notification for the selected day
-				await scheduleNameDayNotifications(
-					favourite.name,
-					favourite.day,
-					favourite.month,
-					day,
+				const updatedFavourite = reactiveFavourites.find(
+					(f) => f.name === favourite.name,
 				);
+				console.log(
+					"Scheduling notifications for days:",
+					updatedFavourite?.daysBefore,
+				);
+				if (
+					updatedFavourite?.daysBefore &&
+					updatedFavourite.daysBefore.length > 0
+				) {
+					try {
+						await scheduleNameDayNotifications(
+							favourite.name,
+							favourite.day,
+							favourite.month,
+							updatedFavourite.daysBefore,
+						);
+					} catch (error) {
+						console.error("Error scheduling notifications:", error);
+						throw error;
+					}
+				}
 
-				// Show toast for the specific day that was just added
 				if (day === 0) {
-					// "On the day" was added
 					Toast.show({
 						type: "success",
 						text1: t("notifications.notificationScheduled"),
@@ -225,7 +237,6 @@ export function GroupedNamesAccordion({favourites}: Props) {
 						position: "bottom",
 					});
 				} else {
-					// Specific day before was added
 					const daysText =
 						day === 1
 							? t("notifications.reminderSetDay", {name: favourite.name})
@@ -242,7 +253,6 @@ export function GroupedNamesAccordion({favourites}: Props) {
 					});
 				}
 			} else {
-				// Day was removed - show removal message
 				if (day === 0) {
 					Toast.show({
 						type: "info",
@@ -251,7 +261,6 @@ export function GroupedNamesAccordion({favourites}: Props) {
 						position: "bottom",
 					});
 				} else {
-					// Show specific removal message for the day that was removed
 					const daysText =
 						day === 1
 							? t("notifications.reminderRemovedDay", {name: favourite.name})
@@ -362,14 +371,14 @@ export function GroupedNamesAccordion({favourites}: Props) {
 
 													{favourite.notifyMe && (
 														<>
-															<Text style={styles.daysBeforeLabel}>
+															<Text style={styles.checkboxDescription}>
 																{t("favourites.daysBefore")}:
 															</Text>
 															<View style={styles.timingButtonsContainer}>
 																<Pressable
 																	style={[
 																		styles.timingButton,
-																		favourite.daysBefore === 0 &&
+																		(favourite.daysBefore || []).includes(0) &&
 																			styles.timingButtonSelected,
 																	]}
 																	onPress={() =>
@@ -379,7 +388,9 @@ export function GroupedNamesAccordion({favourites}: Props) {
 																	<Text
 																		style={[
 																			styles.timingButtonText,
-																			favourite.daysBefore === 0 && {
+																			(favourite.daysBefore || []).includes(
+																				0,
+																			) && {
 																				color: "white",
 																			},
 																		]}
@@ -393,8 +404,9 @@ export function GroupedNamesAccordion({favourites}: Props) {
 																			key={day}
 																			style={[
 																				styles.dayButton,
-																				favourite.daysBefore === day &&
-																					styles.dayButtonSelected,
+																				(favourite.daysBefore || []).includes(
+																					day,
+																				) && styles.dayButtonSelected,
 																			]}
 																			onPress={() =>
 																				handleDaysBeforeToggle(favourite, day)
@@ -403,8 +415,9 @@ export function GroupedNamesAccordion({favourites}: Props) {
 																			<Text
 																				style={[
 																					styles.dayButtonText,
-																					favourite.daysBefore === day &&
-																						styles.dayButtonTextSelected,
+																					(favourite.daysBefore || []).includes(
+																						day,
+																					) && styles.dayButtonTextSelected,
 																				]}
 																			>
 																				{day}
@@ -427,7 +440,7 @@ export function GroupedNamesAccordion({favourites}: Props) {
 			))}
 		</View>
 	);
-}
+};
 
 const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	container: {

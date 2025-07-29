@@ -41,7 +41,11 @@ export function Text({
 	};
 
 	return (
-		<NativeText style={[styles.container, style]} {...rest}>
+		<NativeText
+			style={[styles.container, style]}
+			maxFontSizeMultiplier={1.3}
+			{...rest}
+		>
 			{renderChildren()}
 		</NativeText>
 	);

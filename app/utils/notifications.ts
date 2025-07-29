@@ -65,7 +65,7 @@ export async function scheduleNameDayNotifications(
 	name: string,
 	day: string,
 	month: string,
-	daysBefore = 0,
+	daysBefore: number | number[] = 0,
 ): Promise<void> {
 	const currentLanguage = language$.currentLanguage.get();
 	try {
@@ -91,56 +91,63 @@ export async function scheduleNameDayNotifications(
 
 		await cancelNameDayNotifications(name, day, month);
 
-		// Schedule notification for the selected day
-		const nextDate = getNextOccurrenceDate(day, month, daysBefore);
+		// Convert to array if it's a single number
+		const daysArray = Array.isArray(daysBefore) ? daysBefore : [daysBefore];
+		console.log("Scheduling notifications for days array:", daysArray);
 
-		if (!nextDate) {
-			console.warn(
-				`Could not calculate next date for ${day} ${month} with ${daysBefore} days before`,
+		// Schedule notifications for each selected day
+		for (const dayBefore of daysArray) {
+			console.log(`Processing day ${dayBefore} for ${name}`);
+			const nextDate = getNextOccurrenceDate(day, month, dayBefore);
+
+			if (!nextDate) {
+				console.warn(
+					`Could not calculate next date for ${day} ${month} with ${dayBefore} days before`,
+				);
+				continue;
+			}
+
+			const notificationId = generateDayOfNotificationId(
+				name,
+				day,
+				month,
+				dayBefore,
 			);
-			return;
-		}
+			const notificationText = getNotificationText(
+				currentLanguage,
+				"nameDayToday",
+				name,
+			);
 
-		const notificationId = generateDayOfNotificationId(
-			name,
-			day,
-			month,
-			daysBefore,
-		);
-		const notificationText = getNotificationText(
-			currentLanguage,
-			"nameDayToday",
-			name,
-		);
-
-		await notifee.createTriggerNotification(
-			{
-				id: notificationId,
-				title: notificationText.title,
-				body: notificationText.body,
-				android: {
-					channelId,
-					pressAction: {
-						id: "default",
+			await notifee.createTriggerNotification(
+				{
+					id: notificationId,
+					title: notificationText.title,
+					body: notificationText.body,
+					android: {
+						channelId,
+						pressAction: {
+							id: "default",
+						},
+						smallIcon: "ic_launcher",
 					},
-					smallIcon: "ic_launcher",
+					ios: {
+						sound: "default",
+					},
 				},
-				ios: {
-					sound: "default",
+				{
+					type: TriggerType.TIMESTAMP,
+					timestamp: nextDate.getTime(),
+					alarmManager: {
+						allowWhileIdle: true,
+					},
 				},
-			},
-			{
-				type: TriggerType.TIMESTAMP,
-				timestamp: nextDate.getTime(),
-				alarmManager: {
-					allowWhileIdle: true,
-				},
-			},
-		);
+			);
 
-		console.log(
-			`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${daysBefore} days before name day)`,
-		);
+			console.log(
+				`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${dayBefore} days before name day)`,
+			);
+		}
 	} catch (error) {
 		console.error("Error scheduling notifications:", error);
 	}
@@ -280,4 +287,53 @@ export async function debugNotificationSetup(
 		n.notification.id?.includes(name.toLowerCase().replace(/\s+/g, "-")),
 	);
 	console.log("Existing notifications for this name:", nameNotifications);
+}
+
+export async function debugNotificationTiming(
+	name: string,
+	day: string,
+	month: string,
+	daysBefore: number[],
+): Promise<void> {
+	console.log("=== NOTIFICATION TIMING DEBUG ===");
+	console.log(`Name: ${name}, Day: ${day}, Month: ${month}`);
+	console.log(`Selected days: ${daysBefore.join(", ")}`);
+
+	const now = new Date();
+	console.log(`Current time: ${now.toLocaleString()}`);
+
+	for (const dayBefore of daysBefore) {
+		const notificationDate = getNextOccurrenceDate(day, month, dayBefore);
+		if (notificationDate) {
+			const timeUntil = notificationDate.getTime() - now.getTime();
+			const daysUntil = timeUntil / (1000 * 60 * 60 * 24);
+
+			console.log(
+				`\nDay ${dayBefore} (${dayBefore === 0 ? "On the day" : `${dayBefore} days before`}):`,
+			);
+			console.log(
+				`  Notification will fire: ${notificationDate.toLocaleString()}`,
+			);
+			console.log(`  Time until notification: ${daysUntil.toFixed(2)} days`);
+			console.log(
+				`  Notification ID: ${generateDayOfNotificationId(name, day, month, dayBefore)}`,
+			);
+		} else {
+			console.log(`\nDay ${dayBefore}: Could not calculate notification date`);
+		}
+	}
+
+	// Check existing scheduled notifications
+	const scheduled = await getScheduledNotifications();
+	const nameNotifications = scheduled.filter((n) =>
+		n.notification.id?.includes(name.toLowerCase().replace(/\s+/g, "-")),
+	);
+	console.log(
+		`\nCurrently scheduled notifications for ${name}:`,
+		nameNotifications.length,
+	);
+	nameNotifications.forEach((notification, index) => {
+		console.log(`  ${index + 1}. ID: ${notification.notification.id}`);
+		console.log(`     Trigger: ${notification.trigger}`);
+	});
 }
