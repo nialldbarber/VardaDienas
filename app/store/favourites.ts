@@ -12,7 +12,7 @@ export type Favourite = {
 	day: string;
 	month: string;
 	notifyMe?: boolean;
-	daysBefore?: number[]; // Changed to array to support multiple selections
+	daysBefore?: number[];
 };
 
 type FavouritesStore = {
@@ -31,13 +31,6 @@ const syncedFavourites = configureSynced(synced, {
 	},
 });
 
-// Check what's in storage on startup
-console.log("Favourites storage keys:", favouritesStorage.getAllKeys());
-console.log(
-	"Favourites storage contains 'favourites':",
-	favouritesStorage.contains("favourites"),
-);
-
 export const favourites$ = observable<FavouritesStore>({
 	favourites: syncedFavourites({
 		initial: [],
@@ -46,23 +39,15 @@ export const favourites$ = observable<FavouritesStore>({
 		},
 	}),
 	addFavourite: (favourite: Favourite) => {
-		console.log("Adding favourite:", favourite);
 		favourites$.favourites.push(favourite);
-		console.log(
-			"Current favourites after adding:",
-			favourites$.favourites.get(),
-		);
 	},
 	removeFavourite: (name: string) => {
 		try {
-			console.log("Removing favourite:", name);
 			const currentFavourites = favourites$.favourites.get();
-			console.log("Current favourites before removing:", currentFavourites);
 			const updatedFavourites = currentFavourites.filter(
 				(fav) => fav.name !== name,
 			);
 			favourites$.favourites.set(updatedFavourites);
-			console.log("Favourites after removing:", updatedFavourites);
 		} catch (error) {
 			console.error("Failed to remove from favourites!", error);
 			throw new Error("Failed to remove from favourites!");
@@ -72,8 +57,6 @@ export const favourites$ = observable<FavouritesStore>({
 		const favourites = favourites$.favourites.get();
 		const updatedFavourites = favourites.map((fav) => {
 			if (fav.name === name) {
-				// When enabling notifications, set default to "On the day" (0)
-				// When disabling, clear the daysBefore
 				return {
 					...fav,
 					notifyMe: enabled,
@@ -93,14 +76,6 @@ export const favourites$ = observable<FavouritesStore>({
 	},
 	toggleDaysBefore: (name: string, day: number) => {
 		const favourites = favourites$.favourites.get();
-		console.log(
-			"Toggling days before for:",
-			name,
-			"day:",
-			day,
-			"current favourites:",
-			favourites,
-		);
 		const updatedFavourites = favourites.map((fav) => {
 			if (fav.name === name) {
 				const currentDays = fav.daysBefore || [];
@@ -108,26 +83,15 @@ export const favourites$ = observable<FavouritesStore>({
 
 				let newDaysBefore: number[];
 				if (isSelected) {
-					// Remove the day if it's already selected
 					newDaysBefore = currentDays.filter((d) => d !== day);
 				} else {
-					// Add the day if it's not selected
 					newDaysBefore = [...currentDays, day];
 				}
 
-				console.log(
-					"Updated days for",
-					name,
-					"from",
-					currentDays,
-					"to",
-					newDaysBefore,
-				);
 				return {...fav, daysBefore: newDaysBefore};
 			}
 			return fav;
 		});
 		favourites$.favourites.set(updatedFavourites);
-		console.log("Favourites after toggling:", updatedFavourites);
 	},
 });

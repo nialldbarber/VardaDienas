@@ -114,25 +114,16 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 			}
 
 			if (enabled) {
-				const globalNotificationsEnabled = settings$.notifications.get();
-				if (!globalNotificationsEnabled) {
-					Toast.show({
-						type: "error",
-						text1: t("notifications.permissionRequired"),
-						text2: t("notifications.enableInSettings"),
-						position: "bottom",
-					});
-					return;
-				}
-
+				// First try to get permission
 				hasPermission = await requestNotificationPermissions();
+
 				if (hasPermission) {
 					// Schedule default notification for "On the day" (0 days before)
 					await scheduleNameDayNotifications(
 						favourite.name,
 						favourite.day,
 						favourite.month,
-						0, // Default to "On the day"
+						[0], // Default to "On the day" as array
 					);
 
 					Toast.show({
@@ -145,8 +136,10 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 					Toast.show({
 						type: "error",
 						text1: t("notifications.permissionRequired"),
+						text2: t("notifications.enableInSettings"),
 						position: "bottom",
 					});
+					return;
 				}
 			} else {
 				await cancelNameDayNotifications(

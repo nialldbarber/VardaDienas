@@ -9,6 +9,7 @@ import {
 	type ScrollView,
 } from "react-native";
 import DeviceInfo from "react-native-device-info";
+import {openComposer} from "react-native-email-link";
 import * as Permissions from "react-native-permissions";
 import Share from "react-native-share";
 import {StyleSheet} from "react-native-unistyles";
@@ -291,6 +292,32 @@ Thank you!`;
 		setWebViewVisible(true);
 	};
 
+	const handleGiveFeedback = async () => {
+		try {
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
+
+			const appVersion = DeviceInfo.getVersion();
+			const buildNumber = DeviceInfo.getBuildNumber();
+
+			const subject = "VardaDienas App - Feedback";
+			const body = `Feedback for app version ${appVersion} (${buildNumber}):
+
+[Your feedback here]
+
+Thank you for your feedback!`;
+
+			await openComposer({
+				to: "nialldbarber@gmail.com",
+				subject: subject,
+				body: body,
+			});
+		} catch (error) {
+			console.error("Error opening email:", error);
+		}
+	};
+
 	const handleCloseWebView = () => {
 		setWebViewVisible(false);
 	};
@@ -337,6 +364,11 @@ Thank you!`;
 					<Text style={styles.sectionTitle}>{t("settings.support")}</Text>
 					<Pressable style={styles.row} onPress={handleSupport}>
 						<Text style={styles.rowText}>{t("settings.support")}</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+
+					<Pressable style={styles.row} onPress={handleGiveFeedback}>
+						<Text style={styles.rowText}>{t("settings.giveFeedback")}</Text>
 						<ArrowRight2 size="20" color={colors.primary} />
 					</Pressable>
 

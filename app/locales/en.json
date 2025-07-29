@@ -42,8 +42,9 @@
 		"support": "Support",
 		"writeReview": "Write a Review",
 		"contactUs": "Contact Us",
-		"reportIssue": "Report Issue",
+		"reportIssue": "Report an Issue",
 		"shareWithFriends": "Share with Friends",
+		"giveFeedback": "Give Feedback",
 		"privacyPolicy": "Privacy Policy",
 		"shareMessage": "Check out {{appName}} - a beautiful name day calendar app! {{storeUrl}}",
 		"version": "Version"
