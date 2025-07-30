@@ -1,4 +1,6 @@
 import {language$} from "@/app/store/language";
+import {format} from "date-fns";
+import {enUS, lv} from "date-fns/locale";
 
 /**
  * Formats a date for display according to language-specific conventions
@@ -18,6 +20,26 @@ export function formatDateHeader(day: string, month: string): string {
 
 	// Latvian format: "3. jūlijs" (lowercase month)
 	return `${dayNumber}. ${month.toLowerCase()}`;
+}
+
+/**
+ * Returns the current date formatted for header display
+ * @param getMonthTranslation - Function to get month translation
+ * @returns Formatted date string
+ */
+export function getCurrentDateHeader(
+	getMonthTranslation: (key: string) => string,
+): string {
+	const currentLanguage = language$.currentLanguage.get();
+	const currentDate = new Date();
+	const day = format(currentDate, "d");
+
+	// Use the appropriate locale based on current language
+	const locale = currentLanguage === "en" ? enUS : lv;
+	const monthKey = format(currentDate, "LLLL", {locale});
+	const month = getMonthTranslation(`months.${monthKey}`);
+
+	return formatDateHeader(day, month);
 }
 
 /**

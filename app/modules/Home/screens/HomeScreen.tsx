@@ -18,6 +18,10 @@ import {SkiaSpinner} from "@/app/ui/components/SkiaSpinner";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {getTodaysIndex} from "@/app/utils/dates";
+import {
+	fuzzyMatchName,
+	normaliseLatvianText,
+} from "@/app/utils/textNormalisation";
 
 type VardusItem = DayData;
 
@@ -124,7 +128,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 		}
 
 		const timeoutId = setTimeout(() => {
-			const lowercaseQuery = searchQuery.toLowerCase().trim();
 			const results: SearchResult[] = [];
 			let currentMonthName = "";
 
@@ -135,7 +138,7 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 				}
 
 				for (const name of item.vardi) {
-					if (name.toLowerCase().includes(lowercaseQuery)) {
+					if (fuzzyMatchName(name, searchQuery.trim())) {
 						results.push({
 							day: item,
 							month: currentMonthName,
@@ -146,7 +149,7 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 				}
 
 				for (const name of item.citiVardi) {
-					if (name.toLowerCase().includes(lowercaseQuery)) {
+					if (fuzzyMatchName(name, searchQuery.trim())) {
 						results.push({
 							day: item,
 							month: currentMonthName,
@@ -160,11 +163,22 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 			}
 
 			results.sort((a, b) => {
-				const aExact = a.matchedName.toLowerCase() === lowercaseQuery;
-				const bExact = b.matchedName.toLowerCase() === lowercaseQuery;
+				const normalizedQuery = normaliseLatvianText(searchQuery.trim());
+				const aNormalized = normaliseLatvianText(a.matchedName);
+				const bNormalized = normaliseLatvianText(b.matchedName);
+
+				const aExact = aNormalized === normalizedQuery;
+				const bExact = bNormalized === normalizedQuery;
 
 				if (aExact && !bExact) return -1;
 				if (!aExact && bExact) return 1;
+
+				// If both are exact matches or both are not exact matches, prioritize names that start with the query
+				const aStartsWith = aNormalized.startsWith(normalizedQuery);
+				const bStartsWith = bNormalized.startsWith(normalizedQuery);
+
+				if (aStartsWith && !bStartsWith) return -1;
+				if (!aStartsWith && bStartsWith) return 1;
 
 				if (a.matchType === "vardi" && b.matchType === "citiVardi") return -1;
 				if (a.matchType === "citiVardi" && b.matchType === "vardi") return 1;

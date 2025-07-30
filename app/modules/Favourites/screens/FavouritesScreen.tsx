@@ -107,7 +107,7 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 				<Layout
 					ref={layoutRef}
 					withScroll="vertical"
-					header={<Header title={t("favourites.title")} />}
+					header={<Header title={t("favourites.title")} showDate={true} />}
 				>
 					{favourites.length === 0 ? (
 						<EmptyState />
