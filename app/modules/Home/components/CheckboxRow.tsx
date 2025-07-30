@@ -38,7 +38,6 @@ export function CheckboxRow({
 	isHighlighted = false,
 }: Props) {
 	const {t} = useTranslation();
-	const globalNotificationsEnabled = use$(settings$.notifications);
 	const haptic = hapticToTrigger("impactMedium");
 	const hapticsEnabled = use$(settings$.haptics);
 
@@ -46,7 +45,7 @@ export function CheckboxRow({
 
 	React.useEffect(() => {
 		if (isHighlighted) {
-			borderOpacity.value = withTiming(1, {duration: 300});
+			borderOpacity.value = withTiming(0.2, {duration: 300});
 			const timer = setTimeout(() => {
 				borderOpacity.value = withTiming(0, {duration: 300});
 			}, 3000);
@@ -56,9 +55,7 @@ export function CheckboxRow({
 	}, [isHighlighted, borderOpacity]);
 
 	const highlightStyle = useAnimatedStyle(() => ({
-		borderWidth: 2,
-		borderColor: `rgba(164, 52, 58, ${borderOpacity.value})`,
-		borderRadius: 8,
+		backgroundColor: `rgba(164, 52, 58, ${borderOpacity.value})`,
 	}));
 
 	const handleCheckedChange = async () => {

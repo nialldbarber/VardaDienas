@@ -33,47 +33,33 @@ export function NamesRowScreen({
 	const hapticsEnabled = use$(settings$.haptics);
 	const layoutRef = React.useRef<ScrollView>(null);
 
-	// Scroll to highlighted name when component mounts
 	React.useEffect(() => {
 		if (selectedName && layoutRef.current) {
-			// Add a small delay to ensure the component is fully rendered
 			const timer = setTimeout(() => {
-				// Calculate approximate position of the highlighted name
 				let targetY = 0;
-
-				// Add header height (approximately 50px)
 				targetY += 50;
+				targetY += 60;
 
-				// Add section title height and padding
-				targetY += 60; // "Vārdi" section title + padding
-
-				// Find the position of the highlighted name
 				const allNames = [...data.vardi, ...data.citiVardi];
 				const nameIndex = allNames.indexOf(selectedName);
 
 				if (nameIndex !== -1) {
-					// Calculate position based on name index
-					// Each name row is approximately 50px (including padding)
 					const rowHeight = 50;
 
-					// If it's in the second section, add the first section height
 					if (data.vardi.includes(selectedName)) {
-						// It's in the first section
 						const vardiIndex = data.vardi.indexOf(selectedName);
 						targetY += vardiIndex * rowHeight;
 					} else {
-						// It's in the second section
-						targetY += data.vardi.length * rowHeight; // First section height
-						targetY += 40; // Spacer between sections
-						targetY += 60; // "Citi vārdi" section title + padding
+						targetY += data.vardi.length * rowHeight;
+						targetY += 40;
+						targetY += 60;
 						const citiVardiIndex = data.citiVardi.indexOf(selectedName);
 						targetY += citiVardiIndex * rowHeight;
 					}
 
-					// Scroll to the position with some offset for better visibility
 					if (layoutRef.current) {
 						layoutRef.current.scrollTo({
-							y: Math.max(0, targetY - 100), // Offset by 100px for better visibility
+							y: Math.max(0, targetY - 100),
 							animated: true,
 						});
 					}
@@ -83,18 +69,6 @@ export function NamesRowScreen({
 			return () => clearTimeout(timer);
 		}
 	}, [selectedName, data.vardi, data.citiVardi]);
-
-	// Helper function to format names with proper punctuation
-	function formatNames(names: string[]): string {
-		if (names.length === 0) return "";
-		if (names.length === 1) return names[0];
-		if (names.length === 2) return `${names[0]} ${t("common.and")} ${names[1]}`;
-
-		// For 3 or more names, use commas and "and" before the last one
-		const allButLast = names.slice(0, -1);
-		const last = names[names.length - 1];
-		return `${allButLast.join(", ")} ${t("common.and")} ${last}`;
-	}
 
 	return (
 		<Layout
