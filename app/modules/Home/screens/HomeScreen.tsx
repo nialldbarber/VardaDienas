@@ -232,6 +232,8 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 		(monthIndex: number) => {
 			const monthInfo = monthIndexMap[monthIndex];
 			if (monthInfo && flashListRef.current) {
+				// Update the current month immediately when selecting from sidebar
+				setCurrentMonth(monthInfo.name);
 				flashListRef.current.scrollToIndex({
 					index: monthInfo.index,
 					animated: true,

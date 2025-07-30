@@ -68,7 +68,27 @@ export function FastScrollIndex({
 		.onEnd(() => {
 			isActive.value = false;
 			currentIndex.value = -1;
+		})
+		.onFinalize(() => {
+			isActive.value = false;
+			currentIndex.value = -1;
 		});
+
+	const tapGesture = Gesture.Tap()
+		.onBegin((event) => {
+			isActive.value = true;
+			runOnJS(handlePositionUpdate)(event.y, true);
+		})
+		.onEnd(() => {
+			isActive.value = false;
+			currentIndex.value = -1;
+		})
+		.onFinalize(() => {
+			isActive.value = false;
+			currentIndex.value = -1;
+		});
+
+	const combinedGesture = Gesture.Simultaneous(panGesture, tapGesture);
 
 	const indicatorStyle = useAnimatedStyle(() => {
 		return {
@@ -91,7 +111,7 @@ export function FastScrollIndex({
 
 	return (
 		<View style={styles.container}>
-			<GestureDetector gesture={panGesture}>
+			<GestureDetector gesture={combinedGesture}>
 				<Animated.View
 					style={[
 						styles.scrollTrack,
