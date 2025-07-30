@@ -163,21 +163,52 @@ func formatNames(_ names: [String]) -> String {
     return "\(allButLast.joined(separator: ", ")) un \(last)"
 }
 
+func formatNamesWithEllipsis(_ names: [String], maxLines: Int = 2) -> String {
+    let formatted = formatNames(names)
+    
+    // For 2 lines, allow much more text - approximately 120-150 characters
+    // This ensures the "Citi:" section has enough content to wrap to 2 lines
+    let maxChars = maxLines == 2 ? 150 : 50
+    if formatted.count <= maxChars {
+        return formatted
+    }
+    
+    // Truncate and add ellipsis
+    let truncated = String(formatted.prefix(maxChars - 3))
+    return truncated + "..."
+}
+
+func formatNamesForTwoLines(_ names: [String]) -> (String, String) {
+    let formatted = formatNames(names)
+    
+    // Split the text roughly in half to force it onto 2 lines
+    let words = formatted.components(separatedBy: " ")
+    if words.count <= 3 {
+        return (formatted, "")
+    }
+    
+    let midPoint = words.count / 2
+    let firstLine = words[..<midPoint].joined(separator: " ")
+    let secondLine = words[midPoint...].joined(separator: " ")
+    
+    return (firstLine, secondLine)
+}
+
+func formatNamesForTwoLinesWithEllipsis(_ names: [String]) -> String {
+    let formatted = formatNames(names)
+    return formatted
+}
+
 // MARK: - Widget Views
 struct NameDayWidgetEntryView: View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        content
-            .containerBackground(Color.widgetBackground, for: .widget)
-    }
-
-    @ViewBuilder
-    private var content: some View {
         switch family {
         case .systemMedium:
             MediumNameDayView(nameDay: entry.nameDay)
+                .containerBackground(Color.widgetBackground, for: .widget)
         default:
             EmptyView()
         }
@@ -189,15 +220,10 @@ struct NameDayWidgetInvertedEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        content
-            .containerBackground(Color.widgetBackgroundInverted, for: .widget)
-    }
-
-    @ViewBuilder
-    private var content: some View {
         switch family {
         case .systemMedium:
             MediumNameDayViewInverted(nameDay: entry.nameDay)
+                .containerBackground(Color.widgetBackgroundInverted, for: .widget)
         default:
             EmptyView()
         }
@@ -208,34 +234,55 @@ struct MediumNameDayView: View {
     let nameDay: TodayNameDay
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                Text(formatNames(nameDay.vardi))
-                    .font(.custom("PlusJakartaSans-Bold", size: 18))
+        HStack(spacing: 12) {
+            // Left side - Text content (give it more space)
+            VStack(alignment: .leading, spacing: 6) {
+                // Main names
+                Text(formatNamesWithEllipsis(nameDay.vardi, maxLines: 2))
+                    .font(.custom("PlusJakartaSans-Bold", size: 16))
                     .foregroundColor(.widgetForeground)
                     .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // Additional names section
+                if !nameDay.citiVardi.isEmpty {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Citi:")
+                            .font(.custom("PlusJakartaSans-Bold", size: 12))
+                            .foregroundColor(.widgetForeground)
+                        
+                        Text(formatNamesWithEllipsis(Array(nameDay.citiVardi.prefix(8)), maxLines: 2))
+                            .font(.custom("PlusJakartaSans-Bold", size: 12))
+                            .foregroundColor(.widgetForeground)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                
                 Spacer()
-
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            // Right side - Date and Wreath (make it narrower)
+            VStack(spacing: 8) {
+                // Date at top
                 Text("\(nameDay.day). \(getShortMonth(nameDay.month))")
                     .font(.custom("PlusJakartaSans-Bold", size: 14))
-                    .foregroundColor(.widgetSecondary)
+                    .foregroundColor(.widgetForeground)
+                
+                // Wreath image
+                Image("Wreath")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 60, height: 60)
+                
+                Spacer()
             }
-
-            if !nameDay.citiVardi.isEmpty {
-                HStack(alignment: .top, spacing: 4) {
-                    Text("Citi:")
-                        .font(.custom("PlusJakartaSans-Bold", size: 12))
-                    Text(formatNames(Array(nameDay.citiVardi.prefix(6))))
-                        .font(.custom("PlusJakartaSans-Bold", size: 12))
-                }
-                .foregroundColor(.widgetSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-            }
+            .frame(width: 70, alignment: .center)
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(12)
     }
 }
 
@@ -243,34 +290,55 @@ struct MediumNameDayViewInverted: View {
     let nameDay: TodayNameDay
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                Text(formatNames(nameDay.vardi))
-                    .font(.custom("PlusJakartaSans-Bold", size: 18))
+        HStack(spacing: 12) {
+            // Left side - Text content (give it more space)
+            VStack(alignment: .leading, spacing: 6) {
+                // Main names
+                Text(formatNamesWithEllipsis(nameDay.vardi, maxLines: 2))
+                    .font(.custom("PlusJakartaSans-Bold", size: 16))
                     .foregroundColor(.widgetForegroundInverted)
                     .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // Additional names section
+                if !nameDay.citiVardi.isEmpty {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Citi:")
+                            .font(.custom("PlusJakartaSans-Bold", size: 12))
+                            .foregroundColor(.widgetForegroundInverted)
+                        
+                        Text(formatNamesWithEllipsis(Array(nameDay.citiVardi.prefix(8)), maxLines: 2))
+                            .font(.custom("PlusJakartaSans-Bold", size: 12))
+                            .foregroundColor(.widgetForegroundInverted)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                
                 Spacer()
-
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            // Right side - Date and Wreath (make it narrower)
+            VStack(spacing: 8) {
+                // Date at top
                 Text("\(nameDay.day). \(getShortMonth(nameDay.month))")
                     .font(.custom("PlusJakartaSans-Bold", size: 14))
-                    .foregroundColor(.widgetSecondaryInverted)
+                    .foregroundColor(.widgetForegroundInverted)
+                
+                // Wreath image
+                Image("Wreath")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 60, height: 60)
+                
+                Spacer()
             }
-
-            if !nameDay.citiVardi.isEmpty {
-                HStack(alignment: .top, spacing: 4) {
-                    Text("Citi:")
-                        .font(.custom("PlusJakartaSans-Bold", size: 12))
-                    Text(formatNames(Array(nameDay.citiVardi.prefix(6))))
-                        .font(.custom("PlusJakartaSans-Bold", size: 12))
-                }
-                .foregroundColor(.widgetSecondaryInverted)
-                .fixedSize(horizontal: false, vertical: true)
-            }
+            .frame(width: 70, alignment: .center)
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(12)
     }
 }
 
