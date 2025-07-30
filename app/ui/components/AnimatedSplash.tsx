@@ -1,5 +1,5 @@
 import React from "react";
-import {Image} from "react-native";
+import {Image, Text} from "react-native";
 import Animated, {
 	runOnJS,
 	useAnimatedStyle,
@@ -18,6 +18,8 @@ type Props = {
 export function AnimatedSplash({onAnimationComplete}: Props) {
 	const logoTranslateY = useSharedValue(0);
 	const screenOpacity = useSharedValue(1);
+	const titleOpacity = useSharedValue(0);
+	const titleScale = useSharedValue(0.8);
 
 	React.useEffect(() => {
 		const timer = setTimeout(() => {
@@ -29,28 +31,47 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 					mass: 0.5,
 				},
 				() => {
-					// Start fading the screen when logo starts going down, but with longer duration
-					screenOpacity.value = withTiming(0, {
-						duration: 400,
+					titleOpacity.value = withTiming(1, {
+						duration: 300,
 					});
-
-					logoTranslateY.value = withSpring(
-						500,
-						{
-							damping: 12,
-							stiffness: 150,
-							mass: 0.8,
-						},
-						() => {
-							runOnJS(onAnimationComplete)();
-						},
-					);
+					titleScale.value = withSpring(1, {
+						damping: 15,
+						stiffness: 80,
+						mass: 1.0,
+					});
 				},
 			);
 		}, 300);
 
-		return () => clearTimeout(timer);
-	}, [logoTranslateY, screenOpacity, onAnimationComplete]);
+		const fadeOutTimer = setTimeout(() => {
+			screenOpacity.value = withTiming(0, {
+				duration: 400,
+			});
+
+			logoTranslateY.value = withSpring(
+				500,
+				{
+					damping: 12,
+					stiffness: 150,
+					mass: 0.8,
+				},
+				() => {
+					runOnJS(onAnimationComplete)();
+				},
+			);
+		}, 3500);
+
+		return () => {
+			clearTimeout(timer);
+			clearTimeout(fadeOutTimer);
+		};
+	}, [
+		logoTranslateY,
+		screenOpacity,
+		titleOpacity,
+		titleScale,
+		onAnimationComplete,
+	]);
 
 	const logoAnimatedStyle = useAnimatedStyle(() => {
 		return {
@@ -64,14 +85,24 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 		};
 	});
 
+	const titleAnimatedStyle = useAnimatedStyle(() => {
+		return {
+			opacity: titleOpacity.value,
+			transform: [{scale: titleScale.value}],
+		};
+	});
+
 	return (
 		<Animated.View style={[styles.container, screenAnimatedStyle]}>
-			<Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
+			<Animated.View style={logoAnimatedStyle}>
 				<Image
 					source={require("../../../assets/bootsplash/logo.png")}
 					style={styles.logo}
 					resizeMode="contain"
 				/>
+			</Animated.View>
+			<Animated.View style={[styles.titleContainer, titleAnimatedStyle]}>
+				<Text style={styles.title}>Vārdu Kalendārs</Text>
 			</Animated.View>
 		</Animated.View>
 	);
@@ -89,11 +120,18 @@ const styles = StyleSheet.create(() => ({
 		alignItems: "center",
 		zIndex: 9999,
 	},
-	logoContainer: {
-		// Container for the logo that will animate
-	},
 	logo: {
 		width: 85,
 		height: 85,
+	},
+	titleContainer: {
+		alignItems: "center",
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: "600",
+		color: colors.primary,
+		textAlign: "center",
+		fontFamily: "Plus Jakarta Sans",
 	},
 }));

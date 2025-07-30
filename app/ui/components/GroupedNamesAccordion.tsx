@@ -68,11 +68,13 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 	return Object.entries(grouped)
 		.map(([month, days]) => ({
 			month,
-			days: Object.entries(days).map(([day, favourites]) => ({
-				day,
-				names: favourites.map((f) => f.name),
-				favourites: favourites,
-			})),
+			days: Object.entries(days)
+				.map(([day, favourites]) => ({
+					day,
+					names: favourites.map((f) => f.name),
+					favourites: favourites,
+				}))
+				.sort((a, b) => Number.parseInt(a.day) - Number.parseInt(b.day)), // Sort days numerically
 		}))
 		.sort((a, b) => {
 			const aIndex = MONTH_ORDER.indexOf(a.month);
@@ -297,133 +299,140 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 								<Text variant="body" style={styles.dayTitle}>
 									{dayData.day}
 								</Text>
-								<View>
+								<View style={styles.namesContainer}>
 									{dayData.favourites.map((favourite, index) => (
-										<Accordion.Sibling
-											key={`${favourite.name}-${index}-sibling`}
+										<View
+											key={`${favourite.name}-${index}`}
+											style={styles.nameWrapper}
 										>
-											<Accordion.Accordion
-												key={`${favourite.name}-${index}`}
-												style={styles.accordion}
-												onChange={handleAccordionChange}
+											<Accordion.Sibling
+												key={`${favourite.name}-${index}-sibling`}
 											>
-												<Accordion.Header>
-													<View style={styles.headerContent}>
-														<Text variant="body" style={styles.nameText}>
-															{favourite.name}
-														</Text>
-														<Accordion.HeaderIcon rotation="clockwise">
-															<ArrowDown2 size="25" color={colors.primary} />
-														</Accordion.HeaderIcon>
-													</View>
-												</Accordion.Header>
+												<Accordion.Accordion
+													key={`${favourite.name}-${index}`}
+													style={styles.accordion}
+													onChange={handleAccordionChange}
+												>
+													<Accordion.Header>
+														<View style={styles.headerContent}>
+															<Text variant="body" style={styles.nameText}>
+																{favourite.name}
+															</Text>
+															<Accordion.HeaderIcon rotation="clockwise">
+																<ArrowDown2 size="25" color={colors.primary} />
+															</Accordion.HeaderIcon>
+														</View>
+													</Accordion.Header>
 
-												<Accordion.Expanded style={styles.accordionContent}>
-													<Pressable
-														style={styles.checkboxRow}
-														onPress={() =>
-															handleRemoveFavourite(favourite.name)
-														}
-													>
-														<Text style={styles.checkboxDescription}>
-															{t("favourites.actions.unfavourite")}
-														</Text>
-														<Checkbox
-															checked={true}
-															onUnCheckedChange={() =>
+													<Accordion.Expanded style={styles.accordionContent}>
+														<Pressable
+															style={styles.checkboxRow}
+															onPress={() =>
 																handleRemoveFavourite(favourite.name)
 															}
-															onCheckedChange={() => {}}
-														/>
-													</Pressable>
-
-													<Pressable
-														style={styles.checkboxRow}
-														onPress={() =>
-															handleNotificationToggle(
-																favourite,
-																!favourite.notifyMe,
-															)
-														}
-													>
-														<Text style={styles.checkboxDescription}>
-															{favourite.notifyMe
-																? t("favourites.actions.dontNotifyMe")
-																: t("favourites.actions.notifyMe")}
-														</Text>
-														<Checkbox
-															checked={favourite.notifyMe || false}
-															onCheckedChange={() =>
-																handleNotificationToggle(favourite, true)
-															}
-															onUnCheckedChange={() =>
-																handleNotificationToggle(favourite, false)
-															}
-														/>
-													</Pressable>
-
-													{favourite.notifyMe && (
-														<>
+														>
 															<Text style={styles.checkboxDescription}>
-																{t("favourites.daysBefore")}:
+																{t("favourites.actions.unfavourite")}
 															</Text>
-															<View style={styles.timingButtonsContainer}>
-																<Pressable
-																	style={[
-																		styles.timingButton,
-																		(favourite.daysBefore || []).includes(0) &&
-																			styles.timingButtonSelected,
-																	]}
-																	onPress={() =>
-																		handleDaysBeforeToggle(favourite, 0)
-																	}
-																>
-																	<Text
+															<Checkbox
+																checked={true}
+																onUnCheckedChange={() =>
+																	handleRemoveFavourite(favourite.name)
+																}
+																onCheckedChange={() => {}}
+															/>
+														</Pressable>
+
+														<Pressable
+															style={styles.checkboxRow}
+															onPress={() =>
+																handleNotificationToggle(
+																	favourite,
+																	!favourite.notifyMe,
+																)
+															}
+														>
+															<Text style={styles.checkboxDescription}>
+																{favourite.notifyMe
+																	? t("favourites.actions.dontNotifyMe")
+																	: t("favourites.actions.notifyMe")}
+															</Text>
+															<Checkbox
+																checked={favourite.notifyMe || false}
+																onCheckedChange={() =>
+																	handleNotificationToggle(favourite, true)
+																}
+																onUnCheckedChange={() =>
+																	handleNotificationToggle(favourite, false)
+																}
+															/>
+														</Pressable>
+
+														{favourite.notifyMe && (
+															<>
+																<Text style={styles.checkboxDescription}>
+																	{t("favourites.daysBefore")}:
+																</Text>
+																<View style={styles.timingButtonsContainer}>
+																	<Pressable
 																		style={[
-																			styles.timingButtonText,
+																			styles.timingButton,
 																			(favourite.daysBefore || []).includes(
 																				0,
-																			) && {
-																				color: "white",
-																			},
+																			) && styles.timingButtonSelected,
 																		]}
+																		onPress={() =>
+																			handleDaysBeforeToggle(favourite, 0)
+																		}
 																	>
-																		{t("favourites.onTheDay")}
-																	</Text>
-																</Pressable>
-																<View style={styles.daysBeforeButtons}>
-																	{[1, 2, 3, 4, 5].map((day) => (
-																		<Pressable
-																			key={day}
+																		<Text
 																			style={[
-																				styles.dayButton,
+																				styles.timingButtonText,
 																				(favourite.daysBefore || []).includes(
-																					day,
-																				) && styles.dayButtonSelected,
+																					0,
+																				) && {
+																					color: "white",
+																				},
 																			]}
-																			onPress={() =>
-																				handleDaysBeforeToggle(favourite, day)
-																			}
 																		>
-																			<Text
+																			{t("favourites.onTheDay")}
+																		</Text>
+																	</Pressable>
+																	<View style={styles.daysBeforeButtons}>
+																		{[1, 2, 3, 4, 5].map((day) => (
+																			<Pressable
+																				key={day}
 																				style={[
-																					styles.dayButtonText,
+																					styles.dayButton,
 																					(favourite.daysBefore || []).includes(
 																						day,
-																					) && styles.dayButtonTextSelected,
+																					) && styles.dayButtonSelected,
 																				]}
+																				onPress={() =>
+																					handleDaysBeforeToggle(favourite, day)
+																				}
 																			>
-																				{day}
-																			</Text>
-																		</Pressable>
-																	))}
+																				<Text
+																					style={[
+																						styles.dayButtonText,
+																						(
+																							favourite.daysBefore || []
+																						).includes(day) &&
+																							styles.dayButtonTextSelected,
+																					]}
+																				>
+																					{day}
+																				</Text>
+																			</Pressable>
+																		))}
+																	</View>
 																</View>
-															</View>
-														</>
-													)}
-												</Accordion.Expanded>
-											</Accordion.Accordion>
-										</Accordion.Sibling>
+															</>
+														)}
+													</Accordion.Expanded>
+												</Accordion.Accordion>
+											</Accordion.Sibling>
+										</View>
 									))}
 								</View>
 							</View>
@@ -461,6 +470,12 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		marginBottom: sizes["8px"],
 		color: colors.primary,
 	},
+	namesContainer: {
+		gap: sizes["8px"],
+	},
+	nameWrapper: {
+		marginBottom: sizes["8px"],
+	},
 	accordion: {
 		marginBottom: sizes["8px"],
 		backgroundColor: tokens.background.row,
@@ -468,6 +483,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		borderWidth: StyleSheet.hairlineWidth,
 		borderColor: colors.lightGrey,
 		padding: sizes["10px"],
+		overflow: "hidden",
 	},
 	accordionHeader: {
 		flexDirection: "row",

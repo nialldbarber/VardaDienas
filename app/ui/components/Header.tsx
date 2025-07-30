@@ -19,7 +19,9 @@ export function Header({title, showDate = false}: HeaderProps) {
 		<View style={styles.header}>
 			<Text variant="header">{title}</Text>
 			{showDate && currentDate && (
-				<Text style={styles.dateText}>{currentDate}</Text>
+				<Text style={styles.dateText} withEmoji>
+					{`${currentDate}   🗓️`}
+				</Text>
 			)}
 		</View>
 	);
