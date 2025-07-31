@@ -29,6 +29,8 @@ import {WebViewScreen} from "@/app/ui/components/WebViewScreen";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {
+	simulateMultiplePushNotifications,
+	simulatePushNotification,
 	testDeepLink,
 	testNotificationNavigation,
 } from "@/app/utils/notifications";
@@ -402,6 +404,46 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleSimulatePushNotification = async () => {
+		try {
+			await simulatePushNotification("Rūta", "31", "Jūlijs", 0);
+			Toast.show({
+				type: "success",
+				text1: "Push notification simulation triggered",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Push notification simulation error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Push notification simulation failed",
+				position: "bottom",
+			});
+		}
+	};
+
+	const handleSimulateMultiplePushNotifications = async () => {
+		try {
+			await simulateMultiplePushNotifications([
+				{name: "Rūta", day: "31", month: "Jūlijs", daysBefore: 0},
+				{name: "Angelika", day: "31", month: "Jūlijs", daysBefore: 0},
+				{name: "Māris", day: "30", month: "Jūlijs", daysBefore: 1},
+			]);
+			Toast.show({
+				type: "success",
+				text1: "Multiple push notifications simulation triggered",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Multiple push notifications simulation error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Multiple push notifications simulation failed",
+				position: "bottom",
+			});
+		}
+	};
+
 	return (
 		<Layout
 			ref={layoutRef}
@@ -472,6 +514,24 @@ Thank you for your feedback!`;
 							onPress={handleTestNotificationNavigation}
 						>
 							<Text style={styles.rowText}>Test Notification Navigation</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+
+						<Pressable
+							style={styles.row}
+							onPress={handleSimulatePushNotification}
+						>
+							<Text style={styles.rowText}>Simulate Push Notification</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+
+						<Pressable
+							style={styles.row}
+							onPress={handleSimulateMultiplePushNotifications}
+						>
+							<Text style={styles.rowText}>
+								Simulate Multiple Push Notifications
+							</Text>
 							<ArrowRight2 size="20" color={colors.primary} />
 						</Pressable>
 					</View>

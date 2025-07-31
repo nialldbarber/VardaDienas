@@ -137,10 +137,15 @@ export async function scheduleNameDayNotifications(
 			vibration: true,
 		});
 
+		// Cancel existing notifications for this name first
 		await cancelNameDayNotifications(name, day, month);
 
 		const daysArray = Array.isArray(daysBefore) ? daysBefore : [daysBefore];
 		console.log("Scheduling notifications for days array:", daysArray);
+
+		// Track successful and failed notifications
+		const successfulNotifications: number[] = [];
+		const failedNotifications: number[] = [];
 
 		for (const dayBefore of daysArray) {
 			console.log(`Processing day ${dayBefore} for ${name}`);
@@ -150,6 +155,7 @@ export async function scheduleNameDayNotifications(
 				console.warn(
 					`Could not calculate next date for ${day} ${month} with ${dayBefore} days before`,
 				);
+				failedNotifications.push(dayBefore);
 				continue;
 			}
 
@@ -165,40 +171,63 @@ export async function scheduleNameDayNotifications(
 				name,
 			);
 
-			await notifee.createTriggerNotification(
-				{
-					id: notificationId,
-					title: notificationText.title,
-					body: notificationText.body,
-					data: {
-						deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${dayBefore}`,
-						name,
-						day,
-						month,
-						daysBefore: dayBefore.toString(),
-					},
-					android: {
-						channelId,
-						pressAction: {
-							id: "default",
+			try {
+				await notifee.createTriggerNotification(
+					{
+						id: notificationId,
+						title: notificationText.title,
+						body: notificationText.body,
+						data: {
+							deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${dayBefore}`,
+							name,
+							day,
+							month,
+							daysBefore: dayBefore.toString(),
 						},
-						smallIcon: "ic_launcher",
+						android: {
+							channelId,
+							pressAction: {
+								id: "default",
+							},
+							smallIcon: "ic_launcher",
+						},
+						ios: {
+							sound: "default",
+						},
 					},
-					ios: {
-						sound: "default",
+					{
+						type: TriggerType.TIMESTAMP,
+						timestamp: nextDate.getTime(),
+						alarmManager: {
+							allowWhileIdle: true,
+						},
 					},
-				},
-				{
-					type: TriggerType.TIMESTAMP,
-					timestamp: nextDate.getTime(),
-					alarmManager: {
-						allowWhileIdle: true,
-					},
-				},
-			);
+				);
 
+				console.log(
+					`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${dayBefore} days before name day)`,
+				);
+				successfulNotifications.push(dayBefore);
+			} catch (error) {
+				console.error(
+					`Failed to schedule notification for ${name} (${dayBefore} days before):`,
+					error,
+				);
+				failedNotifications.push(dayBefore);
+			}
+		}
+
+		// Log summary
+		if (successfulNotifications.length > 0) {
 			console.log(
-				`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${dayBefore} days before name day)`,
+				`Successfully scheduled ${successfulNotifications.length} notifications for ${name}:`,
+				successfulNotifications,
+			);
+		}
+		if (failedNotifications.length > 0) {
+			console.warn(
+				`Failed to schedule ${failedNotifications.length} notifications for ${name}:`,
+				failedNotifications,
 			);
 		}
 	} catch (error) {
@@ -212,6 +241,13 @@ export async function cancelNameDayNotifications(
 	month: string,
 ): Promise<void> {
 	try {
+		// Generate the name hash to match the new ID format
+		const nameHash = name
+			.toLowerCase()
+			.replace(/[^a-z0-9]/g, "")
+			.substring(0, 8);
+
+		// Cancel notifications for all possible days before (0-5)
 		for (let daysBefore = 0; daysBefore <= 5; daysBefore++) {
 			const notificationId = generateDayOfNotificationId(
 				name,
@@ -219,10 +255,17 @@ export async function cancelNameDayNotifications(
 				month,
 				daysBefore,
 			);
-			await notifee.cancelNotification(notificationId);
+
+			try {
+				await notifee.cancelNotification(notificationId);
+				console.log(`Cancelled notification: ${notificationId}`);
+			} catch (error) {
+				// It's okay if the notification doesn't exist
+				console.log(`Notification ${notificationId} was not found to cancel`);
+			}
 		}
 
-		console.log(`Cancelled all notifications for ${name}`);
+		console.log(`Cancelled all notifications for ${name} (${day} ${month})`);
 	} catch (error) {
 		console.error("Error cancelling notifications:", error);
 	}
@@ -272,19 +315,27 @@ function getNextOccurrenceDate(
 	const now = new Date();
 	const currentYear = now.getFullYear();
 
+	// Create the target date for the name day
 	let targetDate = new Date(currentYear, monthIndex, dayNumber, 9, 0, 0);
 
+	// If the name day has already passed this year, schedule for next year
 	if (targetDate <= now) {
 		targetDate = new Date(currentYear + 1, monthIndex, dayNumber, 9, 0, 0);
 	}
 
-	// Subtract the days before to get the notification date
-	targetDate.setDate(targetDate.getDate() - daysBefore);
+	// Calculate the notification date by subtracting days before
+	const notificationDate = new Date(targetDate);
+	notificationDate.setDate(notificationDate.getDate() - daysBefore);
 
-	// Don't validate the notification date against the name day date
-	// since we intentionally subtracted days from it
+	// Don't schedule notifications in the past
+	if (notificationDate <= now) {
+		console.warn(
+			`Notification date ${notificationDate.toLocaleDateString()} is in the past for ${day} ${month} (${daysBefore} days before)`,
+		);
+		return null;
+	}
 
-	return targetDate;
+	return notificationDate;
 }
 
 export function generateDayOfNotificationId(
@@ -293,7 +344,13 @@ export function generateDayOfNotificationId(
 	month: string,
 	daysBefore = 0,
 ): string {
-	return `nameday-${name}-${day}-${month}-${daysBefore}`
+	// Include a hash of the name to avoid conflicts between different people
+	// with the same name day
+	const nameHash = name
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, "")
+		.substring(0, 8);
+	return `nameday-${nameHash}-${day}-${month}-${daysBefore}`
 		.replace(/\s+/g, "-")
 		.toLowerCase();
 }
@@ -335,8 +392,13 @@ export async function debugNotificationSetup(
 	}
 
 	const scheduled = await getScheduledNotifications();
+	// Use the name hash to filter notifications for this specific person
+	const nameHash = name
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, "")
+		.substring(0, 8);
 	const nameNotifications = scheduled.filter((n) =>
-		n.notification.id?.includes(name.toLowerCase().replace(/\s+/g, "-")),
+		n.notification.id?.includes(nameHash),
 	);
 	console.log("Existing notifications for this name:", nameNotifications);
 }
@@ -377,8 +439,13 @@ export async function debugNotificationTiming(
 
 	// Check existing scheduled notifications
 	const scheduled = await getScheduledNotifications();
+	// Use the name hash to filter notifications for this specific person
+	const nameHash = name
+		.toLowerCase()
+		.replace(/[^a-z0-9]/g, "")
+		.substring(0, 8);
 	const nameNotifications = scheduled.filter((n) =>
-		n.notification.id?.includes(name.toLowerCase().replace(/\s+/g, "-")),
+		n.notification.id?.includes(nameHash),
 	);
 	console.log(
 		`\nCurrently scheduled notifications for ${name}:`,
@@ -409,4 +476,77 @@ export async function testNotificationNavigation(
 	// Import and handle the deep link
 	const {handleDeepLink} = await import("@/app/navigation/deepLinking");
 	handleDeepLink(deepLink);
+}
+
+export async function simulatePushNotification(
+	name = "Test Name",
+	day = "15",
+	month = "Janvāris",
+	daysBefore = 0,
+): Promise<void> {
+	console.log("=== SIMULATING PUSH NOTIFICATION ===");
+	console.log(
+		`Name: ${name}, Day: ${day}, Month: ${month}, Days Before: ${daysBefore}`,
+	);
+
+	try {
+		const currentLanguage = language$.currentLanguage.get();
+		const notificationText = getNotificationText(
+			currentLanguage,
+			"nameDayToday",
+			name,
+		);
+
+		// Create the notification payload that would be sent by the system
+		const notificationPayload = {
+			id: generateDayOfNotificationId(name, day, month, daysBefore),
+			title: notificationText.title,
+			body: notificationText.body,
+			data: {
+				deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${daysBefore}`,
+				name,
+				day,
+				month,
+				daysBefore: daysBefore.toString(),
+			},
+		};
+
+		console.log("Notification payload:", notificationPayload);
+
+		// Simulate the notification being received
+		console.log("Simulating notification tap...");
+
+		// Import and handle the deep link
+		const {handleDeepLink} = await import("@/app/navigation/deepLinking");
+		handleDeepLink(notificationPayload.data.deepLink);
+
+		console.log("✅ Push notification simulation completed!");
+		console.log(
+			"The app should now navigate to the Favourites screen and highlight the name.",
+		);
+	} catch (error) {
+		console.error("❌ Error simulating push notification:", error);
+	}
+}
+
+export async function simulateMultiplePushNotifications(
+	names: Array<{name: string; day: string; month: string; daysBefore: number}>,
+): Promise<void> {
+	console.log("=== SIMULATING MULTIPLE PUSH NOTIFICATIONS ===");
+	console.log(`Simulating ${names.length} notifications...`);
+
+	for (let i = 0; i < names.length; i++) {
+		const {name, day, month, daysBefore} = names[i];
+		console.log(`\n--- Notification ${i + 1}/${names.length} ---`);
+
+		await simulatePushNotification(name, day, month, daysBefore);
+
+		// Add a small delay between notifications for better debugging
+		if (i < names.length - 1) {
+			console.log("Waiting 2 seconds before next notification...");
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+		}
+	}
+
+	console.log("\n✅ All push notification simulations completed!");
 }

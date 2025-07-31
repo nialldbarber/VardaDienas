@@ -1,8 +1,7 @@
-import {useFocusEffect} from "@react-navigation/native";
 import {ArrowDown2, Star1} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Alert, AppState, Pressable} from "react-native";
+import {Alert, Pressable} from "react-native";
 import * as Permissions from "react-native-permissions";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -285,6 +284,9 @@ export const GroupedNamesAccordion = ({
 		Set<string>
 	>(new Set());
 
+	// State to track if we've already auto-opened accordions on first render
+	const [hasAutoOpened, setHasAutoOpened] = React.useState(false);
+
 	const groupedData = React.useMemo(() => {
 		return groupFavouritesByMonthAndDay(reactiveFavourites);
 	}, [reactiveFavourites]);
@@ -352,75 +354,56 @@ export const GroupedNamesAccordion = ({
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData]);
 
-	useFocusEffect(
-		React.useCallback(() => {
-			const handleAppStateChange = (nextAppState: string) => {
-				if (nextAppState === "active") {
-					setTimeout(() => {
-						const accordionKeys: string[] = [];
+	// Auto-open accordions for today's name days only on first render
+	React.useEffect(() => {
+		if (hasAutoOpened || groupedData.length === 0) return;
 
-						for (const monthData of groupedData) {
-							for (const dayData of monthData.days) {
-								for (
-									let index = 0;
-									index < dayData.favourites.length;
-									index++
-								) {
-									const favourite = dayData.favourites[index];
-									const isToday = isTodayNameDay(
-										favourite.day,
-										favourite.month,
-									);
-									if (isToday) {
-										const key = `${favourite.name}-${index}`;
-										accordionKeys.push(key);
-									}
-								}
-							}
-						}
+		// Small delay to ensure the component is fully rendered
+		setTimeout(() => {
+			// Generate accordion keys based on the actual grouped data structure
+			const accordionKeys: string[] = [];
+			console.log(
+				"🔍 Debug: Checking for today's name days on first render...",
+			);
+			console.log("🔍 Debug: Today's favourites:", todaysFavourites);
+			console.log("🔍 Debug: Grouped data:", groupedData);
 
-						setAutoOpenAccordions(new Set(accordionKeys));
+			// Test isTodayNameDay function directly
+			const today = new Date();
+			console.log("🔍 Debug: Today's date:", today);
+			console.log("🔍 Debug: Today's day:", today.getDate());
+			console.log("🔍 Debug: Today's month:", today.getMonth());
 
-						setTimeout(() => {
-							scrollToTodaysNameDay();
-						}, 500);
-					}, 100);
-				}
-			};
-
-			setTimeout(() => {
-				const accordionKeys: string[] = [];
-
-				for (const monthData of groupedData) {
-					for (const dayData of monthData.days) {
-						for (let index = 0; index < dayData.favourites.length; index++) {
-							const favourite = dayData.favourites[index];
-							const isToday = isTodayNameDay(favourite.day, favourite.month);
-							if (isToday) {
-								const key = `${favourite.name}-${index}`;
-								accordionKeys.push(key);
-							}
+			for (const monthData of groupedData) {
+				for (const dayData of monthData.days) {
+					for (let index = 0; index < dayData.favourites.length; index++) {
+						const favourite = dayData.favourites[index];
+						const isToday = isTodayNameDay(favourite.day, favourite.month);
+						console.log(
+							`🔍 Debug: ${favourite.name} (${favourite.day} ${favourite.month}) - isToday: ${isToday}`,
+						);
+						if (isToday) {
+							const key = `${favourite.name}-${index}`;
+							accordionKeys.push(key);
+							console.log(`🔍 Debug: Adding accordion key: ${key}`);
 						}
 					}
 				}
+			}
+			console.log("🔍 Debug: Final accordion keys:", accordionKeys);
 
-				setAutoOpenAccordions(new Set(accordionKeys));
+			setAutoOpenAccordions(new Set(accordionKeys));
 
-				setTimeout(() => {
-					scrollToTodaysNameDay();
-				}, 500);
-			}, 100);
+			// Scroll to today's name day with longer delay to ensure ref is ready
+			setTimeout(() => {
+				console.log("🔍 Debug: Attempting to scroll to today's name day");
+				scrollToTodaysNameDay();
+			}, 500);
 
-			const subscription = AppState.addEventListener(
-				"change",
-				handleAppStateChange,
-			);
-
-			return () => {
-				subscription?.remove();
-			};
-		}, [groupedData, scrollToTodaysNameDay]),
-	);
+			// Mark as auto-opened so it doesn't happen again
+			setHasAutoOpened(true);
+		}, 100);
+	}, [groupedData, todaysFavourites, scrollToTodaysNameDay, hasAutoOpened]);
 
 	const shouldHighlight = React.useCallback(
 		(name: string) => {

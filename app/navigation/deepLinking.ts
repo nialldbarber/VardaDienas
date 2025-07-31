@@ -8,13 +8,49 @@ import {
 // Parse URL parameters
 function parseUrlParams(url: string): Record<string, string> {
 	const params: Record<string, string> = {};
-	const urlObj = new URL(url);
 
-	urlObj.searchParams.forEach((value, key) => {
-		params[key] = value;
-	});
+	// Extract query string from URL
+	const queryIndex = url.indexOf("?");
+	if (queryIndex === -1) {
+		return params;
+	}
+
+	const queryString = url.substring(queryIndex + 1);
+	const pairs = queryString.split("&");
+
+	for (const pair of pairs) {
+		const [key, value] = pair.split("=");
+		if (key && value) {
+			params[decodeURIComponent(key)] = decodeURIComponent(value);
+		}
+	}
 
 	return params;
+}
+
+// Extract path from URL
+function extractPath(url: string): string {
+	// Remove protocol and host
+	const protocolIndex = url.indexOf("://");
+	if (protocolIndex === -1) {
+		return "";
+	}
+
+	const afterProtocol = url.substring(protocolIndex + 3);
+	const pathIndex = afterProtocol.indexOf("/");
+
+	if (pathIndex === -1) {
+		return "";
+	}
+
+	const pathWithQuery = afterProtocol.substring(pathIndex);
+	const queryIndex = pathWithQuery.indexOf("?");
+
+	if (queryIndex === -1) {
+		return pathWithQuery;
+	}
+
+	return pathWithQuery.substring(0, queryIndex);
 }
 
 // Handle deep link
@@ -22,10 +58,10 @@ export function handleDeepLink(url: string) {
 	console.log("Deep link received:", url);
 
 	try {
-		const urlObj = new URL(url);
+		const path = extractPath(url);
 
 		// Handle favourites deep link
-		if (urlObj.pathname === "/favourites") {
+		if (path === "/favourites") {
 			const params = parseUrlParams(url);
 			const name = params.name;
 
@@ -38,21 +74,21 @@ export function handleDeepLink(url: string) {
 			}
 		}
 		// Handle home deep link
-		else if (urlObj.pathname === "/home") {
+		else if (path === "/home") {
 			console.log("Navigating to home");
 			navigateToHome();
 		}
 		// Handle settings deep link
-		else if (urlObj.pathname === "/settings") {
+		else if (path === "/settings") {
 			console.log("Navigating to settings");
 			navigateToSettings();
 		}
 		// Handle root path
-		else if (urlObj.pathname === "/" || urlObj.pathname === "") {
+		else if (path === "/" || path === "") {
 			console.log("Navigating to home (root path)");
 			navigateToHome();
 		} else {
-			console.log("Unknown deep link path:", urlObj.pathname);
+			console.log("Unknown deep link path:", path);
 			// Default to home for unknown paths
 			navigateToHome();
 		}
