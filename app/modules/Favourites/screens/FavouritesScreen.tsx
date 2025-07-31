@@ -79,6 +79,42 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 			infoBottomSheetRef.current?.present();
 		};
 
+		const scrollToPosition = (y: number) => {
+			console.log("🔍 Debug: scrollToPosition called with y:", y);
+			console.log("🔍 Debug: layoutRef.current:", layoutRef.current);
+
+			if (layoutRef.current) {
+				console.log(
+					"🔍 Debug: layoutRef.current.scrollTo exists:",
+					typeof layoutRef.current.scrollTo,
+				);
+				try {
+					// Use custom animation for smooth scroll with quick start and soft landing
+					layoutRef.current.scrollTo({
+						y,
+						animated: true,
+					});
+					console.log("🔍 Debug: scrollTo called successfully");
+				} catch (error) {
+					console.error("🔍 Debug: Error calling scrollTo:", error);
+				}
+			} else {
+				console.log("🔍 Debug: layoutRef.current is null/undefined");
+			}
+		};
+
+		// Custom scroll function with quick start and soft landing
+		const scrollToPositionWithCustomAnimation = (y: number) => {
+			if (layoutRef.current) {
+				// Use the built-in scrollTo with animated: true for now
+				// This is more reliable than the custom animation approach
+				layoutRef.current.scrollTo({
+					y,
+					animated: true,
+				});
+			}
+		};
+
 		const renderBackdrop = React.useCallback(
 			(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
 				<BottomSheetBackdrop
@@ -120,6 +156,7 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 						<GroupedNamesAccordion
 							favourites={favourites}
 							highlightName={highlightName}
+							scrollToPosition={scrollToPositionWithCustomAnimation}
 						/>
 					)}
 				</Layout>

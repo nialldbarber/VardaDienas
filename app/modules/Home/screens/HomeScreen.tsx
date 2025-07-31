@@ -262,7 +262,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 
 	const renderItem = React.useCallback(
 		({item}: {item: string | VardusItem}) => {
-			console.log("Rendering item:", item);
 			if (typeof item === "string") return null;
 			return (
 				<Pressable

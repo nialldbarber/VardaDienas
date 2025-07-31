@@ -228,6 +228,7 @@ type NamesByMonth = {
 type Props = {
 	favourites: Favourite[];
 	highlightName?: string;
+	scrollToPosition?: (y: number) => void;
 };
 
 const MONTH_ORDER = [
@@ -276,7 +277,11 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 		});
 }
 
-export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
+export const GroupedNamesAccordion = ({
+	favourites,
+	highlightName,
+	scrollToPosition,
+}: Props) => {
 	const {t} = useTranslation();
 	// Use reactive state directly instead of props to ensure UI updates
 	const reactiveFavourites = use$(favourites$.favourites);
@@ -298,6 +303,76 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 			isTodayNameDay(favourite.day, favourite.month),
 		);
 	}, [reactiveFavourites]);
+
+	// Function to calculate scroll position and scroll to today's name day
+	const scrollToTodaysNameDay = React.useCallback(() => {
+		if (todaysFavourites.length === 0 || !scrollToPosition) return;
+
+		const today = new Date();
+		const todayDay = today.getDate().toString();
+
+		// Get the Latvian month name (matching the data structure)
+		const todayMonth = today.toLocaleDateString("lv-LV", {month: "long"});
+		const capitalisedTodayMonth =
+			todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
+
+		// Calculate approximate scroll position based on data structure
+		let scrollY = 0;
+		let foundTarget = false;
+
+		for (const monthData of groupedData) {
+			// Add month height (approximate)
+			scrollY += 60; // Month title height
+
+			if (monthData.month === capitalisedTodayMonth) {
+				// Found the month, now look for the day
+				for (const dayData of monthData.days) {
+					// Add day number height
+					scrollY += 30; // Day number height
+
+					if (dayData.day === todayDay) {
+						// Found the specific day
+						foundTarget = true;
+						break;
+					}
+
+					// Add height for names in this day
+					scrollY += dayData.favourites.length * 80; // Approximate height per name
+				}
+
+				if (foundTarget) break;
+			} else {
+				// Add height for all days in this month
+				for (const dayData of monthData.days) {
+					scrollY += 30; // Day number height
+					scrollY += dayData.favourites.length * 80; // Approximate height per name
+				}
+			}
+		}
+
+		if (foundTarget) {
+			// Scroll to the specific day with better offset
+			scrollToPosition(scrollY - 55); // Increased offset to position date below header
+		} else {
+			// If day not found, try to scroll to the month
+			scrollY = 0;
+			for (const monthData of groupedData) {
+				scrollY += 60; // Month title height
+
+				if (monthData.month === capitalisedTodayMonth) {
+					// Found the month
+					scrollToPosition(scrollY - 60); // Increased offset to position month below header
+					return;
+				}
+
+				// Add height for all days in this month
+				for (const dayData of monthData.days) {
+					scrollY += 30; // Day number height
+					scrollY += dayData.favourites.length * 80; // Approximate height per name
+				}
+			}
+		}
+	}, [todaysFavourites, scrollToPosition, groupedData]);
 
 	// Auto-open accordions for today's name days when screen comes into focus
 	useFocusEffect(
@@ -344,6 +419,12 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 						console.log("🔍 Debug: Final accordion keys:", accordionKeys);
 
 						setAutoOpenAccordions(new Set(accordionKeys));
+
+						// Scroll to today's name day with longer delay to ensure ref is ready
+						setTimeout(() => {
+							console.log("🔍 Debug: Attempting to scroll to today's name day");
+							scrollToTodaysNameDay();
+						}, 500);
 					}, 100);
 				}
 			};
@@ -381,6 +462,12 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 				console.log("🔍 Debug: Final accordion keys:", accordionKeys);
 
 				setAutoOpenAccordions(new Set(accordionKeys));
+
+				// Scroll to today's name day with longer delay to ensure ref is ready
+				setTimeout(() => {
+					console.log("🔍 Debug: Attempting to scroll to today's name day");
+					scrollToTodaysNameDay();
+				}, 500);
 			}, 100);
 
 			// Listen for app state changes
@@ -392,7 +479,7 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 			return () => {
 				subscription?.remove();
 			};
-		}, [groupedData, todaysFavourites]),
+		}, [groupedData, todaysFavourites, scrollToTodaysNameDay]),
 	);
 
 	// Check if a favourite should be highlighted
