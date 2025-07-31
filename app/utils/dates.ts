@@ -40,5 +40,21 @@ export function isTodayNameDay(day: string, month: string): boolean {
 	const capitalisedTodayMonth =
 		todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
 
+	// Add debug logging to help identify issues on real devices
+	console.log("🔍 Debug: isTodayNameDay check:");
+	console.log("  - Input day:", day, "Input month:", month);
+	console.log(
+		"  - Today day:",
+		todayDay,
+		"Today month:",
+		capitalisedTodayMonth,
+	);
+	console.log("  - Day match:", todayDay === day);
+	console.log("  - Month match:", capitalisedTodayMonth === month);
+	console.log(
+		"  - Result:",
+		todayDay === day && capitalisedTodayMonth === month,
+	);
+
 	return todayDay === day && capitalisedTodayMonth === month;
 }

@@ -287,6 +287,17 @@ export const GroupedNamesAccordion = ({
 	// State to track if we've already auto-opened accordions on first render
 	const [hasAutoOpened, setHasAutoOpened] = React.useState(false);
 
+	// State to track component heights for more accurate scrolling
+	const [componentHeights, setComponentHeights] = React.useState<{
+		monthHeight: number;
+		dayHeight: number;
+		favouriteHeight: number;
+	}>({
+		monthHeight: 60,
+		dayHeight: 30,
+		favouriteHeight: 80,
+	});
+
 	const groupedData = React.useMemo(() => {
 		return groupFavouritesByMonthAndDay(reactiveFavourites);
 	}, [reactiveFavourites]);
@@ -298,7 +309,12 @@ export const GroupedNamesAccordion = ({
 	}, [reactiveFavourites]);
 
 	const scrollToTodaysNameDay = React.useCallback(() => {
-		if (todaysFavourites.length === 0 || !scrollToPosition) return;
+		if (todaysFavourites.length === 0 || !scrollToPosition) {
+			console.log(
+				"🔍 Debug: No today's favourites or no scrollToPosition function",
+			);
+			return;
+		}
 
 		const today = new Date();
 		const todayDay = today.getDate().toString();
@@ -307,6 +323,17 @@ export const GroupedNamesAccordion = ({
 		const capitalisedTodayMonth =
 			todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
 
+		console.log(
+			"🔍 Debug: Looking for month:",
+			capitalisedTodayMonth,
+			"day:",
+			todayDay,
+		);
+		console.log(
+			"🔍 Debug: Available months:",
+			groupedData.map((m) => m.month),
+		);
+
 		let scrollY = 0;
 		let foundTarget = false;
 
@@ -314,10 +341,12 @@ export const GroupedNamesAccordion = ({
 			scrollY += 60;
 
 			if (monthData.month === capitalisedTodayMonth) {
+				console.log("🔍 Debug: Found matching month:", monthData.month);
 				for (const dayData of monthData.days) {
 					scrollY += 30;
 
 					if (dayData.day === todayDay) {
+						console.log("🔍 Debug: Found matching day:", dayData.day);
 						foundTarget = true;
 						break;
 					}
@@ -335,13 +364,16 @@ export const GroupedNamesAccordion = ({
 		}
 
 		if (foundTarget) {
+			console.log("🔍 Debug: Scrolling to exact day position:", scrollY - 55);
 			scrollToPosition(scrollY - 55);
 		} else {
+			console.log("🔍 Debug: Day not found, trying to scroll to month");
 			scrollY = 0;
 			for (const monthData of groupedData) {
 				scrollY += 60;
 
 				if (monthData.month === capitalisedTodayMonth) {
+					console.log("🔍 Debug: Scrolling to month position:", scrollY - 60);
 					scrollToPosition(scrollY - 60);
 					return;
 				}
@@ -351,14 +383,97 @@ export const GroupedNamesAccordion = ({
 					scrollY += dayData.favourites.length * 80;
 				}
 			}
+			console.log("🔍 Debug: Month not found, no scroll performed");
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData]);
+
+	// Alternative scroll function that uses measured heights
+	const scrollToTodaysNameDayWithMeasuredHeights = React.useCallback(() => {
+		if (todaysFavourites.length === 0 || !scrollToPosition) {
+			console.log(
+				"🔍 Debug: No today's favourites or no scrollToPosition function",
+			);
+			return;
+		}
+
+		const today = new Date();
+		const todayDay = today.getDate().toString();
+		const todayMonth = today.toLocaleDateString("lv-LV", {month: "long"});
+		const capitalisedTodayMonth =
+			todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
+
+		console.log("🔍 Debug: Using measured heights for scroll calculation");
+		console.log("🔍 Debug: Measured heights:", componentHeights);
+
+		let scrollY = 0;
+		let foundTarget = false;
+
+		for (const monthData of groupedData) {
+			scrollY += componentHeights.monthHeight;
+
+			if (monthData.month === capitalisedTodayMonth) {
+				console.log("🔍 Debug: Found matching month:", monthData.month);
+				for (const dayData of monthData.days) {
+					scrollY += componentHeights.dayHeight;
+
+					if (dayData.day === todayDay) {
+						console.log("🔍 Debug: Found matching day:", dayData.day);
+						foundTarget = true;
+						break;
+					}
+
+					scrollY +=
+						dayData.favourites.length * componentHeights.favouriteHeight;
+				}
+
+				if (foundTarget) break;
+			} else {
+				for (const dayData of monthData.days) {
+					scrollY += componentHeights.dayHeight;
+					scrollY +=
+						dayData.favourites.length * componentHeights.favouriteHeight;
+				}
+			}
+		}
+
+		if (foundTarget) {
+			console.log(
+				"🔍 Debug: Scrolling to exact day position (measured):",
+				scrollY - 55,
+			);
+			scrollToPosition(scrollY - 55);
+		} else {
+			console.log(
+				"🔍 Debug: Day not found, trying to scroll to month (measured)",
+			);
+			scrollY = 0;
+			for (const monthData of groupedData) {
+				scrollY += componentHeights.monthHeight;
+
+				if (monthData.month === capitalisedTodayMonth) {
+					console.log(
+						"🔍 Debug: Scrolling to month position (measured):",
+						scrollY - 60,
+					);
+					scrollToPosition(scrollY - 60);
+					return;
+				}
+
+				for (const dayData of monthData.days) {
+					scrollY += componentHeights.dayHeight;
+					scrollY +=
+						dayData.favourites.length * componentHeights.favouriteHeight;
+				}
+			}
+			console.log("🔍 Debug: Month not found, no scroll performed");
+		}
+	}, [todaysFavourites, scrollToPosition, groupedData, componentHeights]);
 
 	// Auto-open accordions for today's name days only on first render
 	React.useEffect(() => {
 		if (hasAutoOpened || groupedData.length === 0) return;
 
-		// Small delay to ensure the component is fully rendered
+		// Longer delay to ensure the component is fully rendered on real devices
 		setTimeout(() => {
 			// Generate accordion keys based on the actual grouped data structure
 			const accordionKeys: string[] = [];
@@ -394,16 +509,56 @@ export const GroupedNamesAccordion = ({
 
 			setAutoOpenAccordions(new Set(accordionKeys));
 
-			// Scroll to today's name day with longer delay to ensure ref is ready
+			// Scroll to today's name day with much longer delay to ensure ref is ready on real devices
 			setTimeout(() => {
 				console.log("🔍 Debug: Attempting to scroll to today's name day");
-				scrollToTodaysNameDay();
-			}, 500);
+				// Add retry logic for real devices with fallback methods
+				const attemptScroll = (attempts = 0) => {
+					if (attempts >= 4) {
+						console.log("🔍 Debug: Max scroll attempts reached, giving up");
+						return;
+					}
+
+					try {
+						if (attempts === 0) {
+							// First attempt: try original method
+							console.log("🔍 Debug: Attempt 1 - Original scroll method");
+							scrollToTodaysNameDay();
+						} else if (attempts === 1) {
+							// Second attempt: try measured heights method
+							console.log("🔍 Debug: Attempt 2 - Measured heights method");
+							scrollToTodaysNameDayWithMeasuredHeights();
+						} else {
+							// Third and fourth attempts: try original method again with different timing
+							console.log(
+								`🔍 Debug: Attempt ${attempts + 1} - Retry original method`,
+							);
+							scrollToTodaysNameDay();
+						}
+						console.log("🔍 Debug: Scroll attempt successful");
+					} catch (error) {
+						console.log(
+							`🔍 Debug: Scroll attempt ${attempts + 1} failed:`,
+							error,
+						);
+						// Retry after a short delay
+						setTimeout(() => attemptScroll(attempts + 1), 300);
+					}
+				};
+
+				attemptScroll();
+			}, 1000); // Increased from 500ms to 1000ms
 
 			// Mark as auto-opened so it doesn't happen again
 			setHasAutoOpened(true);
-		}, 100);
-	}, [groupedData, todaysFavourites, scrollToTodaysNameDay, hasAutoOpened]);
+		}, 300); // Increased from 100ms to 300ms
+	}, [
+		groupedData,
+		todaysFavourites,
+		scrollToTodaysNameDay,
+		scrollToTodaysNameDayWithMeasuredHeights,
+		hasAutoOpened,
+	]);
 
 	const shouldHighlight = React.useCallback(
 		(name: string) => {
