@@ -3,6 +3,7 @@ import React from "react";
 import {useTranslation} from "react-i18next";
 import {
 	Alert,
+	AppState,
 	Linking,
 	Platform,
 	Pressable,
@@ -26,7 +27,7 @@ import {View} from "@/app/ui/components/View";
 import {WebViewScreen} from "@/app/ui/components/WebViewScreen";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {ArrowRight2} from "iconsax-react-native";
 
@@ -41,8 +42,10 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 	const layoutRef = React.useRef<ScrollView>(null);
 	const hapticsEnabled = use$(settings$.haptics);
 	const notificationsEnabled = use$(settings$.notifications);
+	const notificationPermissionStatus = use$(
+		settings$.notificationPermissionStatus,
+	);
 
-	// Modal state
 	const [webViewVisible, setWebViewVisible] = React.useState(false);
 	const [webViewUrl, setWebViewUrl] = React.useState("");
 	const [webViewTitle, setWebViewTitle] = React.useState("");
@@ -63,10 +66,47 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 		checkNotificationPermission();
 	}, []);
 
+	useFocusEffect(
+		React.useCallback(() => {
+			console.log(
+				"Settings screen focused - checking notification permissions",
+			);
+			checkNotificationPermission();
+		}, []),
+	);
+
+	React.useEffect(() => {
+		const handleAppStateChange = (nextAppState: string) => {
+			console.log("App state changed to:", nextAppState);
+			if (nextAppState === "active") {
+				console.log("App became active - checking notification permissions");
+				checkNotificationPermission();
+			}
+		};
+
+		const subscription = AppState.addEventListener(
+			"change",
+			handleAppStateChange,
+		);
+
+		return () => {
+			subscription?.remove();
+		};
+	}, []);
+
 	const checkNotificationPermission = async () => {
 		try {
+			console.log("Checking notification permissions...");
 			const {status} = await Permissions.checkNotifications();
+			console.log("Current permission status:", status);
 			settings$.notificationPermissionStatus.set(status);
+
+			if (status === Permissions.RESULTS.GRANTED) {
+				console.log("Permission granted - keeping user preference");
+			} else {
+				console.log("Permission not granted - turning off notifications");
+				settings$.notifications.set(false);
+			}
 		} catch (error) {
 			console.error("Error checking notification permission:", error);
 		}
@@ -77,26 +117,28 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 			haptics.impactMedium();
 		}
 
-		if (value) {
-			const currentStatus = settings$.notificationPermissionStatus.get();
+		const {status} = await Permissions.checkNotifications();
+		settings$.notificationPermissionStatus.set(status);
 
-			if (currentStatus === Permissions.RESULTS.GRANTED) {
+		if (value) {
+			if (status === Permissions.RESULTS.GRANTED) {
 				settings$.notifications.set(true);
 			} else if (
-				currentStatus === Permissions.RESULTS.DENIED ||
-				currentStatus === "unavailable"
+				status === Permissions.RESULTS.DENIED ||
+				status === "unavailable"
 			) {
 				try {
-					const {status} = await Permissions.requestNotifications([
+					const {status: newStatus} = await Permissions.requestNotifications([
 						"alert",
 						"sound",
 						"badge",
 					]);
-					settings$.notificationPermissionStatus.set(status);
+					settings$.notificationPermissionStatus.set(newStatus);
 
-					if (status === Permissions.RESULTS.GRANTED) {
+					if (newStatus === Permissions.RESULTS.GRANTED) {
 						settings$.notifications.set(true);
 					} else {
+						settings$.notifications.set(false);
 						Alert.alert(
 							t("notifications.permissionRequired"),
 							t("notifications.permissionMessage"),
@@ -111,8 +153,10 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 					}
 				} catch (error) {
 					console.error("Error requesting notification permission:", error);
+					settings$.notifications.set(false);
 				}
 			} else {
+				settings$.notifications.set(false);
 				Alert.alert(
 					t("notifications.notificationsDisabled"),
 					t("notifications.notificationsBlockedMessage"),
@@ -131,19 +175,14 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 	};
 
 	const getNotificationStatusText = () => {
-		const status = settings$.notificationPermissionStatus.get();
-		switch (status) {
-			case Permissions.RESULTS.GRANTED:
-				return t("settings.notificationStatuses.enabled");
-			case Permissions.RESULTS.DENIED:
-				return t("settings.notificationStatuses.permissionNeeded");
-			case Permissions.RESULTS.BLOCKED:
-				return t("settings.notificationStatuses.blockedInSettings");
-			case Permissions.RESULTS.LIMITED:
-				return t("settings.notificationStatuses.limitedAccess");
-			default:
-				return t("settings.notificationStatuses.unknown");
+		console.log(
+			"Getting notification status text for:",
+			notificationPermissionStatus,
+		);
+		if (notificationPermissionStatus === Permissions.RESULTS.GRANTED) {
+			return t("settings.notificationStatuses.enabled");
 		}
+		return t("settings.notificationStatuses.disabled");
 	};
 
 	const handleShare = async () => {

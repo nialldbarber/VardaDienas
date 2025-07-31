@@ -1,4 +1,5 @@
 import {language$} from "@/app/store/language";
+import {settings$} from "@/app/store/settings";
 import notifee, {
 	TriggerType,
 	type TriggerNotification,
@@ -28,15 +29,39 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 				const granted = await PermissionsAndroid.request(
 					PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
 				);
-				return granted === PermissionsAndroid.RESULTS.GRANTED;
+				const hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+
+				if (hasPermission) {
+					settings$.notificationPermissionStatus.set("granted");
+					settings$.notifications.set(true);
+				} else {
+					settings$.notificationPermissionStatus.set("denied");
+					settings$.notifications.set(false);
+				}
+
+				return hasPermission;
 			}
+			settings$.notificationPermissionStatus.set("granted");
+			settings$.notifications.set(true);
 			return true;
 		}
 
 		const settings = await notifee.requestPermission();
-		return settings.authorizationStatus >= 1;
+		const hasPermission = settings.authorizationStatus >= 1;
+
+		if (hasPermission) {
+			settings$.notificationPermissionStatus.set("granted");
+			settings$.notifications.set(true);
+		} else {
+			settings$.notificationPermissionStatus.set("denied");
+			settings$.notifications.set(false);
+		}
+
+		return hasPermission;
 	} catch (error) {
 		console.error("Error requesting notification permissions:", error);
+		settings$.notificationPermissionStatus.set("denied");
+		settings$.notifications.set(false);
 		return false;
 	}
 }
@@ -48,15 +73,38 @@ export async function checkNotificationPermissions(): Promise<boolean> {
 				const hasPermission = await PermissionsAndroid.check(
 					PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
 				);
+
+				if (hasPermission) {
+					settings$.notificationPermissionStatus.set("granted");
+					settings$.notifications.set(true);
+				} else {
+					settings$.notificationPermissionStatus.set("denied");
+					settings$.notifications.set(false);
+				}
+
 				return hasPermission;
 			}
+			settings$.notificationPermissionStatus.set("granted");
+			settings$.notifications.set(true);
 			return true;
 		}
 
 		const settings = await notifee.getNotificationSettings();
-		return settings.authorizationStatus >= 1;
+		const hasPermission = settings.authorizationStatus >= 1;
+
+		if (hasPermission) {
+			settings$.notificationPermissionStatus.set("granted");
+			settings$.notifications.set(true);
+		} else {
+			settings$.notificationPermissionStatus.set("denied");
+			settings$.notifications.set(false);
+		}
+
+		return hasPermission;
 	} catch (error) {
 		console.error("Error checking notification permissions:", error);
+		settings$.notificationPermissionStatus.set("denied");
+		settings$.notifications.set(false);
 		return false;
 	}
 }
@@ -91,11 +139,9 @@ export async function scheduleNameDayNotifications(
 
 		await cancelNameDayNotifications(name, day, month);
 
-		// Convert to array if it's a single number
 		const daysArray = Array.isArray(daysBefore) ? daysBefore : [daysBefore];
 		console.log("Scheduling notifications for days array:", daysArray);
 
-		// Schedule notifications for each selected day
 		for (const dayBefore of daysArray) {
 			console.log(`Processing day ${dayBefore} for ${name}`);
 			const nextDate = getNextOccurrenceDate(day, month, dayBefore);
@@ -159,7 +205,6 @@ export async function cancelNameDayNotifications(
 	month: string,
 ): Promise<void> {
 	try {
-		// Cancel notifications for all possible days (0-5)
 		for (let daysBefore = 0; daysBefore <= 5; daysBefore++) {
 			const notificationId = generateDayOfNotificationId(
 				name,

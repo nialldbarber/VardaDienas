@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {Pressable} from "react-native";
+import {Alert, Pressable} from "react-native";
 import Toast from "react-native-toast-message";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -10,10 +10,13 @@ import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {hapticToTrigger} from "@/app/utils/haptics";
-import {scheduleNameDayNotifications} from "@/app/utils/notifications";
+import {
+	requestNotificationPermissions,
+	scheduleNameDayNotifications,
+} from "@/app/utils/notifications";
 import {use$} from "@legendapp/state/react";
-import notifee from "@notifee/react-native";
 import React from "react";
+import * as Permissions from "react-native-permissions";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -66,17 +69,7 @@ export function CheckboxRow({
 		});
 
 		try {
-			console.log("Attempting to enable notifications for:", vards);
-
-			const settings = await notifee.requestPermission();
-			const hasPermission = settings.authorizationStatus >= 1;
-			console.log(
-				"Permission result:",
-				hasPermission,
-				"Status:",
-				settings.authorizationStatus,
-			);
-
+			const hasPermission = await requestNotificationPermissions();
 			if (hasPermission) {
 				console.log("Scheduling notification for:", vards);
 				await scheduleNameDayNotifications(vards, data.diena, month ?? "");
@@ -89,6 +82,18 @@ export function CheckboxRow({
 				});
 			} else {
 				console.log("Permission denied for notifications");
+				// Show alert to enable notifications in settings
+				Alert.alert(
+					t("notifications.permissionRequired"),
+					t("notifications.permissionMessage"),
+					[
+						{text: t("common.cancel"), style: "cancel"},
+						{
+							text: t("notifications.openSettings"),
+							onPress: () => Permissions.openSettings("notifications"),
+						},
+					],
+				);
 				Toast.show({
 					type: "success",
 					text1: t("toast.added", {name: vards}),

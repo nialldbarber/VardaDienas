@@ -2,7 +2,8 @@ import {Accordion} from "@animatereactnative/accordion";
 import {ArrowDown2} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Pressable} from "react-native";
+import {Alert, Pressable} from "react-native";
+import * as Permissions from "react-native-permissions";
 import {StyleSheet} from "react-native-unistyles";
 
 import type {Favourite} from "@/app/store/favourites";
@@ -14,8 +15,8 @@ import {View} from "@/app/ui/components/View";
 import {haptics} from "@/app/utils/haptics";
 import {
 	cancelNameDayNotifications,
+	checkNotificationPermissions,
 	debugNotificationSetup,
-	requestNotificationPermissions,
 	scheduleNameDayNotifications,
 } from "@/app/utils/notifications";
 import {use$} from "@legendapp/state/react";
@@ -104,45 +105,44 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 		favourite: Favourite,
 		enabled: boolean,
 	) => {
-		let hasPermission = false;
-
 		try {
 			if (enabled) {
+				const hasPermission = await checkNotificationPermissions();
+
+				if (!hasPermission) {
+					Alert.alert(
+						t("notifications.permissionRequired"),
+						t("notifications.permissionMessage"),
+						[
+							{text: t("common.cancel"), style: "cancel"},
+							{
+								text: t("notifications.openSettings"),
+								onPress: () => Permissions.openSettings("notifications"),
+							},
+						],
+					);
+					return;
+				}
+
 				await debugNotificationSetup(
 					favourite.name,
 					favourite.day,
 					favourite.month,
 				);
-			}
 
-			if (enabled) {
-				// First try to get permission
-				hasPermission = await requestNotificationPermissions();
+				await scheduleNameDayNotifications(
+					favourite.name,
+					favourite.day,
+					favourite.month,
+					[0],
+				);
 
-				if (hasPermission) {
-					// Schedule default notification for "On the day" (0 days before)
-					await scheduleNameDayNotifications(
-						favourite.name,
-						favourite.day,
-						favourite.month,
-						[0], // Default to "On the day" as array
-					);
-
-					Toast.show({
-						type: "success",
-						text1: t("notifications.notificationScheduled"),
-						text2: t("notifications.reminderSet", {name: favourite.name}),
-						position: "bottom",
-					});
-				} else {
-					Toast.show({
-						type: "error",
-						text1: t("notifications.permissionRequired"),
-						text2: t("notifications.enableInSettings"),
-						position: "bottom",
-					});
-					return;
-				}
+				Toast.show({
+					type: "success",
+					text1: t("notifications.notificationScheduled"),
+					text2: t("notifications.reminderSet", {name: favourite.name}),
+					position: "bottom",
+				});
 			} else {
 				await cancelNameDayNotifications(
 					favourite.name,
@@ -158,7 +158,7 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 				});
 			}
 
-			favourites$.toggleNotification(favourite.name, enabled && hasPermission);
+			favourites$.toggleNotification(favourite.name, enabled);
 		} catch (error) {
 			console.error("Error toggling notification:", error);
 			Toast.show({
@@ -167,7 +167,6 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 				text2: t("notifications.updateSettingsError"),
 				position: "bottom",
 			});
-			favourites$.toggleNotification(favourite.name, false);
 		}
 	};
 
@@ -183,6 +182,27 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 				`Toggling day ${day} for ${favourite.name}, was selected: ${wasSelected}`,
 			);
 
+			const isNowSelected = !wasSelected;
+
+			if (isNowSelected) {
+				const hasPermission = await checkNotificationPermissions();
+
+				if (!hasPermission) {
+					Alert.alert(
+						t("notifications.permissionRequired"),
+						t("notifications.permissionMessage"),
+						[
+							{text: t("common.cancel"), style: "cancel"},
+							{
+								text: t("notifications.openSettings"),
+								onPress: () => Permissions.openSettings("notifications"),
+							},
+						],
+					);
+					return;
+				}
+			}
+
 			favourites$.toggleDaysBefore(favourite.name, day);
 
 			await cancelNameDayNotifications(
@@ -191,7 +211,6 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 				favourite.month,
 			);
 
-			const isNowSelected = !wasSelected;
 			console.log(
 				"After toggle - wasSelected:",
 				wasSelected,
@@ -273,7 +292,7 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 				}
 			}
 		} catch (error) {
-			console.error("Error updating days before:", error);
+			console.error("Error toggling days before:", error);
 			Toast.show({
 				type: "error",
 				text1: t("common.error"),
