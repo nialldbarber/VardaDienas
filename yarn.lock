@@ -6531,6 +6531,11 @@ react-native-config@^1.5.5:
   resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.5.5.tgz#5977db58ff20b6fe9dd6fb28c815a9ba43d018d2"
   integrity sha512-dGdLnBU0cd5xL5bF0ROTmHYbsstZnQKOEPfglvZi1vStvAjpld14X25K6mY3KGPTMWAzx6TbjKeq5dR+ILuMMA==
 
+react-native-context-menu-view@^1.19.0:
+  version "1.19.0"
+  resolved "https://registry.yarnpkg.com/react-native-context-menu-view/-/react-native-context-menu-view-1.19.0.tgz#6752f619afa327d51a470882fd574282a97fad0f"
+  integrity sha512-RKkDUQuY9cVIb3rJl0ch8+FLH/WnjN6febtOuSif/6F3q7vuMZ8Ie+jmYGtnIbvSxl6lMknAZU61O192ysW3zg==
+
 react-native-deep-linking@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-native-deep-linking/-/react-native-deep-linking-2.2.0.tgz#45451c4ebcbe7307e094b8df38979d0bd745bb54"
