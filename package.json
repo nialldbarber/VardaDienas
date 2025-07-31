@@ -1,6 +1,6 @@
 {
 	"name": "VardaDienas",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"private": true,
 	"scripts": {
 		"android": "react-native run-android",
@@ -9,7 +9,15 @@
 		"lint": "eslint .",
 		"start": "react-native start",
 		"test": "jest",
-		"deps": "cd ios && npx pod install && cd .."
+		"deps": "cd ios && npx pod install && cd ..",
+		"version:patch": "./scripts/version.sh $(node -p \"require('./package.json').version.split('.').map((v,i)=>i===2?parseInt(v)+1:v).join('.')\")",
+		"version:minor": "./scripts/version.sh $(node -p \"require('./package.json').version.split('.').map((v,i)=>i===1?parseInt(v)+1:i===2?0:v).join('.')\")",
+		"version:major": "./scripts/version.sh $(node -p \"require('./package.json').version.split('.').map((v,i)=>i===0?parseInt(v)+1:i===1?0:i===2?0:v).join('.')\")",
+		"version:set": "node -e \"if(!process.argv[1]){console.log('Usage: yarn version:set <version>'); process.exit(1)}; require('child_process').execSync('./scripts/version.sh ' + process.argv[1], {stdio: 'inherit'})\"",
+		"version:commit": "git add . && git commit -m \"Bump version to $(node -p \"require('./package.json').version\")\"",
+		"version:tag": "git tag v$(node -p \"require('./package.json').version\")",
+		"version:push": "git push && git push --tags",
+		"version:release": "yarn version:commit && yarn version:tag && yarn version:push"
 	},
 	"dependencies": {
 		"@animatereactnative/accordion": "^0.1.5",
