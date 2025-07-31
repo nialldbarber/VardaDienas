@@ -26,7 +26,6 @@ import Share from "react-native-share";
 import Toast from "react-native-toast-message";
 import {colors} from "../config/colors";
 
-// Enhanced Accordion with controlled state support
 import type {PropsWithChildren} from "react";
 import {createContext, useContext, useEffect, useState} from "react";
 import type {ViewProps} from "react-native";
@@ -72,11 +71,9 @@ function Provider({
 } & AnimatedProps<ViewProps>) {
 	const [internalIsOpen, setInternalIsOpen] = useState(!!controlledIsOpen);
 
-	// Use controlled state if provided, otherwise use internal state
 	const isOpen =
 		controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
 
-	// Update internal state when controlled state changes
 	useEffect(() => {
 		if (controlledIsOpen !== undefined) {
 			setInternalIsOpen(controlledIsOpen);
@@ -86,10 +83,8 @@ function Provider({
 	const accordionIsOpen = () => {
 		const newValue = !isOpen;
 		onChange?.(newValue);
-		if (controlledIsOpen === undefined) {
-			// Only update internal state if not controlled
-			setInternalIsOpen(newValue);
-		}
+		// Always update internal state, even when controlled
+		setInternalIsOpen(newValue);
 	};
 
 	return (
@@ -268,7 +263,7 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 					names: favourites.map((f) => f.name),
 					favourites: favourites,
 				}))
-				.sort((a, b) => Number.parseInt(a.day) - Number.parseInt(b.day)), // Sort days numerically
+				.sort((a, b) => Number.parseInt(a.day) - Number.parseInt(b.day)),
 		}))
 		.sort((a, b) => {
 			const aIndex = MONTH_ORDER.indexOf(a.month);
@@ -283,115 +278,86 @@ export const GroupedNamesAccordion = ({
 	scrollToPosition,
 }: Props) => {
 	const {t} = useTranslation();
-	// Use reactive state directly instead of props to ensure UI updates
 	const reactiveFavourites = use$(favourites$.favourites);
 	const hapticsEnabled = use$(settings$.haptics);
 
-	// State to track which accordions should be auto-opened
 	const [autoOpenAccordions, setAutoOpenAccordions] = React.useState<
 		Set<string>
 	>(new Set());
 
-	// Create grouped data from reactive favourites
 	const groupedData = React.useMemo(() => {
 		return groupFavouritesByMonthAndDay(reactiveFavourites);
 	}, [reactiveFavourites]);
 
-	// Find favourites whose name day is today
 	const todaysFavourites = React.useMemo(() => {
 		return reactiveFavourites.filter((favourite) =>
 			isTodayNameDay(favourite.day, favourite.month),
 		);
 	}, [reactiveFavourites]);
 
-	// Function to calculate scroll position and scroll to today's name day
 	const scrollToTodaysNameDay = React.useCallback(() => {
 		if (todaysFavourites.length === 0 || !scrollToPosition) return;
 
 		const today = new Date();
 		const todayDay = today.getDate().toString();
 
-		// Get the Latvian month name (matching the data structure)
 		const todayMonth = today.toLocaleDateString("lv-LV", {month: "long"});
 		const capitalisedTodayMonth =
 			todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
 
-		// Calculate approximate scroll position based on data structure
 		let scrollY = 0;
 		let foundTarget = false;
 
 		for (const monthData of groupedData) {
-			// Add month height (approximate)
-			scrollY += 60; // Month title height
+			scrollY += 60;
 
 			if (monthData.month === capitalisedTodayMonth) {
-				// Found the month, now look for the day
 				for (const dayData of monthData.days) {
-					// Add day number height
-					scrollY += 30; // Day number height
+					scrollY += 30;
 
 					if (dayData.day === todayDay) {
-						// Found the specific day
 						foundTarget = true;
 						break;
 					}
 
-					// Add height for names in this day
-					scrollY += dayData.favourites.length * 80; // Approximate height per name
+					scrollY += dayData.favourites.length * 80;
 				}
 
 				if (foundTarget) break;
 			} else {
-				// Add height for all days in this month
 				for (const dayData of monthData.days) {
-					scrollY += 30; // Day number height
-					scrollY += dayData.favourites.length * 80; // Approximate height per name
+					scrollY += 30;
+					scrollY += dayData.favourites.length * 80;
 				}
 			}
 		}
 
 		if (foundTarget) {
-			// Scroll to the specific day with better offset
-			scrollToPosition(scrollY - 55); // Increased offset to position date below header
+			scrollToPosition(scrollY - 55);
 		} else {
-			// If day not found, try to scroll to the month
 			scrollY = 0;
 			for (const monthData of groupedData) {
-				scrollY += 60; // Month title height
+				scrollY += 60;
 
 				if (monthData.month === capitalisedTodayMonth) {
-					// Found the month
-					scrollToPosition(scrollY - 60); // Increased offset to position month below header
+					scrollToPosition(scrollY - 60);
 					return;
 				}
 
-				// Add height for all days in this month
 				for (const dayData of monthData.days) {
-					scrollY += 30; // Day number height
-					scrollY += dayData.favourites.length * 80; // Approximate height per name
+					scrollY += 30;
+					scrollY += dayData.favourites.length * 80;
 				}
 			}
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData]);
 
-	// Auto-open accordions for today's name days when screen comes into focus
 	useFocusEffect(
 		React.useCallback(() => {
 			const handleAppStateChange = (nextAppState: string) => {
 				if (nextAppState === "active") {
-					// Small delay to ensure the component is fully rendered
 					setTimeout(() => {
-						// Generate accordion keys based on the actual grouped data structure
 						const accordionKeys: string[] = [];
-						console.log("🔍 Debug: Checking for today's name days...");
-						console.log("🔍 Debug: Today's favourites:", todaysFavourites);
-						console.log("🔍 Debug: Grouped data:", groupedData);
-
-						// Test isTodayNameDay function directly
-						const today = new Date();
-						console.log("🔍 Debug: Today's date:", today);
-						console.log("🔍 Debug: Today's day:", today.getDate());
-						console.log("🔍 Debug: Today's month:", today.getMonth());
 
 						for (const monthData of groupedData) {
 							for (const dayData of monthData.days) {
@@ -405,72 +371,46 @@ export const GroupedNamesAccordion = ({
 										favourite.day,
 										favourite.month,
 									);
-									console.log(
-										`🔍 Debug: ${favourite.name} (${favourite.day} ${favourite.month}) - isToday: ${isToday}`,
-									);
 									if (isToday) {
 										const key = `${favourite.name}-${index}`;
 										accordionKeys.push(key);
-										console.log(`🔍 Debug: Adding accordion key: ${key}`);
 									}
 								}
 							}
 						}
-						console.log("🔍 Debug: Final accordion keys:", accordionKeys);
 
 						setAutoOpenAccordions(new Set(accordionKeys));
 
-						// Scroll to today's name day with longer delay to ensure ref is ready
 						setTimeout(() => {
-							console.log("🔍 Debug: Attempting to scroll to today's name day");
 							scrollToTodaysNameDay();
 						}, 500);
 					}, 100);
 				}
 			};
 
-			// Auto-open accordions when screen comes into focus
 			setTimeout(() => {
-				// Generate accordion keys based on the actual grouped data structure
 				const accordionKeys: string[] = [];
-				console.log("🔍 Debug: Checking for today's name days on focus...");
-				console.log("🔍 Debug: Today's favourites:", todaysFavourites);
-				console.log("🔍 Debug: Grouped data:", groupedData);
-
-				// Test isTodayNameDay function directly
-				const today = new Date();
-				console.log("🔍 Debug: Today's date:", today);
-				console.log("🔍 Debug: Today's day:", today.getDate());
-				console.log("🔍 Debug: Today's month:", today.getMonth());
 
 				for (const monthData of groupedData) {
 					for (const dayData of monthData.days) {
 						for (let index = 0; index < dayData.favourites.length; index++) {
 							const favourite = dayData.favourites[index];
 							const isToday = isTodayNameDay(favourite.day, favourite.month);
-							console.log(
-								`🔍 Debug: ${favourite.name} (${favourite.day} ${favourite.month}) - isToday: ${isToday}`,
-							);
 							if (isToday) {
 								const key = `${favourite.name}-${index}`;
 								accordionKeys.push(key);
-								console.log(`🔍 Debug: Adding accordion key: ${key}`);
 							}
 						}
 					}
 				}
-				console.log("🔍 Debug: Final accordion keys:", accordionKeys);
 
 				setAutoOpenAccordions(new Set(accordionKeys));
 
-				// Scroll to today's name day with longer delay to ensure ref is ready
 				setTimeout(() => {
-					console.log("🔍 Debug: Attempting to scroll to today's name day");
 					scrollToTodaysNameDay();
 				}, 500);
 			}, 100);
 
-			// Listen for app state changes
 			const subscription = AppState.addEventListener(
 				"change",
 				handleAppStateChange,
@@ -479,10 +419,9 @@ export const GroupedNamesAccordion = ({
 			return () => {
 				subscription?.remove();
 			};
-		}, [groupedData, todaysFavourites, scrollToTodaysNameDay]),
+		}, [groupedData, scrollToTodaysNameDay]),
 	);
 
-	// Check if a favourite should be highlighted
 	const shouldHighlight = React.useCallback(
 		(name: string) => {
 			return (
@@ -501,11 +440,20 @@ export const GroupedNamesAccordion = ({
 			haptics.impactMedium();
 		}
 
-		// Remove from auto-open set when user manually closes an accordion
-		if (!isOpen && favouriteName && index !== undefined) {
+		// Handle both opening and closing accordions
+		if (favouriteName && index !== undefined) {
 			setAutoOpenAccordions((prev) => {
 				const newSet = new Set(prev);
-				newSet.delete(`${favouriteName}-${index}`);
+				const key = `${favouriteName}-${index}`;
+
+				if (isOpen) {
+					// Add to auto-open set when opening
+					newSet.add(key);
+				} else {
+					// Remove from auto-open set when closing
+					newSet.delete(key);
+				}
+
 				return newSet;
 			});
 		}
