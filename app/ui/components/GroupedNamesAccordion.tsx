@@ -1,4 +1,3 @@
-import {Accordion} from "@animatereactnative/accordion";
 import {useFocusEffect} from "@react-navigation/native";
 import {ArrowDown2, Star1} from "iconsax-react-native";
 import React from "react";
@@ -26,6 +25,194 @@ import {use$} from "@legendapp/state/react";
 import Share from "react-native-share";
 import Toast from "react-native-toast-message";
 import {colors} from "../config/colors";
+
+// Enhanced Accordion with controlled state support
+import type {PropsWithChildren} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
+import type {ViewProps} from "react-native";
+import type {AnimatedProps} from "react-native-reanimated";
+import Animated, {
+	FadeIn,
+	FadeOut,
+	LinearTransition,
+	useAnimatedStyle,
+	useDerivedValue,
+	withSpring,
+} from "react-native-reanimated";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const AccordionContext = createContext({
+	isOpen: false,
+	accordionIsOpen: () => {},
+});
+
+type AnimatedComponentProps = PropsWithChildren<AnimatedProps<ViewProps>>;
+
+const useAccordion = () => {
+	const context = useContext(AccordionContext);
+
+	if (!context) {
+		throw new Error("useAccordion must be used within a Accordion.Provider");
+	}
+
+	return context;
+};
+
+function Provider({
+	children,
+	isOpen: controlledIsOpen,
+	onChange,
+	style,
+	...rest
+}: {
+	children: React.ReactNode;
+	isOpen?: boolean;
+	onChange?: (value: boolean) => void;
+} & AnimatedProps<ViewProps>) {
+	const [internalIsOpen, setInternalIsOpen] = useState(!!controlledIsOpen);
+
+	// Use controlled state if provided, otherwise use internal state
+	const isOpen =
+		controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+
+	// Update internal state when controlled state changes
+	useEffect(() => {
+		if (controlledIsOpen !== undefined) {
+			setInternalIsOpen(controlledIsOpen);
+		}
+	}, [controlledIsOpen]);
+
+	const accordionIsOpen = () => {
+		const newValue = !isOpen;
+		onChange?.(newValue);
+		if (controlledIsOpen === undefined) {
+			// Only update internal state if not controlled
+			setInternalIsOpen(newValue);
+		}
+	};
+
+	return (
+		<AccordionContext.Provider
+			value={{
+				isOpen,
+				accordionIsOpen,
+			}}
+		>
+			<Animated.View
+				style={[style, {overflow: "hidden"}]}
+				layout={LinearTransition.springify().damping(80).stiffness(200)}
+				{...rest}
+			>
+				{children}
+			</Animated.View>
+		</AccordionContext.Provider>
+	);
+}
+
+function Header({children}: {children: React.ReactNode}) {
+	const {accordionIsOpen} = useAccordion();
+
+	return (
+		<AnimatedPressable onPress={() => accordionIsOpen()}>
+			{children}
+		</AnimatedPressable>
+	);
+}
+
+function Icon({
+	children,
+	rotation = "clockwise",
+}: {
+	children: React.ReactNode;
+	rotation?: "clockwise" | "counter-clockwise";
+}) {
+	const {isOpen} = useAccordion();
+	const rotate = useDerivedValue(() => {
+		return withSpring(isOpen ? (rotation === "clockwise" ? -1 : 1) * 180 : 0, {
+			damping: 80,
+			stiffness: 200,
+		});
+	}, [isOpen, rotation]);
+
+	const stylez = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					rotate: `${rotate.value}deg`,
+				},
+			],
+		};
+	});
+
+	return (
+		<Animated.View
+			style={stylez}
+			layout={LinearTransition.springify().damping(80).stiffness(200)}
+		>
+			{children}
+		</Animated.View>
+	);
+}
+
+function Expanded({children, ...rest}: AnimatedComponentProps) {
+	const {isOpen} = useAccordion();
+
+	if (!isOpen) {
+		return null;
+	}
+
+	return <Content {...rest}>{children}</Content>;
+}
+
+function Collapsed({children, ...rest}: AnimatedComponentProps) {
+	const {isOpen} = useAccordion();
+
+	if (isOpen) {
+		return null;
+	}
+
+	return <Content {...rest}>{children}</Content>;
+}
+
+function Always({children, ...rest}: AnimatedComponentProps) {
+	return <Content {...rest}>{children}</Content>;
+}
+
+function Content({children, style, ...rest}: AnimatedComponentProps) {
+	return (
+		<Animated.View
+			entering={FadeIn.springify().damping(80).stiffness(200)}
+			exiting={FadeOut.springify().damping(80).stiffness(200)}
+			layout={LinearTransition.springify().damping(80).stiffness(200)}
+			style={[style, {overflow: "hidden"}]}
+			{...rest}
+		>
+			{children}
+		</Animated.View>
+	);
+}
+
+function Sibling({children, ...rest}: AnimatedComponentProps) {
+	return (
+		<Animated.View
+			layout={LinearTransition.springify().damping(80).stiffness(200)}
+			{...rest}
+		>
+			{children}
+		</Animated.View>
+	);
+}
+
+const EnhancedAccordion = {
+	Accordion: Provider,
+	Header,
+	HeaderIcon: Icon,
+	Expanded,
+	Collapsed,
+	Always,
+	Sibling,
+};
 
 type NamesByDay = {
 	day: string;
@@ -119,30 +306,81 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 				if (nextAppState === "active") {
 					// Small delay to ensure the component is fully rendered
 					setTimeout(() => {
-						const accordionKeys = todaysFavourites.map(
-							(favourite) => `${favourite.name}-0`,
-						);
-						setAutoOpenAccordions(new Set(accordionKeys));
+						// Generate accordion keys based on the actual grouped data structure
+						const accordionKeys: string[] = [];
+						console.log("🔍 Debug: Checking for today's name days...");
+						console.log("🔍 Debug: Today's favourites:", todaysFavourites);
+						console.log("🔍 Debug: Grouped data:", groupedData);
 
-						// Clear auto-open state after 3 seconds to allow normal user interaction
-						setTimeout(() => {
-							setAutoOpenAccordions(new Set());
-						}, 3000);
+						// Test isTodayNameDay function directly
+						const today = new Date();
+						console.log("🔍 Debug: Today's date:", today);
+						console.log("🔍 Debug: Today's day:", today.getDate());
+						console.log("🔍 Debug: Today's month:", today.getMonth());
+
+						for (const monthData of groupedData) {
+							for (const dayData of monthData.days) {
+								for (
+									let index = 0;
+									index < dayData.favourites.length;
+									index++
+								) {
+									const favourite = dayData.favourites[index];
+									const isToday = isTodayNameDay(
+										favourite.day,
+										favourite.month,
+									);
+									console.log(
+										`🔍 Debug: ${favourite.name} (${favourite.day} ${favourite.month}) - isToday: ${isToday}`,
+									);
+									if (isToday) {
+										const key = `${favourite.name}-${index}`;
+										accordionKeys.push(key);
+										console.log(`🔍 Debug: Adding accordion key: ${key}`);
+									}
+								}
+							}
+						}
+						console.log("🔍 Debug: Final accordion keys:", accordionKeys);
+
+						setAutoOpenAccordions(new Set(accordionKeys));
 					}, 100);
 				}
 			};
 
 			// Auto-open accordions when screen comes into focus
 			setTimeout(() => {
-				const accordionKeys = todaysFavourites.map(
-					(favourite) => `${favourite.name}-0`,
-				);
-				setAutoOpenAccordions(new Set(accordionKeys));
+				// Generate accordion keys based on the actual grouped data structure
+				const accordionKeys: string[] = [];
+				console.log("🔍 Debug: Checking for today's name days on focus...");
+				console.log("🔍 Debug: Today's favourites:", todaysFavourites);
+				console.log("🔍 Debug: Grouped data:", groupedData);
 
-				// Clear auto-open state after 3 seconds to allow normal user interaction
-				setTimeout(() => {
-					setAutoOpenAccordions(new Set());
-				}, 3000);
+				// Test isTodayNameDay function directly
+				const today = new Date();
+				console.log("🔍 Debug: Today's date:", today);
+				console.log("🔍 Debug: Today's day:", today.getDate());
+				console.log("🔍 Debug: Today's month:", today.getMonth());
+
+				for (const monthData of groupedData) {
+					for (const dayData of monthData.days) {
+						for (let index = 0; index < dayData.favourites.length; index++) {
+							const favourite = dayData.favourites[index];
+							const isToday = isTodayNameDay(favourite.day, favourite.month);
+							console.log(
+								`🔍 Debug: ${favourite.name} (${favourite.day} ${favourite.month}) - isToday: ${isToday}`,
+							);
+							if (isToday) {
+								const key = `${favourite.name}-${index}`;
+								accordionKeys.push(key);
+								console.log(`🔍 Debug: Adding accordion key: ${key}`);
+							}
+						}
+					}
+				}
+				console.log("🔍 Debug: Final accordion keys:", accordionKeys);
+
+				setAutoOpenAccordions(new Set(accordionKeys));
 			}, 100);
 
 			// Listen for app state changes
@@ -154,7 +392,7 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 			return () => {
 				subscription?.remove();
 			};
-		}, [todaysFavourites]),
+		}, [groupedData, todaysFavourites]),
 	);
 
 	// Check if a favourite should be highlighted
@@ -405,7 +643,7 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 	return (
 		<View style={styles.container}>
 			{groupedData.map((monthData) => (
-				<Accordion.Sibling key={`${monthData.month}-sibling`}>
+				<EnhancedAccordion.Sibling key={`${monthData.month}-sibling`}>
 					<View key={monthData.month} style={styles.monthBlock}>
 						<Text variant="header" color="black" style={styles.monthTitle}>
 							{t(`months.${monthData.month}`)}
@@ -424,20 +662,20 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 											key={`${favourite.name}-${index}`}
 											style={styles.nameWrapper}
 										>
-											<Accordion.Sibling
+											<EnhancedAccordion.Sibling
 												key={`${favourite.name}-${index}-sibling`}
 											>
-												<Accordion.Accordion
+												<EnhancedAccordion.Accordion
 													key={`${favourite.name}-${index}`}
 													style={styles.accordion}
-													onChange={(isOpen) =>
-														handleAccordionChange(isOpen, favourite.name, index)
-													}
 													isOpen={autoOpenAccordions.has(
 														`${favourite.name}-${index}`,
 													)}
+													onChange={(isOpen) =>
+														handleAccordionChange(isOpen, favourite.name, index)
+													}
 												>
-													<Accordion.Header>
+													<EnhancedAccordion.Header>
 														<View style={styles.headerContent}>
 															<View style={styles.nameContainer}>
 																{isTodayNameDay(
@@ -462,13 +700,15 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 																	{favourite.name}
 																</Text>
 															</View>
-															<Accordion.HeaderIcon rotation="clockwise">
+															<EnhancedAccordion.HeaderIcon rotation="clockwise">
 																<ArrowDown2 size="25" color={colors.primary} />
-															</Accordion.HeaderIcon>
+															</EnhancedAccordion.HeaderIcon>
 														</View>
-													</Accordion.Header>
+													</EnhancedAccordion.Header>
 
-													<Accordion.Expanded style={styles.accordionContent}>
+													<EnhancedAccordion.Expanded
+														style={styles.accordionContent}
+													>
 														<Pressable
 															style={styles.checkboxRow}
 															onPress={() =>
@@ -586,16 +826,16 @@ export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 																</Text>
 															</Button>
 														)}
-													</Accordion.Expanded>
-												</Accordion.Accordion>
-											</Accordion.Sibling>
+													</EnhancedAccordion.Expanded>
+												</EnhancedAccordion.Accordion>
+											</EnhancedAccordion.Sibling>
 										</View>
 									))}
 								</View>
 							</View>
 						))}
 					</View>
-				</Accordion.Sibling>
+				</EnhancedAccordion.Sibling>
 			))}
 		</View>
 	);
