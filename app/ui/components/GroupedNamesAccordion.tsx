@@ -1,5 +1,5 @@
 import {Accordion} from "@animatereactnative/accordion";
-import {ArrowDown2} from "iconsax-react-native";
+import {ArrowDown2, Star1} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {Alert, Pressable} from "react-native";
@@ -12,6 +12,7 @@ import {settings$} from "@/app/store/settings";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
+import {isTodayNameDay} from "@/app/utils/dates";
 import {haptics} from "@/app/utils/haptics";
 import {
 	cancelNameDayNotifications,
@@ -334,9 +335,22 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 												>
 													<Accordion.Header>
 														<View style={styles.headerContent}>
-															<Text variant="body" style={styles.nameText}>
-																{favourite.name}
-															</Text>
+															<View style={styles.nameContainer}>
+																{isTodayNameDay(
+																	favourite.day,
+																	favourite.month,
+																) && (
+																	<Star1
+																		size="16"
+																		variant="Bold"
+																		color={colors.primary}
+																		style={styles.starIcon}
+																	/>
+																)}
+																<Text variant="body" style={styles.nameText}>
+																	{favourite.name}
+																</Text>
+															</View>
 															<Accordion.HeaderIcon rotation="clockwise">
 																<ArrowDown2 size="25" color={colors.primary} />
 															</Accordion.HeaderIcon>
@@ -517,10 +531,18 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		alignItems: "center",
 		width: "100%",
 	},
+	nameContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		flex: 1,
+	},
 	nameText: {
 		flex: 1,
 		fontSize: sizes["16px"],
 		fontWeight: "700",
+	},
+	starIcon: {
+		marginRight: sizes["8px"],
 	},
 	accordionContent: {
 		paddingHorizontal: sizes["12px"],

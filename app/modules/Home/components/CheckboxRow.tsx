@@ -135,7 +135,9 @@ export function CheckboxRow({
 		<View style={styles.container(isLast)}>
 			<Animated.View style={[styles.pressableContent, highlightStyle]}>
 				<Pressable onPress={handleRowPress} style={styles.pressableInner}>
-					<Text style={styles.text}>{vards}</Text>
+					<View style={styles.nameContainer}>
+						<Text style={styles.text}>{vards}</Text>
+					</View>
 					<View>
 						<Checkbox
 							checked={isChecked}
@@ -178,7 +180,15 @@ const styles = StyleSheet.create(({sizes, colors, tokens}) => ({
 		width: "100%",
 		flex: 1,
 	},
+	nameContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		flex: 1,
+	},
 	text: {
 		color: tokens.text.primary,
+	},
+	starIcon: {
+		marginRight: sizes["8px"],
 	},
 }));

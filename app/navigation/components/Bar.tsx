@@ -5,7 +5,7 @@ import {
 	type ParamListBase,
 	useLinkBuilder,
 } from "@react-navigation/native";
-import {Home, Setting4, Star} from "iconsax-react-native";
+import {Home, Setting2, Star} from "iconsax-react-native";
 import {useTranslation} from "react-i18next";
 import Animated, {
 	useAnimatedStyle,
@@ -106,7 +106,7 @@ export function Bar({
 					variant={isFocused ? "Bold" : "Outline"}
 				/>
 			) : label === "SettingsStack" ? (
-				<Setting4
+				<Setting2
 					size="27"
 					color={colors.primary}
 					variant={isFocused ? "Bold" : "Outline"}

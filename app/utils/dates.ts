@@ -26,3 +26,19 @@ export function getTodaysIndex(vardūs: MonthData[]): number {
 
 	return 0;
 }
+
+/**
+ * Checks if today is someone's name day
+ * @param day - The day of the name day (e.g., "3", "03")
+ * @param month - The month of the name day (e.g., "Jūlijs")
+ * @returns boolean indicating if today is the name day
+ */
+export function isTodayNameDay(day: string, month: string): boolean {
+	const today = new Date();
+	const todayDay = format(today, "dd");
+	const todayMonth = format(today, "LLLL", {locale: lv});
+	const capitalisedTodayMonth =
+		todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
+
+	return todayDay === day && capitalisedTodayMonth === month;
+}
