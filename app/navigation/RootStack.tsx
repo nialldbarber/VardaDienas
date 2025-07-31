@@ -7,6 +7,7 @@ import {HomeScreen} from "@/app/modules/Home/screens/HomeScreen";
 import {NamesRowScreen} from "@/app/modules/Home/screens/NamesRowScreen";
 import {SettingsScreen} from "@/app/modules/Settings/screens/SettingsScreen";
 import {TabBar} from "@/app/navigation/components/TabBar";
+import {navigationRef} from "@/app/navigation/navigationService";
 
 const HomeStack = createNativeStackNavigator({
 	screens: {
@@ -41,4 +42,6 @@ const RootStack = createBottomTabNavigator({
 	},
 });
 
-export const Navigation = createStaticNavigation(RootStack);
+const NavigationComponent = createStaticNavigation(RootStack);
+
+export const Navigation = () => <NavigationComponent ref={navigationRef} />;

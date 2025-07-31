@@ -73,7 +73,9 @@
 			"dontNotifyMe": "Paziņot man"
 		},
 		"daysBefore": "Dienas iepriekš",
-		"onTheDay": "Dienā"
+		"onTheDay": "Dienā",
+		"shareWishes": "Dalīties ar vēlējumiem",
+		"shareMessage": "{{name}}, sveicieni vārda dienā! 🎉"
 	},
 	"notifications": {
 		"permissionRequired": "Nepieciešama atļauja",

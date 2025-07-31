@@ -13,6 +13,7 @@ import DeviceInfo from "react-native-device-info";
 import {openComposer} from "react-native-email-link";
 import * as Permissions from "react-native-permissions";
 import Share from "react-native-share";
+import Toast from "react-native-toast-message";
 import {StyleSheet} from "react-native-unistyles";
 
 import {setSettingsScrollToTop} from "@/app/navigation/components/TabBar";
@@ -27,6 +28,10 @@ import {View} from "@/app/ui/components/View";
 import {WebViewScreen} from "@/app/ui/components/WebViewScreen";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
+import {
+	testDeepLink,
+	testNotificationNavigation,
+} from "@/app/utils/notifications";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {ArrowRight2} from "iconsax-react-native";
@@ -361,6 +366,42 @@ Thank you for your feedback!`;
 		setWebViewVisible(false);
 	};
 
+	const handleTestDeepLink = async () => {
+		try {
+			await testDeepLink("vardadienas://favourites?name=Test%20Name");
+			Toast.show({
+				type: "success",
+				text1: "Deep link test triggered",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Deep link test error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Deep link test failed",
+				position: "bottom",
+			});
+		}
+	};
+
+	const handleTestNotificationNavigation = async () => {
+		try {
+			await testNotificationNavigation("Test Name");
+			Toast.show({
+				type: "success",
+				text1: "Notification navigation test triggered",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Notification navigation test error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Notification navigation test failed",
+				position: "bottom",
+			});
+		}
+	};
+
 	return (
 		<Layout
 			ref={layoutRef}
@@ -416,6 +457,25 @@ Thank you for your feedback!`;
 						<ArrowRight2 size="20" color={colors.primary} />
 					</Pressable>
 				</View>
+
+				{/* Debug section - only show in development */}
+				{__DEV__ && (
+					<View style={styles.section}>
+						<Text style={styles.sectionTitle}>Debug</Text>
+						<Pressable style={styles.row} onPress={handleTestDeepLink}>
+							<Text style={styles.rowText}>Test Deep Link</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+
+						<Pressable
+							style={styles.row}
+							onPress={handleTestNotificationNavigation}
+						>
+							<Text style={styles.rowText}>Test Notification Navigation</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+					</View>
+				)}
 
 				<View style={styles.madeWith}>
 					<Text style={styles.madeWithText} withEmoji>

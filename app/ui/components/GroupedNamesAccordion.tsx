@@ -1,14 +1,16 @@
 import {Accordion} from "@animatereactnative/accordion";
+import {useFocusEffect} from "@react-navigation/native";
 import {ArrowDown2, Star1} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Alert, Pressable} from "react-native";
+import {Alert, AppState, Pressable} from "react-native";
 import * as Permissions from "react-native-permissions";
 import {StyleSheet} from "react-native-unistyles";
 
 import type {Favourite} from "@/app/store/favourites";
 import {favourites$} from "@/app/store/favourites";
 import {settings$} from "@/app/store/settings";
+import {Button} from "@/app/ui/components/Button";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
@@ -21,6 +23,7 @@ import {
 	scheduleNameDayNotifications,
 } from "@/app/utils/notifications";
 import {use$} from "@legendapp/state/react";
+import Share from "react-native-share";
 import Toast from "react-native-toast-message";
 import {colors} from "../config/colors";
 
@@ -37,6 +40,7 @@ type NamesByMonth = {
 
 type Props = {
 	favourites: Favourite[];
+	highlightName?: string;
 };
 
 const MONTH_ORDER = [
@@ -85,20 +89,100 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 		});
 }
 
-export const GroupedNamesAccordion = ({favourites}: Props) => {
+export const GroupedNamesAccordion = ({favourites, highlightName}: Props) => {
 	const {t} = useTranslation();
 	// Use reactive state directly instead of props to ensure UI updates
 	const reactiveFavourites = use$(favourites$.favourites);
 	const hapticsEnabled = use$(settings$.haptics);
+
+	// State to track which accordions should be auto-opened
+	const [autoOpenAccordions, setAutoOpenAccordions] = React.useState<
+		Set<string>
+	>(new Set());
 
 	// Create grouped data from reactive favourites
 	const groupedData = React.useMemo(() => {
 		return groupFavouritesByMonthAndDay(reactiveFavourites);
 	}, [reactiveFavourites]);
 
-	const handleAccordionChange = (isOpen: boolean) => {
+	// Find favourites whose name day is today
+	const todaysFavourites = React.useMemo(() => {
+		return reactiveFavourites.filter((favourite) =>
+			isTodayNameDay(favourite.day, favourite.month),
+		);
+	}, [reactiveFavourites]);
+
+	// Auto-open accordions for today's name days when screen comes into focus
+	useFocusEffect(
+		React.useCallback(() => {
+			const handleAppStateChange = (nextAppState: string) => {
+				if (nextAppState === "active") {
+					// Small delay to ensure the component is fully rendered
+					setTimeout(() => {
+						const accordionKeys = todaysFavourites.map(
+							(favourite) => `${favourite.name}-0`,
+						);
+						setAutoOpenAccordions(new Set(accordionKeys));
+
+						// Clear auto-open state after 3 seconds to allow normal user interaction
+						setTimeout(() => {
+							setAutoOpenAccordions(new Set());
+						}, 3000);
+					}, 100);
+				}
+			};
+
+			// Auto-open accordions when screen comes into focus
+			setTimeout(() => {
+				const accordionKeys = todaysFavourites.map(
+					(favourite) => `${favourite.name}-0`,
+				);
+				setAutoOpenAccordions(new Set(accordionKeys));
+
+				// Clear auto-open state after 3 seconds to allow normal user interaction
+				setTimeout(() => {
+					setAutoOpenAccordions(new Set());
+				}, 3000);
+			}, 100);
+
+			// Listen for app state changes
+			const subscription = AppState.addEventListener(
+				"change",
+				handleAppStateChange,
+			);
+
+			return () => {
+				subscription?.remove();
+			};
+		}, [todaysFavourites]),
+	);
+
+	// Check if a favourite should be highlighted
+	const shouldHighlight = React.useCallback(
+		(name: string) => {
+			return (
+				highlightName && name.toLowerCase() === highlightName.toLowerCase()
+			);
+		},
+		[highlightName],
+	);
+
+	const handleAccordionChange = (
+		isOpen: boolean,
+		favouriteName?: string,
+		index?: number,
+	) => {
 		if (hapticsEnabled) {
 			haptics.impactMedium();
+		}
+
+		// Remove from auto-open set when user manually closes an accordion
+		if (!isOpen && favouriteName && index !== undefined) {
+			setAutoOpenAccordions((prev) => {
+				const newSet = new Set(prev);
+				newSet.delete(`${favouriteName}-${index}`);
+				return newSet;
+			});
 		}
 	};
 
@@ -173,6 +257,21 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 
 	const handleRemoveFavourite = (name: string) => {
 		favourites$.removeFavourite(name);
+	};
+
+	const handleShareWishes = async (name: string) => {
+		try {
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
+
+			const message = t("favourites.shareMessage", {name});
+			await Share.open({
+				message,
+			});
+		} catch (error) {
+			console.error("Error sharing wishes:", error);
+		}
 	};
 
 	const handleDaysBeforeToggle = async (favourite: Favourite, day: number) => {
@@ -331,7 +430,12 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 												<Accordion.Accordion
 													key={`${favourite.name}-${index}`}
 													style={styles.accordion}
-													onChange={handleAccordionChange}
+													onChange={(isOpen) =>
+														handleAccordionChange(isOpen, favourite.name, index)
+													}
+													isOpen={autoOpenAccordions.has(
+														`${favourite.name}-${index}`,
+													)}
 												>
 													<Accordion.Header>
 														<View style={styles.headerContent}>
@@ -347,7 +451,14 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 																		style={styles.starIcon}
 																	/>
 																)}
-																<Text variant="body" style={styles.nameText}>
+																<Text
+																	variant="body"
+																	style={[
+																		styles.nameText,
+																		shouldHighlight(favourite.name) &&
+																			styles.highlightedName,
+																	]}
+																>
 																	{favourite.name}
 																</Text>
 															</View>
@@ -462,6 +573,19 @@ export const GroupedNamesAccordion = ({favourites}: Props) => {
 																</View>
 															</>
 														)}
+
+														{isTodayNameDay(favourite.day, favourite.month) && (
+															<Button
+																variant="outline"
+																onPress={() =>
+																	handleShareWishes(favourite.name)
+																}
+															>
+																<Text style={styles.shareButtonText}>
+																	{t("favourites.shareWishes")}
+																</Text>
+															</Button>
+														)}
 													</Accordion.Expanded>
 												</Accordion.Accordion>
 											</Accordion.Sibling>
@@ -541,6 +665,13 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		fontSize: sizes["16px"],
 		fontWeight: "700",
 	},
+	highlightedName: {
+		backgroundColor: colors.primary,
+		color: "white",
+		paddingHorizontal: sizes["8px"],
+		paddingVertical: sizes["4px"],
+		borderRadius: sizes["4px"],
+	},
 	starIcon: {
 		marginRight: sizes["8px"],
 	},
@@ -618,5 +749,10 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	},
 	dayButtonTextSelected: {
 		color: "white",
+	},
+	shareButtonText: {
+		color: colors.primary,
+		fontSize: sizes["16px"],
+		fontWeight: "600",
 	},
 }));

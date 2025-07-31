@@ -1,24 +1,54 @@
 import type {PropsWithChildren} from "react";
-import {Animated, Pressable} from "react-native";
+import {Pressable} from "react-native";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+} from "react-native-reanimated";
+import type {UnistylesVariants} from "react-native-unistyles";
 import {StyleSheet} from "react-native-unistyles";
-
-import {useButtonAnimation} from "@/app/ui/hooks/useButtonAnimation";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-type Props = {
+interface Props extends UnistylesVariants<typeof styles> {
 	onPress: () => void;
-};
+}
 
-export function Button({children, onPress}: PropsWithChildren<Props>) {
-	const {onPress: onPressAnimation, animatedStyle} = useButtonAnimation();
+export function Button({
+	children,
+	onPress,
+	variant = "primary",
+}: PropsWithChildren<Props>) {
+	const scale = useSharedValue(1);
+
+	const animatedStyle = useAnimatedStyle(() => ({
+		transform: [{scale: scale.value}],
+	}));
+
+	const handlePressIn = () => {
+		scale.value = withSpring(0.95, {
+			overshootClamping: false,
+			restDisplacementThreshold: 0.01,
+			restSpeedThreshold: 2,
+		});
+	};
+
+	const handlePressOut = () => {
+		scale.value = withSpring(1, {
+			overshootClamping: false,
+			restDisplacementThreshold: 0.01,
+			restSpeedThreshold: 2,
+		});
+	};
+
+	styles.useVariants({variant});
 
 	return (
 		<AnimatedPressable
 			style={[styles.container, animatedStyle]}
 			onPress={onPress}
-			onPressIn={() => onPressAnimation("in")}
-			onPressOut={() => onPressAnimation("out")}
+			onPressIn={handlePressIn}
+			onPressOut={handlePressOut}
 		>
 			{children}
 		</AnimatedPressable>
@@ -27,8 +57,22 @@ export function Button({children, onPress}: PropsWithChildren<Props>) {
 
 const styles = StyleSheet.create(({colors, sizes}) => ({
 	container: {
-		backgroundColor: colors.primary,
+		alignItems: "center",
+		justifyContent: "center",
 		padding: sizes["10px"],
-		borderRadius: sizes["5px"],
+		variants: {
+			variant: {
+				primary: {
+					backgroundColor: colors.primary,
+					borderRadius: sizes["5px"],
+				},
+				outline: {
+					backgroundColor: "transparent",
+					borderWidth: 1,
+					borderColor: colors.primary,
+					borderRadius: sizes["5px"],
+				},
+			},
+		},
 	},
 }));

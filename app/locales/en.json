@@ -73,7 +73,9 @@
 			"dontNotifyMe": "Notify me"
 		},
 		"daysBefore": "Days before",
-		"onTheDay": "On the day"
+		"onTheDay": "On the day",
+		"shareWishes": "Share your wishes",
+		"shareMessage": "Happy name day, {{name}}! 🎉"
 	},
 	"notifications": {
 		"permissionRequired": "Permission Required",

@@ -170,6 +170,13 @@ export async function scheduleNameDayNotifications(
 					id: notificationId,
 					title: notificationText.title,
 					body: notificationText.body,
+					data: {
+						deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${dayBefore}`,
+						name,
+						day,
+						month,
+						daysBefore: dayBefore.toString(),
+					},
 					android: {
 						channelId,
 						pressAction: {
@@ -381,4 +388,25 @@ export async function debugNotificationTiming(
 		console.log(`  ${index + 1}. ID: ${notification.notification.id}`);
 		console.log(`     Trigger: ${notification.trigger}`);
 	});
+}
+
+export async function testDeepLink(url: string): Promise<void> {
+	console.log("Testing deep link:", url);
+
+	// Import and handle the deep link
+	const {handleDeepLink} = await import("@/app/navigation/deepLinking");
+	handleDeepLink(url);
+}
+
+export async function testNotificationNavigation(
+	name = "Test Name",
+): Promise<void> {
+	console.log("Testing notification navigation for:", name);
+
+	// Create a test deep link
+	const deepLink = `vardadienas://favourites?name=${encodeURIComponent(name)}&day=15&month=Janvāris&daysBefore=0`;
+
+	// Import and handle the deep link
+	const {handleDeepLink} = await import("@/app/navigation/deepLinking");
+	handleDeepLink(deepLink);
 }

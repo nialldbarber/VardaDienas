@@ -4,7 +4,7 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import {use$} from "@legendapp/state/react";
-import {useNavigation} from "@react-navigation/native";
+import {useNavigation, useRoute} from "@react-navigation/native";
 import {Home, InfoCircle} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
@@ -34,9 +34,14 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 		const favourites = use$(favourites$.favourites);
 		const hapticsEnabled = use$(settings$.haptics);
 		const navigation = useNavigation();
+		const route = useRoute();
 		const haptic = hapticToTrigger("impactMedium");
 		const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
 		const layoutRef = React.useRef<ScrollView>(null);
+
+		// Get the highlightName from route params (from notification)
+		const highlightName = (route.params as {highlightName?: string})
+			?.highlightName;
 
 		React.useImperativeHandle(ref, () => ({
 			scrollToTop: () => {
@@ -112,7 +117,10 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 					{favourites.length === 0 ? (
 						<EmptyState />
 					) : (
-						<GroupedNamesAccordion favourites={favourites} />
+						<GroupedNamesAccordion
+							favourites={favourites}
+							highlightName={highlightName}
+						/>
 					)}
 				</Layout>
 
