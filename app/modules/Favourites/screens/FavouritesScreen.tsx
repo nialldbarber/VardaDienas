@@ -91,8 +91,10 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 		const handleContextMenuPress = (e: {
 			nativeEvent: {name: string; index: number};
 		}) => {
+			console.log("### Context menu pressed, haptics enabled:", hapticsEnabled);
 			if (hapticsEnabled) {
 				haptic.impactMedium();
+				console.log("### Haptic feedback triggered");
 			}
 
 			const actionName = e.nativeEvent.name;
