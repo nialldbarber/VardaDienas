@@ -56,8 +56,9 @@ workflows:
           echo "Current build number from project:"
           agvtool what-version -terse || echo "No current version found"
           
-          echo "Setting build number to 34 (incrementing from failed build 33)..."
-          agvtool new-version -all 34
+          # Use Codemagic's build number (automatically incremented)
+          echo "Setting build number to $CM_BUILD_NUMBER..."
+          agvtool new-version -all $CM_BUILD_NUMBER
           
           echo "Verifying build number was set:"
           agvtool what-version -terse
@@ -152,8 +153,9 @@ workflows:
           echo "Current build number from project:"
           agvtool what-version -terse || echo "No current version found"
           
-          echo "Setting build number to 34 (incrementing from failed build 33)..."
-          agvtool new-version -all 34
+          # Use Codemagic's build number (automatically incremented)
+          echo "Setting build number to $CM_BUILD_NUMBER..."
+          agvtool new-version -all $CM_BUILD_NUMBER
           
           echo "Verifying build number was set:"
           agvtool what-version -terse
