@@ -413,10 +413,8 @@ export const GroupedNamesAccordion = ({
 		Set<string>
 	>(new Set());
 
-	// State to track if we've already auto-opened accordions on first render
 	const [hasAutoOpened, setHasAutoOpened] = React.useState(false);
 
-	// State to track component heights for more accurate scrolling
 	const [componentHeights, setComponentHeights] = React.useState<{
 		monthHeight: number;
 		dayHeight: number;
@@ -430,9 +428,6 @@ export const GroupedNamesAccordion = ({
 	const groupedData = React.useMemo(() => {
 		let data = groupFavouritesByMonthAndDay(reactiveFavourites);
 
-		console.log("🔍 showPublicHolidays setting:", showPublicHolidays);
-
-		// Add public holidays if enabled
 		if (showPublicHolidays.show) {
 			console.log("🔍 Public holidays enabled, adding them...");
 			data = addPublicHolidaysToGroupedData(data);
@@ -528,7 +523,6 @@ export const GroupedNamesAccordion = ({
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData]);
 
-	// Alternative scroll function that uses measured heights
 	const scrollToTodaysNameDayWithMeasuredHeights = React.useCallback(() => {
 		if (todaysFavourites.length === 0 || !scrollToPosition) {
 			console.log(
@@ -610,13 +604,10 @@ export const GroupedNamesAccordion = ({
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData, componentHeights]);
 
-	// Auto-open accordions for today's name days only on first render
 	React.useEffect(() => {
 		if (hasAutoOpened || groupedData.length === 0) return;
 
-		// Longer delay to ensure the component is fully rendered on real devices
 		setTimeout(() => {
-			// Generate accordion keys based on the actual grouped data structure
 			const accordionKeys: string[] = [];
 			console.log(
 				"🔍 Debug: Checking for today's name days on first render...",
@@ -624,7 +615,6 @@ export const GroupedNamesAccordion = ({
 			console.log("🔍 Debug: Today's favourites:", todaysFavourites);
 			console.log("🔍 Debug: Grouped data:", groupedData);
 
-			// Test isTodayNameDay function directly
 			const today = new Date();
 			console.log("🔍 Debug: Today's date:", today);
 			console.log("🔍 Debug: Today's day:", today.getDate());
@@ -650,10 +640,8 @@ export const GroupedNamesAccordion = ({
 
 			setAutoOpenAccordions(new Set(accordionKeys));
 
-			// Scroll to today's name day with much longer delay to ensure ref is ready on real devices
 			setTimeout(() => {
 				console.log("🔍 Debug: Attempting to scroll to today's name day");
-				// Add retry logic for real devices with fallback methods
 				const attemptScroll = (attempts = 0) => {
 					if (attempts >= 4) {
 						console.log("🔍 Debug: Max scroll attempts reached, giving up");
@@ -662,15 +650,12 @@ export const GroupedNamesAccordion = ({
 
 					try {
 						if (attempts === 0) {
-							// First attempt: try original method
 							console.log("🔍 Debug: Attempt 1 - Original scroll method");
 							scrollToTodaysNameDay();
 						} else if (attempts === 1) {
-							// Second attempt: try measured heights method
 							console.log("🔍 Debug: Attempt 2 - Measured heights method");
 							scrollToTodaysNameDayWithMeasuredHeights();
 						} else {
-							// Third and fourth attempts: try original method again with different timing
 							console.log(
 								`🔍 Debug: Attempt ${attempts + 1} - Retry original method`,
 							);
@@ -682,17 +667,15 @@ export const GroupedNamesAccordion = ({
 							`🔍 Debug: Scroll attempt ${attempts + 1} failed:`,
 							error,
 						);
-						// Retry after a short delay
 						setTimeout(() => attemptScroll(attempts + 1), 300);
 					}
 				};
 
 				attemptScroll();
-			}, 1000); // Increased from 500ms to 1000ms
+			}, 1000);
 
-			// Mark as auto-opened so it doesn't happen again
 			setHasAutoOpened(true);
-		}, 300); // Increased from 100ms to 300ms
+		}, 300);
 	}, [
 		groupedData,
 		todaysFavourites,
@@ -719,17 +702,14 @@ export const GroupedNamesAccordion = ({
 			haptics.impactMedium();
 		}
 
-		// Handle both opening and closing accordions
 		if (favouriteName && index !== undefined) {
 			setAutoOpenAccordions((prev) => {
 				const newSet = new Set(prev);
 				const key = `${favouriteName}-${index}`;
 
 				if (isOpen) {
-					// Add to auto-open set when opening
 					newSet.add(key);
 				} else {
-					// Remove from auto-open set when closing
 					newSet.delete(key);
 				}
 

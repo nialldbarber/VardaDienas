@@ -8,7 +8,10 @@ import Animated, {
 	withTiming,
 } from "react-native-reanimated";
 
+import {haptics$} from "@/app/store/haptics";
 import {colors} from "@/app/ui/config/colors";
+import {haptics} from "@/app/utils/haptics";
+import {use$} from "@legendapp/state/react";
 import {StyleSheet} from "react-native-unistyles";
 
 type Props = {
@@ -20,9 +23,14 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 	const screenOpacity = useSharedValue(1);
 	const titleOpacity = useSharedValue(0);
 	const titleScale = useSharedValue(0.8);
+	const hapticsEnabled = use$(haptics$.enabled);
 
 	React.useEffect(() => {
 		const timer = setTimeout(() => {
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
+
 			logoTranslateY.value = withSpring(
 				-50,
 				{
@@ -41,12 +49,16 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 					});
 				},
 			);
-		}, 300);
+		}, 50);
 
 		const fadeOutTimer = setTimeout(() => {
 			screenOpacity.value = withTiming(0, {
 				duration: 400,
 			});
+
+			if (hapticsEnabled) {
+				haptics.impactMedium();
+			}
 
 			logoTranslateY.value = withSpring(
 				500,
@@ -71,6 +83,7 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 		titleOpacity,
 		titleScale,
 		onAnimationComplete,
+		hapticsEnabled,
 	]);
 
 	const logoAnimatedStyle = useAnimatedStyle(() => {
