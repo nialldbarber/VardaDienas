@@ -27,6 +27,7 @@ import Share from "react-native-share";
 import Toast from "react-native-toast-message";
 import {colors} from "../config/colors";
 
+import {language$} from "@/app/store/language";
 import type {PropsWithChildren} from "react";
 import {createContext, useContext, useEffect, useState} from "react";
 import type {ViewProps} from "react-native";
@@ -276,6 +277,7 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 
 function addPublicHolidaysToGroupedData(
 	groupedData: NamesByMonth[],
+	currentLanguage: string,
 ): NamesByMonth[] {
 	console.log("🔍 Starting addPublicHolidaysToGroupedData");
 	console.log(
@@ -341,12 +343,14 @@ function addPublicHolidaysToGroupedData(
 				console.log(
 					`🔍 Adding holiday: ${holiday.title} on day ${holiday.day}`,
 				);
+				const holidayName =
+					currentLanguage === "lv" ? holiday.titleLv : holiday.title;
 				const holidayDay: NamesByDay = {
 					day: holiday.day.toString(),
-					names: [holiday.title],
+					names: [holidayName],
 					favourites: [
 						{
-							name: holiday.title,
+							name: holidayName,
 							day: holiday.day.toString(),
 							month: monthData.month,
 							notifyMe: false,
@@ -407,6 +411,7 @@ export const GroupedNamesAccordion = ({
 	const {t} = useTranslation();
 	const reactiveFavourites = use$(favourites$.favourites);
 	const hapticsEnabled = use$(haptics$.enabled);
+	const currentLanguage = use$(language$.currentLanguage);
 	const showPublicHolidays = use$(publicHolidays$.show);
 
 	const [autoOpenAccordions, setAutoOpenAccordions] = React.useState<
@@ -430,13 +435,13 @@ export const GroupedNamesAccordion = ({
 
 		if (showPublicHolidays.show) {
 			console.log("🔍 Public holidays enabled, adding them...");
-			data = addPublicHolidaysToGroupedData(data);
+			data = addPublicHolidaysToGroupedData(data, currentLanguage);
 		} else {
 			console.log("🔍 Public holidays disabled");
 		}
 
 		return data;
-	}, [reactiveFavourites, showPublicHolidays]);
+	}, [reactiveFavourites, showPublicHolidays, currentLanguage]);
 
 	const todaysFavourites = React.useMemo(() => {
 		return reactiveFavourites.filter((favourite) =>
