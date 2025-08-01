@@ -56,28 +56,8 @@ workflows:
           echo "Current build number from project:"
           agvtool what-version -terse || echo "No current version found"
           
-          echo "Fetching latest build number from App Store Connect..."
-          if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
-            echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
-            if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-              echo "Warning: Invalid build number format received: $LATEST_BUILD_NUMBER"
-              echo "Trying to get latest build number from App Store Connect API..."
-              LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_ID" 2>/dev/null || echo "0")
-            fi
-          else
-            echo "Failed to get TestFlight build number, trying App Store Connect API..."
-            LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_ID" 2>/dev/null || echo "0")
-          fi
-          
-          echo "Latest build number found: $LATEST_BUILD_NUMBER"
-          if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-            echo "Warning: Still invalid build number, using fallback..."
-            LATEST_BUILD_NUMBER="33"
-          fi
-          
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          echo "Setting new build number to: $NEW_BUILD_NUMBER"
-          agvtool new-version -all $NEW_BUILD_NUMBER
+          echo "Setting build number to 34 (incrementing from failed build 33)..."
+          agvtool new-version -all 34
           
           echo "Verifying build number was set:"
           agvtool what-version -terse
@@ -172,28 +152,8 @@ workflows:
           echo "Current build number from project:"
           agvtool what-version -terse || echo "No current version found"
           
-          echo "Fetching latest build number from App Store Connect..."
-          if LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$APP_ID" 2>/dev/null); then
-            echo "Latest TestFlight build number: $LATEST_BUILD_NUMBER"
-            if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-              echo "Warning: Invalid build number format received: $LATEST_BUILD_NUMBER"
-              echo "Trying to get latest build number from App Store Connect API..."
-              LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_ID" 2>/dev/null || echo "0")
-            fi
-          else
-            echo "Failed to get TestFlight build number, trying App Store Connect API..."
-            LATEST_BUILD_NUMBER=$(app-store-connect get-latest-build-number "$APP_ID" 2>/dev/null || echo "0")
-          fi
-          
-          echo "Latest build number found: $LATEST_BUILD_NUMBER"
-          if ! [[ "$LATEST_BUILD_NUMBER" =~ ^[0-9]+$ ]]; then
-            echo "Warning: Still invalid build number, using fallback..."
-            LATEST_BUILD_NUMBER="33"
-          fi
-          
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          echo "Setting new build number to: $NEW_BUILD_NUMBER"
-          agvtool new-version -all $NEW_BUILD_NUMBER
+          echo "Setting build number to 34 (incrementing from failed build 33)..."
+          agvtool new-version -all 34
           
           echo "Verifying build number was set:"
           agvtool what-version -terse
