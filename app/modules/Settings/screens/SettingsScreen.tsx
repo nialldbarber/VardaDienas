@@ -18,7 +18,8 @@ import {StyleSheet} from "react-native-unistyles";
 
 import {setSettingsScrollToTop} from "@/app/navigation/components/TabBar";
 import type {SettingsStackParamList} from "@/app/navigation/navigation";
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
+import {language$} from "@/app/store/language";
 import {Header} from "@/app/ui/components/Header";
 import {LanguageSelector} from "@/app/ui/components/LanguageSelector";
 import {Layout} from "@/app/ui/components/layout";
@@ -47,10 +48,10 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 	const navigation =
 		useNavigation<NativeStackNavigationProp<SettingsStackParamList>>();
 	const layoutRef = React.useRef<ScrollView>(null);
-	const hapticsEnabled = use$(settings$.haptics);
-	const notificationsEnabled = use$(settings$.notifications);
+	const hapticsEnabled = use$(haptics$.enabled);
+	const notificationsEnabled = use$(language$.notifications);
 	const notificationPermissionStatus = use$(
-		settings$.notificationPermissionStatus,
+		language$.notificationPermissionStatus,
 	);
 
 	const [webViewVisible, setWebViewVisible] = React.useState(false);
@@ -106,13 +107,13 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 			console.log("Checking notification permissions...");
 			const {status} = await Permissions.checkNotifications();
 			console.log("Current permission status:", status);
-			settings$.notificationPermissionStatus.set(status);
+			language$.setNotificationPermissionStatus(status);
 
 			if (status === Permissions.RESULTS.GRANTED) {
 				console.log("Permission granted - keeping user preference");
 			} else {
 				console.log("Permission not granted - turning off notifications");
-				settings$.notifications.set(false);
+				language$.setNotifications(false);
 			}
 		} catch (error) {
 			console.error("Error checking notification permission:", error);
@@ -125,11 +126,11 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 		}
 
 		const {status} = await Permissions.checkNotifications();
-		settings$.notificationPermissionStatus.set(status);
+		language$.setNotificationPermissionStatus(status);
 
 		if (value) {
 			if (status === Permissions.RESULTS.GRANTED) {
-				settings$.notifications.set(true);
+				language$.setNotifications(true);
 			} else if (
 				status === Permissions.RESULTS.DENIED ||
 				status === "unavailable"
@@ -140,12 +141,12 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 						"sound",
 						"badge",
 					]);
-					settings$.notificationPermissionStatus.set(newStatus);
+					language$.setNotificationPermissionStatus(newStatus);
 
 					if (newStatus === Permissions.RESULTS.GRANTED) {
-						settings$.notifications.set(true);
+						language$.setNotifications(true);
 					} else {
-						settings$.notifications.set(false);
+						language$.setNotifications(false);
 						Alert.alert(
 							t("notifications.permissionRequired"),
 							t("notifications.permissionMessage"),
@@ -160,10 +161,10 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 					}
 				} catch (error) {
 					console.error("Error requesting notification permission:", error);
-					settings$.notifications.set(false);
+					language$.setNotifications(false);
 				}
 			} else {
-				settings$.notifications.set(false);
+				language$.setNotifications(false);
 				Alert.alert(
 					t("notifications.notificationsDisabled"),
 					t("notifications.notificationsBlockedMessage"),
@@ -177,7 +178,7 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 				);
 			}
 		} else {
-			settings$.notifications.set(false);
+			language$.setNotifications(false);
 		}
 	};
 
@@ -463,8 +464,8 @@ Thank you for your feedback!`;
 							</Text>
 						</View>
 						<Switch
-							value={hapticsEnabled}
-							onValueChange={(value) => settings$.haptics.set(value)}
+							value={hapticsEnabled.enabled}
+							onValueChange={(value) => haptics$.setEnabled(value)}
 						/>
 					</View>
 

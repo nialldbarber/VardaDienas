@@ -5,9 +5,11 @@ import {Alert, Pressable} from "react-native";
 import * as Permissions from "react-native-permissions";
 import {StyleSheet} from "react-native-unistyles";
 
+import {publicHolidays} from "@/app/constants/publicHolidays";
 import type {Favourite} from "@/app/store/favourites";
 import {favourites$} from "@/app/store/favourites";
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
+import {publicHolidays$} from "@/app/store/publicHolidays";
 import {Button} from "@/app/ui/components/Button";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
@@ -212,6 +214,7 @@ type NamesByDay = {
 	day: string;
 	names: string[];
 	favourites: Favourite[];
+	isPublicHolidaySeparator?: boolean;
 };
 
 type NamesByMonth = {
@@ -271,6 +274,131 @@ function groupFavouritesByMonthAndDay(favourites: Favourite[]): NamesByMonth[] {
 		});
 }
 
+function addPublicHolidaysToGroupedData(
+	groupedData: NamesByMonth[],
+): NamesByMonth[] {
+	console.log("🔍 Starting addPublicHolidaysToGroupedData");
+	console.log(
+		"🔍 Available public holidays:",
+		publicHolidays.map((h) => `${h.month}/${h.day} - ${h.title}`),
+	);
+
+	// Create a deep copy of the grouped data
+	const newGroupedData = JSON.parse(JSON.stringify(groupedData));
+
+	// Get all months that have public holidays
+	const monthsWithHolidays = [...new Set(publicHolidays.map((h) => h.month))];
+	console.log("🔍 Months with holidays:", monthsWithHolidays);
+
+	// Create month names for months with holidays
+	const monthNames = {
+		1: "Janvāris",
+		2: "Februāris",
+		3: "Marts",
+		4: "Aprīlis",
+		5: "Maijs",
+		6: "Jūnijs",
+		7: "Jūlijs",
+		8: "Augusts",
+		9: "Septembris",
+		10: "Oktobris",
+		11: "Novembris",
+		12: "Decembris",
+	};
+
+	// Ensure all months with holidays are in the grouped data
+	for (const monthNumber of monthsWithHolidays) {
+		const monthName = monthNames[monthNumber as keyof typeof monthNames];
+		let monthData = newGroupedData.find(
+			(m: NamesByMonth) => getMonthNumber(m.month) === monthNumber,
+		);
+
+		if (!monthData) {
+			console.log(`🔍 Creating new month entry for ${monthName}`);
+			monthData = {
+				month: monthName,
+				days: [],
+			};
+			newGroupedData.push(monthData);
+		}
+	}
+
+	// Sort the data by month number
+	newGroupedData.sort(
+		(a: NamesByMonth, b: NamesByMonth) =>
+			getMonthNumber(a.month) - getMonthNumber(b.month),
+	);
+
+	// Add public holidays to each month
+	for (const monthData of newGroupedData) {
+		const monthNumber = getMonthNumber(monthData.month);
+		const holidaysForMonth = publicHolidays.filter(
+			(holiday) => holiday.month === monthNumber,
+		);
+
+		if (holidaysForMonth.length > 0) {
+			for (const holiday of holidaysForMonth) {
+				console.log(
+					`🔍 Adding holiday: ${holiday.title} on day ${holiday.day}`,
+				);
+				const holidayDay: NamesByDay = {
+					day: holiday.day.toString(),
+					names: [holiday.title],
+					favourites: [
+						{
+							name: holiday.title,
+							day: holiday.day.toString(),
+							month: monthData.month,
+							notifyMe: false,
+							daysBefore: [],
+							isPublicHoliday: true,
+							emoji: holiday.emoji,
+							titleLv: holiday.titleLv,
+						},
+					],
+				};
+				monthData.days.push(holidayDay);
+			}
+		}
+	}
+
+	console.log(
+		"🔍 Final grouped data months:",
+		newGroupedData.map((m: NamesByMonth) => m.month),
+	);
+	return newGroupedData;
+}
+
+function getMonthNumber(monthName: string): number {
+	const monthMap: Record<string, number> = {
+		Janvāris: 1,
+		January: 1,
+		Februāris: 2,
+		February: 2,
+		Marts: 3,
+		March: 3,
+		Aprīlis: 4,
+		April: 4,
+		Maijs: 5,
+		May: 5,
+		Jūnijs: 6,
+		June: 6,
+		Jūlijs: 7,
+		July: 7,
+		Augusts: 8,
+		August: 8,
+		Septembris: 9,
+		September: 9,
+		Oktobris: 10,
+		October: 10,
+		Novembris: 11,
+		November: 11,
+		Decembris: 12,
+		December: 12,
+	};
+	return monthMap[monthName] || 1;
+}
+
 export const GroupedNamesAccordion = ({
 	favourites,
 	highlightName,
@@ -278,7 +406,8 @@ export const GroupedNamesAccordion = ({
 }: Props) => {
 	const {t} = useTranslation();
 	const reactiveFavourites = use$(favourites$.favourites);
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
+	const showPublicHolidays = use$(publicHolidays$.show);
 
 	const [autoOpenAccordions, setAutoOpenAccordions] = React.useState<
 		Set<string>
@@ -299,8 +428,20 @@ export const GroupedNamesAccordion = ({
 	});
 
 	const groupedData = React.useMemo(() => {
-		return groupFavouritesByMonthAndDay(reactiveFavourites);
-	}, [reactiveFavourites]);
+		let data = groupFavouritesByMonthAndDay(reactiveFavourites);
+
+		console.log("🔍 showPublicHolidays setting:", showPublicHolidays);
+
+		// Add public holidays if enabled
+		if (showPublicHolidays.show) {
+			console.log("🔍 Public holidays enabled, adding them...");
+			data = addPublicHolidaysToGroupedData(data);
+		} else {
+			console.log("🔍 Public holidays disabled");
+		}
+
+		return data;
+	}, [reactiveFavourites, showPublicHolidays]);
 
 	const todaysFavourites = React.useMemo(() => {
 		return reactiveFavourites.filter((favourite) =>
@@ -826,185 +967,212 @@ export const GroupedNamesAccordion = ({
 								key={`${monthData.month}-${dayData.day}`}
 								style={styles.dayBlock}
 							>
-								<Text variant="body" style={styles.dayTitle}>
-									{dayData.day}
-								</Text>
-								<View style={styles.namesContainer}>
-									{dayData.favourites.map((favourite, index) => (
-										<View
-											key={`${favourite.name}-${index}`}
-											style={styles.nameWrapper}
-										>
-											<EnhancedAccordion.Sibling
-												key={`${favourite.name}-${index}-sibling`}
+								<>
+									<Text variant="body" style={styles.dayTitle}>
+										{dayData.day.padStart(2, "0")}
+									</Text>
+									<View style={styles.namesContainer}>
+										{dayData.favourites.map((favourite, index) => (
+											<View
+												key={`${favourite.name}-${index}`}
+												style={styles.nameWrapper}
 											>
-												<EnhancedAccordion.Accordion
-													key={`${favourite.name}-${index}`}
-													style={styles.accordion}
-													isOpen={autoOpenAccordions.has(
-														`${favourite.name}-${index}`,
-													)}
-													onChange={(isOpen) =>
-														handleAccordionChange(isOpen, favourite.name, index)
-													}
-												>
-													<EnhancedAccordion.Header>
-														<View style={styles.headerContent}>
-															<View style={styles.nameContainer}>
-																{isTodayNameDay(
-																	favourite.day,
-																	favourite.month,
-																) && (
-																	<Star1
-																		size="16"
-																		variant="Bold"
-																		color={colors.primary}
-																		style={styles.starIcon}
-																	/>
-																)}
-																<Text
-																	variant="body"
-																	style={[
-																		styles.nameText,
-																		shouldHighlight(favourite.name) &&
-																			styles.highlightedName,
-																	]}
-																>
-																	{favourite.name}
-																</Text>
-															</View>
-															<EnhancedAccordion.HeaderIcon rotation="clockwise">
-																<ArrowDown2 size="25" color={colors.primary} />
-															</EnhancedAccordion.HeaderIcon>
-														</View>
-													</EnhancedAccordion.Header>
-
-													<EnhancedAccordion.Expanded
-														style={styles.accordionContent}
+												{favourite.isPublicHoliday ? (
+													<View style={styles.publicHolidayItem}>
+														<Text style={styles.publicHolidayEmoji}>
+															{favourite.emoji}
+														</Text>
+														<Text style={styles.publicHolidayName}>
+															{favourite.name}
+														</Text>
+													</View>
+												) : (
+													<EnhancedAccordion.Sibling
+														key={`${favourite.name}-${index}-sibling`}
 													>
-														<Pressable
-															style={styles.checkboxRow}
-															onPress={() =>
-																handleRemoveFavourite(favourite.name)
-															}
-														>
-															<Text style={styles.checkboxDescription}>
-																{t("favourites.actions.unfavourite")}
-															</Text>
-															<Checkbox
-																checked={true}
-																onUnCheckedChange={() =>
-																	handleRemoveFavourite(favourite.name)
-																}
-																onCheckedChange={() => {}}
-															/>
-														</Pressable>
-
-														<Pressable
-															style={styles.checkboxRow}
-															onPress={() =>
-																handleNotificationToggle(
-																	favourite,
-																	!favourite.notifyMe,
+														<EnhancedAccordion.Accordion
+															key={`${favourite.name}-${index}`}
+															style={styles.accordion}
+															isOpen={autoOpenAccordions.has(
+																`${favourite.name}-${index}`,
+															)}
+															onChange={(isOpen) =>
+																handleAccordionChange(
+																	isOpen,
+																	favourite.name,
+																	index,
 																)
 															}
 														>
-															<Text style={styles.checkboxDescription}>
-																{favourite.notifyMe
-																	? t("favourites.actions.dontNotifyMe")
-																	: t("favourites.actions.notifyMe")}
-															</Text>
-															<Checkbox
-																checked={favourite.notifyMe || false}
-																onCheckedChange={() =>
-																	handleNotificationToggle(favourite, true)
-																}
-																onUnCheckedChange={() =>
-																	handleNotificationToggle(favourite, false)
-																}
-															/>
-														</Pressable>
-
-														{favourite.notifyMe && (
-															<>
-																<Text style={styles.checkboxDescription}>
-																	{t("favourites.daysBefore")}:
-																</Text>
-																<View style={styles.timingButtonsContainer}>
-																	<Pressable
-																		style={[
-																			styles.timingButton,
-																			(favourite.daysBefore || []).includes(
-																				0,
-																			) && styles.timingButtonSelected,
-																		]}
-																		onPress={() =>
-																			handleDaysBeforeToggle(favourite, 0)
-																		}
-																	>
+															<EnhancedAccordion.Header>
+																<View style={styles.headerContent}>
+																	<View style={styles.nameContainer}>
+																		{isTodayNameDay(
+																			favourite.day,
+																			favourite.month,
+																		) && (
+																			<Star1
+																				size="16"
+																				variant="Bold"
+																				color={colors.primary}
+																				style={styles.starIcon}
+																			/>
+																		)}
 																		<Text
+																			variant="body"
 																			style={[
-																				styles.timingButtonText,
-																				(favourite.daysBefore || []).includes(
-																					0,
-																				) && {
-																					color: "white",
-																				},
+																				styles.nameText,
+																				shouldHighlight(favourite.name) &&
+																					styles.highlightedName,
 																			]}
 																		>
-																			{t("favourites.onTheDay")}
+																			{favourite.name}
 																		</Text>
-																	</Pressable>
-																	<View style={styles.daysBeforeButtons}>
-																		{[1, 2, 3, 4, 5].map((day) => (
+																	</View>
+																	<EnhancedAccordion.HeaderIcon rotation="clockwise">
+																		<ArrowDown2
+																			size="25"
+																			color={colors.primary}
+																		/>
+																	</EnhancedAccordion.HeaderIcon>
+																</View>
+															</EnhancedAccordion.Header>
+
+															<EnhancedAccordion.Expanded
+																style={styles.accordionContent}
+															>
+																<Pressable
+																	style={styles.checkboxRow}
+																	onPress={() =>
+																		handleRemoveFavourite(favourite.name)
+																	}
+																>
+																	<Text style={styles.checkboxDescription}>
+																		{t("favourites.actions.unfavourite")}
+																	</Text>
+																	<Checkbox
+																		checked={true}
+																		onUnCheckedChange={() =>
+																			handleRemoveFavourite(favourite.name)
+																		}
+																		onCheckedChange={() => {}}
+																	/>
+																</Pressable>
+
+																<Pressable
+																	style={styles.checkboxRow}
+																	onPress={() =>
+																		handleNotificationToggle(
+																			favourite,
+																			!favourite.notifyMe,
+																		)
+																	}
+																>
+																	<Text style={styles.checkboxDescription}>
+																		{favourite.notifyMe
+																			? t("favourites.actions.dontNotifyMe")
+																			: t("favourites.actions.notifyMe")}
+																	</Text>
+																	<Checkbox
+																		checked={favourite.notifyMe || false}
+																		onCheckedChange={() =>
+																			handleNotificationToggle(favourite, true)
+																		}
+																		onUnCheckedChange={() =>
+																			handleNotificationToggle(favourite, false)
+																		}
+																	/>
+																</Pressable>
+
+																{favourite.notifyMe && (
+																	<>
+																		<Text style={styles.checkboxDescription}>
+																			{t("favourites.daysBefore")}:
+																		</Text>
+																		<View style={styles.timingButtonsContainer}>
 																			<Pressable
-																				key={day}
 																				style={[
-																					styles.dayButton,
+																					styles.timingButton,
 																					(favourite.daysBefore || []).includes(
-																						day,
-																					) && styles.dayButtonSelected,
+																						0,
+																					) && styles.timingButtonSelected,
 																				]}
 																				onPress={() =>
-																					handleDaysBeforeToggle(favourite, day)
+																					handleDaysBeforeToggle(favourite, 0)
 																				}
 																			>
 																				<Text
 																					style={[
-																						styles.dayButtonText,
+																						styles.timingButtonText,
 																						(
 																							favourite.daysBefore || []
-																						).includes(day) &&
-																							styles.dayButtonTextSelected,
+																						).includes(0) && {
+																							color: "white",
+																						},
 																					]}
 																				>
-																					{day}
+																					{t("favourites.onTheDay")}
 																				</Text>
 																			</Pressable>
-																		))}
-																	</View>
-																</View>
-															</>
-														)}
+																			<View style={styles.daysBeforeButtons}>
+																				{[1, 2, 3, 4, 5].map((day) => (
+																					<Pressable
+																						key={day}
+																						style={[
+																							styles.dayButton,
+																							(
+																								favourite.daysBefore || []
+																							).includes(day) &&
+																								styles.dayButtonSelected,
+																						]}
+																						onPress={() =>
+																							handleDaysBeforeToggle(
+																								favourite,
+																								day,
+																							)
+																						}
+																					>
+																						<Text
+																							style={[
+																								styles.dayButtonText,
+																								(
+																									favourite.daysBefore || []
+																								).includes(day) &&
+																									styles.dayButtonTextSelected,
+																							]}
+																						>
+																							{day}
+																						</Text>
+																					</Pressable>
+																				))}
+																			</View>
+																		</View>
+																	</>
+																)}
 
-														{isTodayNameDay(favourite.day, favourite.month) && (
-															<Button
-																variant="outline"
-																onPress={() =>
-																	handleShareWishes(favourite.name)
-																}
-															>
-																<Text style={styles.shareButtonText}>
-																	{t("favourites.shareWishes")}
-																</Text>
-															</Button>
-														)}
-													</EnhancedAccordion.Expanded>
-												</EnhancedAccordion.Accordion>
-											</EnhancedAccordion.Sibling>
-										</View>
-									))}
-								</View>
+																{isTodayNameDay(
+																	favourite.day,
+																	favourite.month,
+																) && (
+																	<Button
+																		variant="outline"
+																		onPress={() =>
+																			handleShareWishes(favourite.name)
+																		}
+																	>
+																		<Text style={styles.shareButtonText}>
+																			{t("favourites.shareWishes")}
+																		</Text>
+																	</Button>
+																)}
+															</EnhancedAccordion.Expanded>
+														</EnhancedAccordion.Accordion>
+													</EnhancedAccordion.Sibling>
+												)}
+											</View>
+										))}
+									</View>
+								</>
 							</View>
 						))}
 					</View>
@@ -1167,5 +1335,44 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		color: colors.primary,
 		fontSize: sizes["16px"],
 		fontWeight: "600",
+	},
+	publicHolidaySeparator: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: sizes["16px"],
+		marginBottom: sizes["16px"],
+	},
+	separatorLine: {
+		flex: 1,
+		height: StyleSheet.hairlineWidth,
+		backgroundColor: colors.lightGrey,
+	},
+	separatorText: {
+		marginHorizontal: sizes["10px"],
+		fontSize: sizes["16px"],
+		fontWeight: "600",
+		color: colors.primary,
+	},
+	publicHolidayItem: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: sizes["8px"],
+		backgroundColor: "white",
+		paddingHorizontal: sizes["12px"],
+		paddingVertical: sizes["8px"],
+		borderRadius: sizes["8px"],
+		borderWidth: 1,
+		borderColor: colors.primary,
+	},
+	publicHolidayEmoji: {
+		fontSize: sizes["20px"],
+	},
+	publicHolidayName: {
+		fontSize: sizes["16px"],
+		fontWeight: "600",
+		color: colors.primary,
+		flex: 1,
+		flexWrap: "wrap",
 	},
 }));

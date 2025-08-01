@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import type {DayData} from "@/app/types";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
@@ -46,7 +46,7 @@ export const SearchBottomSheet = React.forwardRef<
 		const {t} = useTranslation();
 		const snapPoints = React.useMemo(() => ["25%", "50%"], []);
 		const haptic = hapticToTrigger("impactMedium");
-		const hapticsEnabled = use$(settings$.haptics);
+		const hapticsEnabled = use$(haptics$.enabled);
 
 		const renderBackdrop = React.useCallback(
 			(props: React.ComponentProps<typeof BottomSheetBackdrop>) => (

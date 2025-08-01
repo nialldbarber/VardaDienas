@@ -1,5 +1,4 @@
 import {language$} from "@/app/store/language";
-import {settings$} from "@/app/store/settings";
 import notifee, {
 	TriggerType,
 	type TriggerNotification,
@@ -32,17 +31,17 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 				const hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
 
 				if (hasPermission) {
-					settings$.notificationPermissionStatus.set("granted");
-					settings$.notifications.set(true);
+					language$.setNotificationPermissionStatus("granted");
+					language$.setNotifications(true);
 				} else {
-					settings$.notificationPermissionStatus.set("denied");
-					settings$.notifications.set(false);
+					language$.setNotificationPermissionStatus("denied");
+					language$.setNotifications(false);
 				}
 
 				return hasPermission;
 			}
-			settings$.notificationPermissionStatus.set("granted");
-			settings$.notifications.set(true);
+			language$.setNotificationPermissionStatus("granted");
+			language$.setNotifications(true);
 			return true;
 		}
 
@@ -50,18 +49,18 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 		const hasPermission = settings.authorizationStatus >= 1;
 
 		if (hasPermission) {
-			settings$.notificationPermissionStatus.set("granted");
-			settings$.notifications.set(true);
+			language$.setNotificationPermissionStatus("granted");
+			language$.setNotifications(true);
 		} else {
-			settings$.notificationPermissionStatus.set("denied");
-			settings$.notifications.set(false);
+			language$.setNotificationPermissionStatus("denied");
+			language$.setNotifications(false);
 		}
 
 		return hasPermission;
 	} catch (error) {
 		console.error("Error requesting notification permissions:", error);
-		settings$.notificationPermissionStatus.set("denied");
-		settings$.notifications.set(false);
+		language$.setNotificationPermissionStatus("denied");
+		language$.setNotifications(false);
 		return false;
 	}
 }
@@ -75,17 +74,14 @@ export async function checkNotificationPermissions(): Promise<boolean> {
 				);
 
 				if (hasPermission) {
-					settings$.notificationPermissionStatus.set("granted");
-					settings$.notifications.set(true);
+					language$.setNotificationPermissionStatus("granted");
 				} else {
-					settings$.notificationPermissionStatus.set("denied");
-					settings$.notifications.set(false);
+					language$.setNotificationPermissionStatus("denied");
 				}
 
 				return hasPermission;
 			}
-			settings$.notificationPermissionStatus.set("granted");
-			settings$.notifications.set(true);
+			language$.setNotificationPermissionStatus("granted");
 			return true;
 		}
 
@@ -93,18 +89,15 @@ export async function checkNotificationPermissions(): Promise<boolean> {
 		const hasPermission = settings.authorizationStatus >= 1;
 
 		if (hasPermission) {
-			settings$.notificationPermissionStatus.set("granted");
-			settings$.notifications.set(true);
+			language$.setNotificationPermissionStatus("granted");
 		} else {
-			settings$.notificationPermissionStatus.set("denied");
-			settings$.notifications.set(false);
+			language$.setNotificationPermissionStatus("denied");
 		}
 
 		return hasPermission;
 	} catch (error) {
 		console.error("Error checking notification permissions:", error);
-		settings$.notificationPermissionStatus.set("denied");
-		settings$.notifications.set(false);
+		language$.setNotificationPermissionStatus("denied");
 		return false;
 	}
 }

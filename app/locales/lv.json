@@ -77,6 +77,14 @@
 		"shareWishes": "Dalīties ar vēlējumiem",
 		"shareMessage": "{{name}}, sveicieni vārda dienā! 🎉"
 	},
+	"contextMenu": {
+		"favouritesInfo": "Mīļāko informācija",
+		"showPublicHolidays": "Rādīt valsts svētkus"
+	},
+	"publicHolidays": {
+		"title": "Valsts svētki",
+		"separator": "Svētku datums"
+	},
 	"notifications": {
 		"permissionRequired": "Nepieciešama atļauja",
 		"permissionMessage": "Lai saņemtu atgādinājumus par vārda dienām, lūdzu, ieslēdziet paziņojumus ierīces iestatījumos.",

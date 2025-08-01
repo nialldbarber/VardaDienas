@@ -7,7 +7,7 @@ import Animated, {
 } from "react-native-reanimated";
 import {StyleSheet} from "react-native-unistyles";
 
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {hapticToTrigger} from "@/app/utils/haptics";
@@ -27,7 +27,7 @@ export function FastScrollIndex({
 	const translateY = useSharedValue(0);
 	const isActive = useSharedValue(false);
 	const currentIndex = useSharedValue(-1);
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 	const haptic = hapticToTrigger("impactLight");
 
 	const monthLetters = React.useMemo(() => {

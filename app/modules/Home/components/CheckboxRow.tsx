@@ -4,7 +4,7 @@ import Toast from "react-native-toast-message";
 import {StyleSheet} from "react-native-unistyles";
 
 import {favourites$} from "@/app/store/favourites";
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import type {DayData} from "@/app/types";
 import {Checkbox} from "@/app/ui/components/Checkbox";
 import {Text} from "@/app/ui/components/Text";
@@ -42,7 +42,7 @@ export function CheckboxRow({
 }: Props) {
 	const {t} = useTranslation();
 	const haptic = hapticToTrigger("impactMedium");
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 
 	const borderOpacity = useSharedValue(0);
 

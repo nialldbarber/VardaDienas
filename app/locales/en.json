@@ -77,6 +77,14 @@
 		"shareWishes": "Share your wishes",
 		"shareMessage": "Happy name day, {{name}}! 🎉"
 	},
+	"contextMenu": {
+		"favouritesInfo": "Favourites info",
+		"showPublicHolidays": "Toggle public holidays"
+	},
+	"publicHolidays": {
+		"title": "Public Holidays",
+		"separator": "Holiday date"
+	},
 	"notifications": {
 		"permissionRequired": "Permission Required",
 		"permissionMessage": "To receive reminders about name days, please enable notifications in your device settings.",

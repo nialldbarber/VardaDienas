@@ -8,7 +8,7 @@ import {StyleSheet} from "react-native-unistyles";
 
 import {CheckboxRow} from "@/app/modules/Home/components/CheckboxRow";
 import {favourites$} from "@/app/store/favourites";
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import type {DayData} from "@/app/types";
 import {Text} from "@/app/ui/components/Text";
 import {Layout} from "@/app/ui/components/layout";
@@ -30,7 +30,7 @@ export function NamesRowScreen({
 	const {t} = useTranslation();
 	const {goBack} = useNavigation();
 	const favourites = use$(favourites$.favourites);
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 	const layoutRef = React.useRef<ScrollView>(null);
 
 	React.useEffect(() => {

@@ -13,6 +13,9 @@ export type Favourite = {
 	month: string;
 	notifyMe?: boolean;
 	daysBefore?: number[];
+	isPublicHoliday?: boolean;
+	emoji?: string;
+	titleLv?: string;
 };
 
 type FavouritesStore = {

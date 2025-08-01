@@ -14,7 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 import {StyleSheet} from "react-native-unistyles";
 
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
 import {use$} from "@legendapp/state/react";
@@ -49,7 +49,7 @@ export function Bar({
 	const {buildHref} = useLinkBuilder();
 	const scale = useSharedValue(1);
 	const haptic = hapticToTrigger("impactMedium");
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 
 	const getTabText = (routeName: string) => {
 		switch (routeName) {

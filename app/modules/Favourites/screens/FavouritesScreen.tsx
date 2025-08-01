@@ -5,17 +5,18 @@ import {
 } from "@gorhom/bottom-sheet";
 import {use$} from "@legendapp/state/react";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {Home, InfoCircle} from "iconsax-react-native";
+import {Home, Setting2} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {Pressable, type ScrollView} from "react-native";
+import ContextMenu from "react-native-context-menu-view";
 import {StyleSheet} from "react-native-unistyles";
 
 import {setFavouritesScrollToTop} from "@/app/navigation/components/TabBar";
 import {favourites$} from "@/app/store/favourites";
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
+import {publicHolidays$} from "@/app/store/publicHolidays";
 import {Button} from "@/app/ui/components/Button";
-
 import {GroupedNamesAccordion} from "@/app/ui/components/GroupedNamesAccordion";
 import {Header} from "@/app/ui/components/Header";
 import {Text} from "@/app/ui/components/Text";
@@ -32,12 +33,20 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 	(props, ref) => {
 		const {t} = useTranslation();
 		const favourites = use$(favourites$.favourites);
-		const hapticsEnabled = use$(settings$.haptics);
+		const hapticsEnabled = use$(haptics$.enabled);
+		const showPublicHolidays = use$(publicHolidays$.show);
 		const navigation = useNavigation();
 		const route = useRoute();
 		const haptic = hapticToTrigger("impactMedium");
 		const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
 		const layoutRef = React.useRef<ScrollView>(null);
+
+		console.log(
+			"### FavouritesScreen loaded, showPublicHolidays:",
+			showPublicHolidays,
+		);
+		console.log("### Haptics store value:", haptics$.enabled.get());
+		console.log("### Public holidays store value:", publicHolidays$.show.get());
 
 		// Get the highlightName from route params (from notification)
 		const highlightName = (route.params as {highlightName?: string})
@@ -79,27 +88,36 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 			infoBottomSheetRef.current?.present();
 		};
 
-		const scrollToPosition = (y: number) => {
-			console.log("🔍 Debug: scrollToPosition called with y:", y);
-			console.log("🔍 Debug: layoutRef.current:", layoutRef.current);
+		const handleContextMenuPress = (e: {
+			nativeEvent: {name: string; index: number};
+		}) => {
+			if (hapticsEnabled) {
+				haptic.impactMedium();
+			}
 
+			const actionName = e.nativeEvent.name;
+			const actionIndex = e.nativeEvent.index;
+
+			// Use index-based detection since name might not be reliable
+			switch (actionIndex) {
+				case 0: // First action - Favourites info
+					handleOpenInfo();
+					break;
+				case 1: // Second action - Show/Hide public holidays
+					publicHolidays$.setShow(!showPublicHolidays.show);
+					break;
+				default:
+					break;
+			}
+		};
+
+		const scrollToPosition = (y: number) => {
 			if (layoutRef.current) {
-				console.log(
-					"🔍 Debug: layoutRef.current.scrollTo exists:",
-					typeof layoutRef.current.scrollTo,
-				);
-				try {
-					// Use custom animation for smooth scroll with quick start and soft landing
-					layoutRef.current.scrollTo({
-						y,
-						animated: true,
-					});
-					console.log("🔍 Debug: scrollTo called successfully");
-				} catch (error) {
-					console.error("🔍 Debug: Error calling scrollTo:", error);
-				}
-			} else {
-				console.log("🔍 Debug: layoutRef.current is null/undefined");
+				// Use custom animation for smooth scroll with quick start and soft landing
+				layoutRef.current.scrollTo({
+					y,
+					animated: true,
+				});
 			}
 		};
 
@@ -161,10 +179,6 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 					)}
 				</Layout>
 
-				<Pressable onPress={handleOpenInfo} style={styles.infoButton}>
-					<InfoCircle size="20" color={colors.primary} variant="Outline" />
-				</Pressable>
-
 				<BottomSheetModal
 					ref={infoBottomSheetRef}
 					snapPoints={["40%"]}
@@ -182,6 +196,26 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 						</Text>
 					</BottomSheetView>
 				</BottomSheetModal>
+
+				<ContextMenu
+					actions={[
+						{
+							title: t("contextMenu.favouritesInfo"),
+							systemIcon: "info.circle",
+						},
+						{
+							title: t("contextMenu.showPublicHolidays"),
+							systemIcon: "calendar",
+						},
+					]}
+					onPress={handleContextMenuPress}
+					style={styles.contextMenuContainer}
+					dropdownMenuMode={true}
+				>
+					<Pressable style={styles.settingsButton}>
+						<Setting2 size="20" color={colors.primary} variant="Outline" />
+					</Pressable>
+				</ContextMenu>
 			</View>
 		);
 	},
@@ -192,20 +226,37 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 		flex: 1,
 	},
 
-	infoButton: {
-		position: "absolute",
-		top: insets.top + 60,
-		right: sizes["16px"],
+	settingsButton: {
 		width: 32,
 		height: 32,
 		borderRadius: 16,
 		backgroundColor: tokens.background.primary,
 		justifyContent: "center",
 		alignItems: "center",
-		zIndex: 100,
 		shadowColor: colors.black,
 		boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
 	},
+
+	contextMenuContainer: {
+		position: "absolute",
+		top: insets.top + 60,
+		right: sizes["16px"],
+		zIndex: 100,
+	},
+
+	publicHolidaysStatus: {
+		paddingHorizontal: sizes["16px"],
+		paddingVertical: sizes["8px"],
+		marginBottom: sizes["8px"],
+	},
+
+	publicHolidaysText: {
+		fontSize: 16,
+		fontWeight: "600",
+		color: colors.primary,
+		textAlign: "center",
+	},
+
 	emptyState: {
 		flex: 1,
 		justifyContent: "center",

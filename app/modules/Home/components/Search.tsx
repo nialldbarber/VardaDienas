@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import {Text} from "@/app/ui/components/Text";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
@@ -17,7 +17,7 @@ type Props = {
 export function Search({openSearch, currentMonth}: Props) {
 	const {t} = useTranslation();
 	const haptic = hapticToTrigger("impactMedium");
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 
 	const handleOpenSearch = () => {
 		openSearch();

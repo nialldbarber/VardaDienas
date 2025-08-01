@@ -1,7 +1,7 @@
 import React from "react";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import {colors} from "@/app/ui/config/colors";
 import {hapticToTrigger} from "@/app/utils/haptics";
 import {use$} from "@legendapp/state/react";
@@ -19,7 +19,7 @@ export function Checkbox({
 }: Props) {
 	const [localChecked, setLocalChecked] = React.useState(checked);
 	const haptic = hapticToTrigger("impactMedium");
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 
 	React.useEffect(() => {
 		setLocalChecked(checked);

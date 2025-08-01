@@ -8,7 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import {StyleSheet} from "react-native-unistyles";
 
-import {settings$} from "@/app/store/settings";
+import {haptics$} from "@/app/store/haptics";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {colors} from "@/app/ui/config/colors";
@@ -59,7 +59,7 @@ export function Switch({
 }: Props) {
 	const animatedValue = useSharedValue(value ? 1 : 0);
 	const pressScale = useSharedValue(1);
-	const hapticsEnabled = use$(settings$.haptics);
+	const hapticsEnabled = use$(haptics$.enabled);
 
 	const config = SWITCH_CONFIG[size];
 
