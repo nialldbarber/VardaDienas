@@ -6,19 +6,54 @@ import notifee, {
 import {PermissionsAndroid, Platform} from "react-native";
 
 // Helper function to get translations without hooks
-function getNotificationText(language: string, key: string, name: string) {
+function getNotificationText(
+	language: string,
+	key: string,
+	name: string,
+	daysBefore = 0,
+) {
 	const translations = {
 		en: {
-			title: "🎉 Name Day Today!",
-			body: `It's ${name}'s name day! Don't forget to say sveiciens!`,
+			today: {
+				title: "🎉 Name day today!",
+				body: `It's ${name}'s name day! Don't forget to say sveiciens!`,
+			},
+			tomorrow: {
+				title: "🎉 Name day tomorrow!",
+				body: `Tomorrow is ${name}'s name day! Don't forget to say sveiciens!`,
+			},
+			future: {
+				title: "🎉 Name day coming up!",
+				body: `${name}'s name day is in ${daysBefore} days! Don't forget to say sveiciens!`,
+			},
 		},
 		lv: {
-			title: "🎉 Vārda diena šodien!",
-			body: `Šodien ir ${name} vārda diena! Neaizmirsti teikt sveiciens!`,
+			today: {
+				title: "🎉 Vārda diena šodien!",
+				body: `Šodien ir ${name} vārda diena! Neaizmirsti teikt sveiciens!`,
+			},
+			tomorrow: {
+				title: "🎉 Vārda diena rīt!",
+				body: `Rīt ir ${name} vārda diena! Neaizmirsti teikt sveiciens!`,
+			},
+			future: {
+				title: "🎉 Vārda diena drīzumā!",
+				body: `${name} vārda diena ir pēc ${daysBefore} dienām! Neaizmirsti teikt sveiciens!`,
+			},
 		},
 	};
 
-	return translations[language as keyof typeof translations] || translations.en;
+	const langTranslations =
+		translations[language as keyof typeof translations] || translations.en;
+
+	// Determine which message to use based on daysBefore
+	if (daysBefore === 0) {
+		return langTranslations.today;
+	}
+	if (daysBefore === 1) {
+		return langTranslations.tomorrow;
+	}
+	return langTranslations.future;
 }
 
 export async function requestNotificationPermissions(): Promise<boolean> {
@@ -162,6 +197,7 @@ export async function scheduleNameDayNotifications(
 				currentLanguage,
 				"nameDayToday",
 				name,
+				dayBefore,
 			);
 
 			try {
@@ -270,6 +306,28 @@ export async function cancelAllNotifications(): Promise<void> {
 		console.log("Cancelled all notifications");
 	} catch (error) {
 		console.error("Error cancelling all notifications:", error);
+	}
+}
+
+export async function cancelTestNotifications(): Promise<void> {
+	try {
+		const notifications = await notifee.getTriggerNotifications();
+		const testNotifications = notifications.filter((notification) =>
+			notification.notification.id?.startsWith("test-"),
+		);
+
+		for (const notification of testNotifications) {
+			if (notification.notification.id) {
+				await notifee.cancelNotification(notification.notification.id);
+				console.log(
+					`Cancelled test notification: ${notification.notification.id}`,
+				);
+			}
+		}
+
+		console.log(`Cancelled ${testNotifications.length} test notifications`);
+	} catch (error) {
+		console.error("Error cancelling test notifications:", error);
 	}
 }
 
@@ -477,69 +535,180 @@ export async function simulatePushNotification(
 	month = "Janvāris",
 	daysBefore = 0,
 ): Promise<void> {
-	console.log("=== SIMULATING PUSH NOTIFICATION ===");
+	console.log("=== SCHEDULING TEST PUSH NOTIFICATION ===");
 	console.log(
 		`Name: ${name}, Day: ${day}, Month: ${month}, Days Before: ${daysBefore}`,
 	);
 
 	try {
+		const hasPermission = await checkNotificationPermissions();
+		if (!hasPermission) {
+			console.warn("Cannot schedule test notification: no permission");
+			return;
+		}
+
 		const currentLanguage = language$.currentLanguage.get();
 		const notificationText = getNotificationText(
 			currentLanguage,
 			"nameDayToday",
 			name,
+			daysBefore,
 		);
 
-		// Create the notification payload that would be sent by the system
-		const notificationPayload = {
-			id: generateDayOfNotificationId(name, day, month, daysBefore),
-			title: notificationText.title,
-			body: notificationText.body,
-			data: {
-				deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${daysBefore}`,
-				name,
-				day,
-				month,
-				daysBefore: daysBefore.toString(),
+		const channelId = await notifee.createChannel({
+			id: "nameday-notifications",
+			name:
+				currentLanguage === "lv"
+					? "Vārda dienu paziņojumi"
+					: "Name Day Notifications",
+			description:
+				currentLanguage === "lv"
+					? "Paziņojumi par jūsu mīļākajām vārda dienām"
+					: "Notifications for your favourite name days",
+			sound: "default",
+			vibration: true,
+		});
+
+		// Schedule notification for 1 minute in the future
+		const testDate = new Date(Date.now() + 60000); // 1 minute from now
+		const notificationId = `test-${generateDayOfNotificationId(name, day, month, daysBefore)}`;
+
+		await notifee.createTriggerNotification(
+			{
+				id: notificationId,
+				title: `🧪 TEST: ${notificationText.title}`,
+				body: `🧪 TEST: ${notificationText.body}`,
+				data: {
+					deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${daysBefore}`,
+					name,
+					day,
+					month,
+					daysBefore: daysBefore.toString(),
+					isTest: "true",
+				},
+				android: {
+					channelId,
+					pressAction: {
+						id: "default",
+					},
+					smallIcon: "ic_launcher",
+				},
+				ios: {
+					sound: "default",
+				},
 			},
-		};
+			{
+				type: TriggerType.TIMESTAMP,
+				timestamp: testDate.getTime(),
+				alarmManager: {
+					allowWhileIdle: true,
+				},
+			},
+		);
 
-		console.log("Notification payload:", notificationPayload);
-
-		// Simulate the notification being received
-		console.log("Simulating notification tap...");
-
-		// Import and handle the deep link
-		const {handleDeepLink} = await import("@/app/navigation/deepLinking");
-		handleDeepLink(notificationPayload.data.deepLink);
-
-		console.log("✅ Push notification simulation completed!");
 		console.log(
-			"The app should now navigate to the Favourites screen and highlight the name.",
+			`✅ Test notification scheduled for ${testDate.toLocaleString()}`,
+		);
+		console.log(`Notification ID: ${notificationId}`);
+		console.log(
+			"The notification will fire in 1 minute and navigate to the Favourites screen.",
 		);
 	} catch (error) {
-		console.error("❌ Error simulating push notification:", error);
+		console.error("❌ Error scheduling test notification:", error);
 	}
 }
 
 export async function simulateMultiplePushNotifications(
 	names: Array<{name: string; day: string; month: string; daysBefore: number}>,
 ): Promise<void> {
-	console.log("=== SIMULATING MULTIPLE PUSH NOTIFICATIONS ===");
-	console.log(`Simulating ${names.length} notifications...`);
+	console.log("=== SCHEDULING MULTIPLE TEST PUSH NOTIFICATIONS ===");
+	console.log(`Scheduling ${names.length} test notifications...`);
 
-	for (let i = 0; i < names.length; i++) {
-		const {name, day, month, daysBefore} = names[i];
-		console.log(`\n--- Notification ${i + 1}/${names.length} ---`);
-
-		await simulatePushNotification(name, day, month, daysBefore);
-
-		// Add a small delay between notifications for better debugging
-		if (i < names.length - 1) {
-			console.log("Waiting 2 seconds before next notification...");
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+	try {
+		const hasPermission = await checkNotificationPermissions();
+		if (!hasPermission) {
+			console.warn("Cannot schedule test notifications: no permission");
+			return;
 		}
-	}
 
-	console.log("\n✅ All push notification simulations completed!");
+		const currentLanguage = language$.currentLanguage.get();
+		const channelId = await notifee.createChannel({
+			id: "nameday-notifications",
+			name:
+				currentLanguage === "lv"
+					? "Vārda dienu paziņojumi"
+					: "Name Day Notifications",
+			description:
+				currentLanguage === "lv"
+					? "Paziņojumi par jūsu mīļākajām vārda dienām"
+					: "Notifications for your favourite name days",
+			sound: "default",
+			vibration: true,
+		});
+
+		// Schedule notifications with 30-second intervals starting from 1 minute
+		for (let i = 0; i < names.length; i++) {
+			const {name, day, month, daysBefore} = names[i];
+			console.log(
+				`\n--- Scheduling Test Notification ${i + 1}/${names.length} ---`,
+			);
+
+			const notificationText = getNotificationText(
+				currentLanguage,
+				"nameDayToday",
+				name,
+				daysBefore,
+			);
+
+			// Schedule notification with staggered timing (1 min, 1.5 min, 2 min, etc.)
+			const testDate = new Date(Date.now() + 60000 + i * 30000); // 1 min + (i * 30 seconds)
+			const notificationId = `test-${generateDayOfNotificationId(name, day, month, daysBefore)}`;
+
+			await notifee.createTriggerNotification(
+				{
+					id: notificationId,
+					title: `🧪 TEST ${i + 1}: ${notificationText.title}`,
+					body: `🧪 TEST ${i + 1}: ${notificationText.body}`,
+					data: {
+						deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${daysBefore}`,
+						name,
+						day,
+						month,
+						daysBefore: daysBefore.toString(),
+						isTest: "true",
+						testIndex: (i + 1).toString(),
+					},
+					android: {
+						channelId,
+						pressAction: {
+							id: "default",
+						},
+						smallIcon: "ic_launcher",
+					},
+					ios: {
+						sound: "default",
+					},
+				},
+				{
+					type: TriggerType.TIMESTAMP,
+					timestamp: testDate.getTime(),
+					alarmManager: {
+						allowWhileIdle: true,
+					},
+				},
+			);
+
+			console.log(
+				`✅ Test notification ${i + 1} scheduled for ${testDate.toLocaleString()}`,
+			);
+			console.log(`Notification ID: ${notificationId}`);
+		}
+
+		console.log("\n✅ All test notifications scheduled!");
+		console.log(
+			"Notifications will fire at 30-second intervals starting in 1 minute.",
+		);
+	} catch (error) {
+		console.error("❌ Error scheduling multiple test notifications:", error);
+	}
 }

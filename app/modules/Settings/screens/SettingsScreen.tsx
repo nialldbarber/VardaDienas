@@ -30,6 +30,7 @@ import {WebViewScreen} from "@/app/ui/components/WebViewScreen";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {
+	cancelTestNotifications,
 	simulateMultiplePushNotifications,
 	simulatePushNotification,
 	testDeepLink,
@@ -445,6 +446,24 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleCancelTestNotifications = async () => {
+		try {
+			await cancelTestNotifications();
+			Toast.show({
+				type: "success",
+				text1: "Test notifications cancelled",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Cancel test notifications error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Failed to cancel test notifications",
+				position: "bottom",
+			});
+		}
+	};
+
 	return (
 		<Layout
 			ref={layoutRef}
@@ -502,39 +521,51 @@ Thank you for your feedback!`;
 				</View>
 
 				{/* Debug section - only show in development */}
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Debug</Text>
-					<Pressable style={styles.row} onPress={handleTestDeepLink}>
-						<Text style={styles.rowText}>Test Deep Link</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+				{__DEV__ && (
+					<View style={styles.section}>
+						<Text style={styles.sectionTitle}>Debug</Text>
+						<Pressable style={styles.row} onPress={handleTestDeepLink}>
+							<Text style={styles.rowText}>Test Deep Link</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleTestNotificationNavigation}
-					>
-						<Text style={styles.rowText}>Test Notification Navigation</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleTestNotificationNavigation}
+						>
+							<Text style={styles.rowText}>Test Notification Navigation</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleSimulatePushNotification}
-					>
-						<Text style={styles.rowText}>Simulate Push Notification</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleSimulatePushNotification}
+						>
+							<Text style={styles.rowText}>
+								Schedule Test Notification (1 min)
+							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleSimulateMultiplePushNotifications}
-					>
-						<Text style={styles.rowText}>
-							Simulate Multiple Push Notifications
-						</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
-				</View>
+						<Pressable
+							style={styles.row}
+							onPress={handleSimulateMultiplePushNotifications}
+						>
+							<Text style={styles.rowText}>
+								Schedule Multiple Test Notifications
+							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+
+						<Pressable
+							style={styles.row}
+							onPress={handleCancelTestNotifications}
+						>
+							<Text style={styles.rowText}>Cancel Test Notifications</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+					</View>
+				)}
 
 				<View style={styles.madeWith}>
 					<Text style={styles.madeWithText} withEmoji>
