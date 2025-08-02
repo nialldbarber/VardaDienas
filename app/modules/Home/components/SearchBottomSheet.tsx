@@ -9,11 +9,11 @@ import type {BottomSheetModalMethods} from "@gorhom/bottom-sheet/lib/typescript/
 import {CloseCircle} from "iconsax-react-native";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Pressable} from "react-native";
 import {StyleSheet} from "react-native-unistyles";
 
 import {haptics$} from "@/app/store/haptics";
 import type {DayData} from "@/app/types";
+import {Pressable} from "@/app/ui/components/Pressable";
 import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {colors} from "@/app/ui/config/colors";
@@ -62,6 +62,7 @@ export const SearchBottomSheet = React.forwardRef<
 		const renderSearchResult = React.useCallback(
 			({item}: {item: SearchResult}) => (
 				<Pressable
+					animateStyle="opacity"
 					style={styles.resultItem}
 					onPress={() => {
 						// Add a small delay to ensure keyboard dismissal doesn't interfere
@@ -122,9 +123,8 @@ export const SearchBottomSheet = React.forwardRef<
 									haptic.impactMedium();
 								}
 							}}
-							style={styles.closeButton}
 						>
-							<CloseCircle size="24" variant="Outline" color={colors.primary} />
+							<CloseCircle size="28" variant="Bold" color={colors.primary} />
 						</Pressable>
 					</View>
 				</BottomSheetView>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	},
 	title: {
 		fontSize: 20,
-		fontWeight: "600",
+		fontWeight: "700",
 		color: tokens.text.primary,
 		marginBottom: sizes["16px"],
 		textAlign: "center",
@@ -191,7 +191,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		fontSize: 16,
 		backgroundColor: tokens.background.textInput,
 		fontFamily: "Plus Jakarta Sans",
-		fontWeight: "500",
+		fontWeight: "600",
 		color: tokens.text.primary,
 		marginRight: sizes["8px"],
 	},
@@ -210,17 +210,19 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	},
 	resultName: {
 		fontSize: 18,
-		fontWeight: "600",
+		fontWeight: "700",
 		color: colors.primary,
 		marginBottom: sizes["4px"],
 	},
 	resultDate: {
 		fontSize: 14,
-		color: colors.grey,
+		color: tokens.text.fadedText,
+		fontWeight: "600",
 		marginBottom: sizes["2px"],
 	},
 	resultType: {
 		fontSize: 12,
+		fontWeight: "600",
 		color: tokens.text.fadedText,
 	},
 	noResults: {
@@ -243,9 +245,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	emptyStateText: {
 		fontSize: 16,
 		color: tokens.text.fadedText,
+		fontWeight: "600",
 		textAlign: "center",
-	},
-	closeButton: {
-		padding: sizes["4px"],
 	},
 }));

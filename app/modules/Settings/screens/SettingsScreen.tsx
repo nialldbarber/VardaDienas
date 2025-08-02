@@ -520,7 +520,6 @@ Thank you for your feedback!`;
 					</Pressable>
 				</View>
 
-				{/* Debug section - only show in development */}
 				{__DEV__ && (
 					<View style={styles.section}>
 						<Text style={styles.sectionTitle}>Debug</Text>
@@ -633,7 +632,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	},
 	rowText: {
 		fontSize: 16,
-		fontWeight: "500",
+		fontWeight: "600",
 		color: tokens.text.primary,
 	},
 	rowSubtext: {

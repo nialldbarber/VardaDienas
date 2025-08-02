@@ -1,3 +1,4 @@
+import {haptics$} from "@/app/store/haptics";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
 export const HapticFeedback = {
@@ -17,6 +18,12 @@ export type HapticFeedbackType =
 
 function triggerHaptic(haptic: HapticFeedbackType) {
 	try {
+		// Check if haptics are enabled in the store
+		const hapticsEnabled = haptics$.enabled.get().enabled;
+		if (!hapticsEnabled) {
+			return; // Don't trigger haptic if disabled
+		}
+
 		if (
 			ReactNativeHapticFeedback &&
 			typeof ReactNativeHapticFeedback.trigger === "function"

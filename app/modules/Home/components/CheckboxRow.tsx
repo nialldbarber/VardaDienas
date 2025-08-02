@@ -71,7 +71,6 @@ export function CheckboxRow({
 		try {
 			const hasPermission = await requestNotificationPermissions();
 			if (hasPermission) {
-				console.log("Scheduling notification for:", vards);
 				await scheduleNameDayNotifications(vards, data.diena, month ?? "");
 				favourites$.toggleNotification(vards, true);
 
@@ -81,8 +80,6 @@ export function CheckboxRow({
 					position: "bottom",
 				});
 			} else {
-				console.log("Permission denied for notifications");
-				// Show alert to enable notifications in settings
 				Alert.alert(
 					t("notifications.permissionRequired"),
 					t("notifications.permissionMessage"),
@@ -187,6 +184,7 @@ const styles = StyleSheet.create(({sizes, colors, tokens}) => ({
 	},
 	text: {
 		color: tokens.text.primary,
+		fontWeight: "600",
 	},
 	starIcon: {
 		marginRight: sizes["8px"],

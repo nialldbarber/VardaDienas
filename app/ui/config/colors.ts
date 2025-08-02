@@ -17,7 +17,7 @@ export const semantics = {
 export const colors = {
 	primary: "#A4343A",
 	white: "#FFFFFF",
-	black: "#111111",
+	black: "#3a3a3a",
 	...greys,
 	...semantics,
 } as const;

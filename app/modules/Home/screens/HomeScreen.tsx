@@ -428,6 +428,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, rtl) => ({
 	},
 	citiVardi: {
 		fontSize: 14,
+		fontWeight: "600",
 		color: tokens.text.header,
 		marginTop: sizes["3px"],
 		lineHeight: 20,

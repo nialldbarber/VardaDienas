@@ -146,7 +146,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	},
 	optionText: {
 		fontSize: 16,
-		fontWeight: "500",
+		fontWeight: "600",
 		color: tokens.text.primary,
 		marginLeft: sizes["8px"],
 	},

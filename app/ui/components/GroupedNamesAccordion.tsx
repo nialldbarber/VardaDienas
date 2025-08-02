@@ -1,36 +1,11 @@
-import {ArrowDown2, Star1} from "iconsax-react-native";
-import React from "react";
-import {useTranslation} from "react-i18next";
-import {Alert, Pressable} from "react-native";
-import * as Permissions from "react-native-permissions";
-import {StyleSheet} from "react-native-unistyles";
-
-import {publicHolidays} from "@/app/constants/publicHolidays";
-import type {Favourite} from "@/app/store/favourites";
-import {favourites$} from "@/app/store/favourites";
-import {haptics$} from "@/app/store/haptics";
-import {publicHolidays$} from "@/app/store/publicHolidays";
-import {Button} from "@/app/ui/components/Button";
-import {Checkbox} from "@/app/ui/components/Checkbox";
-import {Text} from "@/app/ui/components/Text";
-import {View} from "@/app/ui/components/View";
-import {isTodayNameDay} from "@/app/utils/dates";
-import {haptics} from "@/app/utils/haptics";
-import {
-	cancelNameDayNotifications,
-	checkNotificationPermissions,
-	debugNotificationSetup,
-	scheduleNameDayNotifications,
-} from "@/app/utils/notifications";
 import {use$} from "@legendapp/state/react";
-import Share from "react-native-share";
-import Toast from "react-native-toast-message";
-import {colors} from "../config/colors";
-
-import {language$} from "@/app/store/language";
+import {ArrowDown2, Star1} from "iconsax-react-native";
 import type {PropsWithChildren} from "react";
-import {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
 import type {ViewProps} from "react-native";
+import {Alert} from "react-native";
+import * as Permissions from "react-native-permissions";
 import type {AnimatedProps} from "react-native-reanimated";
 import Animated, {
 	FadeIn,
@@ -40,6 +15,30 @@ import Animated, {
 	useDerivedValue,
 	withSpring,
 } from "react-native-reanimated";
+import Share from "react-native-share";
+import Toast from "react-native-toast-message";
+import {StyleSheet} from "react-native-unistyles";
+
+import {publicHolidays} from "@/app/constants/publicHolidays";
+import type {Favourite} from "@/app/store/favourites";
+import {favourites$} from "@/app/store/favourites";
+import {haptics$} from "@/app/store/haptics";
+import {language$} from "@/app/store/language";
+import {publicHolidays$} from "@/app/store/publicHolidays";
+import {Button} from "@/app/ui/components/Button";
+import {Checkbox} from "@/app/ui/components/Checkbox";
+import {Pressable} from "@/app/ui/components/Pressable";
+import {Text} from "@/app/ui/components/Text";
+import {View} from "@/app/ui/components/View";
+import {colors} from "@/app/ui/config/colors";
+import {isTodayNameDay} from "@/app/utils/dates";
+import {haptics} from "@/app/utils/haptics";
+import {
+	cancelNameDayNotifications,
+	checkNotificationPermissions,
+	debugNotificationSetup,
+	scheduleNameDayNotifications,
+} from "@/app/utils/notifications";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -110,7 +109,7 @@ function Header({children}: {children: React.ReactNode}) {
 	const {accordionIsOpen} = useAccordion();
 
 	return (
-		<AnimatedPressable onPress={() => accordionIsOpen()}>
+		<AnimatedPressable onPress={() => accordionIsOpen()} animateStyle="none">
 			{children}
 		</AnimatedPressable>
 	);
@@ -356,6 +355,12 @@ function addPublicHolidaysToGroupedData(
 				};
 				monthData.days.push(holidayDay);
 			}
+
+			// Sort days by day number after adding public holidays
+			monthData.days.sort(
+				(a: NamesByDay, b: NamesByDay) =>
+					Number.parseInt(a.day) - Number.parseInt(b.day),
+			);
 		}
 	}
 
@@ -884,7 +889,7 @@ export const GroupedNamesAccordion = ({
 											>
 												{favourite.isPublicHoliday ? (
 													<View style={styles.publicHolidayItem}>
-														<Text style={styles.publicHolidayEmoji}>
+														<Text style={styles.publicHolidayEmoji} withEmoji>
 															{favourite.emoji}
 														</Text>
 														<Text style={styles.publicHolidayName}>
@@ -947,6 +952,7 @@ export const GroupedNamesAccordion = ({
 																style={styles.accordionContent}
 															>
 																<Pressable
+																	animateStyle="none"
 																	style={styles.checkboxRow}
 																	onPress={() =>
 																		handleRemoveFavourite(favourite.name)
@@ -965,6 +971,7 @@ export const GroupedNamesAccordion = ({
 																</Pressable>
 
 																<Pressable
+																	animateStyle="none"
 																	style={styles.checkboxRow}
 																	onPress={() =>
 																		handleNotificationToggle(
@@ -1109,7 +1116,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 	},
 	dayTitle: {
 		fontSize: sizes["16px"],
-		fontWeight: "600",
+		fontWeight: "800",
 		marginBottom: sizes["8px"],
 		color: colors.primary,
 	},
@@ -1263,20 +1270,18 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		flexDirection: "row",
 		alignItems: "center",
 		gap: sizes["8px"],
-		backgroundColor: "white",
 		paddingHorizontal: sizes["12px"],
 		paddingVertical: sizes["8px"],
 		borderRadius: sizes["8px"],
-		borderWidth: 1,
-		borderColor: colors.primary,
+		backgroundColor: colors.primary,
 	},
 	publicHolidayEmoji: {
 		fontSize: sizes["20px"],
 	},
 	publicHolidayName: {
 		fontSize: sizes["16px"],
-		fontWeight: "600",
-		color: colors.primary,
+		fontWeight: "700",
+		color: colors.white,
 		flex: 1,
 		flexWrap: "wrap",
 	},
