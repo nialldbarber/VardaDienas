@@ -27,10 +27,6 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 
 	React.useEffect(() => {
 		const timer = setTimeout(() => {
-			if (hapticsEnabled) {
-				haptics.impactMedium();
-			}
-
 			logoTranslateY.value = withSpring(
 				-50,
 				{
@@ -39,6 +35,9 @@ export function AnimatedSplash({onAnimationComplete}: Props) {
 					mass: 0.5,
 				},
 				() => {
+					if (hapticsEnabled) {
+						runOnJS(haptics.impactMedium)();
+					}
 					titleOpacity.value = withTiming(1, {
 						duration: 300,
 					});
@@ -139,6 +138,7 @@ const styles = StyleSheet.create(() => ({
 	},
 	titleContainer: {
 		alignItems: "center",
+		marginTop: -25,
 	},
 	title: {
 		fontSize: 24,

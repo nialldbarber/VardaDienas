@@ -35,6 +35,12 @@
 		"notificationTimeDescription": "Laiks, kad sūtīt vārda dienu paziņojumus",
 		"setNotificationTime": "Iestatīt paziņojumu laiku",
 		"notificationTimeUpdated": "Paziņojumu laiks atjaunināts",
+		"timePicker": {
+			"title": "Iestatīt paziņojumu laiku",
+			"hours": "Stundas",
+			"minutes": "Minūtes",
+			"confirm": "Apstiprināt"
+		},
 		"notificationStatuses": {
 			"enabled": "Ieslēgti",
 			"disabled": "Izslēgti",

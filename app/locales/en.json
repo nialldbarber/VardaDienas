@@ -35,6 +35,12 @@
 		"notificationTimeDescription": "Time to send name day notifications",
 		"setNotificationTime": "Set Notification Time",
 		"notificationTimeUpdated": "Notification time updated",
+		"timePicker": {
+			"title": "Set notification time",
+			"hours": "Hours",
+			"minutes": "Minutes",
+			"confirm": "Confirm"
+		},
 		"notificationStatuses": {
 			"enabled": "Enabled",
 			"disabled": "Disabled",

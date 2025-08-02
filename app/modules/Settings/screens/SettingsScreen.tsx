@@ -640,7 +640,10 @@ Thank you for your feedback!`;
 							onValueChange={(value) => haptics$.setEnabled(value)}
 						/>
 					</View>
+				</View>
 
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>{t("settings.notifications")}</Text>
 					<View style={styles.row}>
 						<View style={styles.rowContent}>
 							<Text style={styles.rowText}>{t("settings.notifications")}</Text>

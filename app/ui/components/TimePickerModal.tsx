@@ -2,14 +2,10 @@ import {notifications$} from "@/app/store/notifications";
 import {colors} from "@/app/ui/config/colors";
 import {sizes} from "@/app/ui/config/sizes";
 import React from "react";
-import {
-	Modal,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
-} from "react-native";
+import {useTranslation} from "react-i18next";
+import {Modal, ScrollView, StyleSheet, Text, View} from "react-native";
+
+import {Pressable} from "@/app/ui/components/Pressable";
 
 type TimePickerModalProps = {
 	visible: boolean;
@@ -22,8 +18,9 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 	visible,
 	onClose,
 	onConfirm,
-	title = "Set notification time",
+	title,
 }) => {
+	const {t} = useTranslation();
 	const currentTime = notifications$.notificationTime.get();
 	const [selectedHours, setSelectedHours] = React.useState(currentTime.hours);
 	const [selectedMinutes, setSelectedMinutes] = React.useState(
@@ -87,13 +84,25 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 			animationType="fade"
 			onRequestClose={handleCancel}
 		>
-			<Pressable style={styles.overlay} onPress={handleCancel}>
-				<Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
-					<Text style={styles.title}>{title}</Text>
+			<Pressable
+				style={styles.overlay}
+				onPress={handleCancel}
+				animateStyle="none"
+			>
+				<Pressable
+					style={styles.modal}
+					onPress={(e) => e.stopPropagation()}
+					animateStyle="none"
+				>
+					<Text style={styles.title}>
+						{title || t("settings.timePicker.title")}
+					</Text>
 
 					<View style={styles.timeContainer}>
 						<View style={styles.timeSection}>
-							<Text style={styles.timeLabel}>Hours</Text>
+							<Text style={styles.timeLabel}>
+								{t("settings.timePicker.hours")}
+							</Text>
 							<View style={styles.pickerContainer}>
 								<ScrollView
 									ref={hoursScrollRef}
@@ -113,6 +122,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 										<Pressable
 											key={hour}
 											style={styles.pickerItemContainer}
+											animateStyle="none"
 											onPress={() => setSelectedHours(hour)}
 										>
 											{renderPickerItem(hour, hour === selectedHours)}
@@ -126,7 +136,9 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 						<Text style={styles.separator}>:</Text>
 
 						<View style={styles.timeSection}>
-							<Text style={styles.timeLabel}>Minutes</Text>
+							<Text style={styles.timeLabel}>
+								{t("settings.timePicker.minutes")}
+							</Text>
 							<View style={styles.pickerContainer}>
 								<ScrollView
 									ref={minutesScrollRef}
@@ -140,7 +152,6 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 										setSelectedMinutes(minutes[index] || 0);
 									}}
 								>
-									{/* Add padding items at top and bottom */}
 									<View style={styles.pickerPadding} />
 									{minutes.map((minute) => (
 										<Pressable
@@ -158,11 +169,13 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 					</View>
 
 					<View style={styles.buttonContainer}>
-						<Pressable style={styles.cancelButton} onPress={handleCancel}>
-							<Text style={styles.cancelButtonText}>Cancel</Text>
-						</Pressable>
 						<Pressable style={styles.confirmButton} onPress={handleConfirm}>
-							<Text style={styles.confirmButtonText}>Confirm</Text>
+							<Text style={styles.confirmButtonText}>
+								{t("settings.timePicker.confirm")}
+							</Text>
+						</Pressable>
+						<Pressable style={styles.cancelButton} onPress={handleCancel}>
+							<Text style={styles.cancelButtonText}>{t("common.cancel")}</Text>
 						</Pressable>
 					</View>
 				</Pressable>
