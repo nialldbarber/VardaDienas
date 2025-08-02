@@ -33,6 +33,8 @@ import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {
 	cancelTestNotifications,
+	debugScheduleForToday,
+	debugShowAllScheduledNotifications,
 	simulateMultiplePushNotifications,
 	simulatePushNotification,
 	testDeepLink,
@@ -488,6 +490,44 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleDebugScheduleForToday = async () => {
+		try {
+			const result = await debugScheduleForToday();
+			Toast.show({
+				type: result.success ? "success" : "error",
+				text1: result.message,
+				text2: result.details,
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Debug schedule for today error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Debug schedule for today failed",
+				position: "bottom",
+			});
+		}
+	};
+
+	const handleDebugShowAllScheduledNotifications = async () => {
+		try {
+			const result = await debugShowAllScheduledNotifications();
+			Toast.show({
+				type: result.success ? "success" : "error",
+				text1: result.message,
+				text2: result.details,
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Debug show all scheduled notifications error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Debug show all scheduled notifications failed",
+				position: "bottom",
+			});
+		}
+	};
+
 	const handleOpenTimePicker = () => {
 		if (hapticsEnabled) {
 			haptics.impactMedium();
@@ -507,6 +547,11 @@ Thank you for your feedback!`;
 
 	const formatNotificationTime = () => {
 		return `${notificationTime.hours.toString().padStart(2, "0")}:${notificationTime.minutes.toString().padStart(2, "0")}`;
+	};
+
+	const getCurrentLocalTime = () => {
+		const now = new Date();
+		return `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
 	};
 
 	return (
@@ -560,6 +605,16 @@ Thank you for your feedback!`;
 							<ArrowRight2 size="20" color={colors.primary} />
 						</View>
 					</Pressable>
+
+					<View style={styles.row}>
+						<View style={styles.rowContent}>
+							<Text style={styles.rowText}>Debug: Current Time</Text>
+							<Text style={styles.rowSubtext}>
+								Local: {getCurrentLocalTime()} | Notification:{" "}
+								{formatNotificationTime()}
+							</Text>
+						</View>
+					</View>
 				</View>
 
 				<View style={styles.section}>
@@ -580,59 +635,56 @@ Thank you for your feedback!`;
 					</Pressable>
 				</View>
 
-				{__DEV__ && (
-					<View style={styles.section}>
-						<Text style={styles.sectionTitle}>Debug</Text>
-						<Pressable style={styles.row} onPress={handleTestDeepLink}>
-							<Text style={styles.rowText}>Test Deep Link</Text>
-							<ArrowRight2 size="20" color={colors.primary} />
-						</Pressable>
+				<View style={styles.section}>
+					<Text style={styles.sectionTitle}>Debug</Text>
+					<Pressable
+						style={styles.row}
+						onPress={handleSimulatePushNotification}
+					>
+						<Text style={styles.rowText}>
+							Schedule Test Notification (1 min)
+						</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
 
-						<Pressable
-							style={styles.row}
-							onPress={handleTestNotificationNavigation}
-						>
-							<Text style={styles.rowText}>Test Notification Navigation</Text>
-							<ArrowRight2 size="20" color={colors.primary} />
-						</Pressable>
+					<Pressable
+						style={styles.row}
+						onPress={handleSimulateMultiplePushNotifications}
+					>
+						<Text style={styles.rowText}>
+							Schedule Multiple Test Notifications
+						</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
 
-						<Pressable
-							style={styles.row}
-							onPress={handleSimulatePushNotification}
-						>
-							<Text style={styles.rowText}>
-								Schedule Test Notification (1 min)
-							</Text>
-							<ArrowRight2 size="20" color={colors.primary} />
-						</Pressable>
+					<Pressable style={styles.row} onPress={handleCancelTestNotifications}>
+						<Text style={styles.rowText}>Cancel Test Notifications</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
 
-						<Pressable
-							style={styles.row}
-							onPress={handleSimulateMultiplePushNotifications}
-						>
-							<Text style={styles.rowText}>
-								Schedule Multiple Test Notifications
-							</Text>
-							<ArrowRight2 size="20" color={colors.primary} />
-						</Pressable>
+					<Pressable
+						style={styles.row}
+						onPress={handleTestNotificationPermissions}
+					>
+						<Text style={styles.rowText}>Test Notification Permissions</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
 
-						<Pressable
-							style={styles.row}
-							onPress={handleCancelTestNotifications}
-						>
-							<Text style={styles.rowText}>Cancel Test Notifications</Text>
-							<ArrowRight2 size="20" color={colors.primary} />
-						</Pressable>
+					<Pressable style={styles.row} onPress={handleDebugScheduleForToday}>
+						<Text style={styles.rowText}>Debug Schedule For Today</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
 
-						<Pressable
-							style={styles.row}
-							onPress={handleTestNotificationPermissions}
-						>
-							<Text style={styles.rowText}>Test Notification Permissions</Text>
-							<ArrowRight2 size="20" color={colors.primary} />
-						</Pressable>
-					</View>
-				)}
+					<Pressable
+						style={styles.row}
+						onPress={handleDebugShowAllScheduledNotifications}
+					>
+						<Text style={styles.rowText}>
+							Debug: Show All Scheduled Notifications
+						</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+				</View>
 
 				<View style={styles.madeWith}>
 					<Text style={styles.madeWithText} withEmoji>

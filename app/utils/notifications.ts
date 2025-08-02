@@ -1,4 +1,5 @@
 import {language$} from "@/app/store/language";
+import {notifications$} from "@/app/store/notifications";
 import notifee, {
 	TriggerType,
 	type TriggerNotification,
@@ -335,7 +336,20 @@ function getNextOccurrenceDate(
 	// Get the custom notification time from the store
 	const notificationTime = notifications$.notificationTime.get();
 
-	// Create the target date for the name day
+	// For "today" notifications (daysBefore = 0), schedule for today at the specified time
+	if (daysBefore === 0) {
+		const today = new Date();
+		today.setHours(notificationTime.hours, notificationTime.minutes, 0, 0);
+
+		// If the time has already passed today, schedule for tomorrow
+		if (today <= now) {
+			today.setDate(today.getDate() + 1);
+		}
+
+		return today;
+	}
+
+	// For "X days before" notifications, calculate the next name day occurrence
 	let targetDate = new Date(
 		currentYear,
 		monthIndex,
@@ -718,5 +732,209 @@ export async function testNotificationPermissions(): Promise<void> {
 		}
 	} catch (error) {
 		console.error("❌ Error testing notification permissions:", error);
+	}
+}
+
+export async function debugScheduleForToday(): Promise<{
+	success: boolean;
+	message: string;
+	details: string;
+}> {
+	console.log("=== DEBUG SCHEDULING FOR TODAY ===");
+
+	try {
+		const hasPermission = await checkNotificationPermissions();
+		if (!hasPermission) {
+			const message = "❌ No notification permission";
+			console.log(message);
+			return {
+				success: false,
+				message: "Failed to schedule notification",
+				details: "No notification permission granted",
+			};
+		}
+
+		const now = new Date();
+		const notificationTime = notifications$.notificationTime.get();
+
+		console.log("Current time:", now.toLocaleString());
+		console.log("Notification time setting:", notificationTime);
+
+		// Calculate when the notification should fire today
+		const today = new Date();
+		today.setHours(notificationTime.hours, notificationTime.minutes, 0, 0);
+
+		console.log("Notification should fire at:", today.toLocaleString());
+
+		// If the time has already passed today, schedule for tomorrow
+		if (today <= now) {
+			today.setDate(today.getDate() + 1);
+			console.log(
+				"Time already passed, scheduling for tomorrow:",
+				today.toLocaleString(),
+			);
+		}
+
+		const timeUntil = today.getTime() - now.getTime();
+		const minutesUntil = timeUntil / (1000 * 60);
+		console.log("Time until notification (ms):", timeUntil);
+		console.log("Time until notification (minutes):", minutesUntil);
+
+		const currentLanguage = language$.currentLanguage.get();
+		const notificationText = getNotificationText(
+			currentLanguage,
+			"nameDayToday",
+			"Debug Test",
+			0,
+		);
+
+		const channelId = await notifee.createChannel({
+			id: "nameday-notifications",
+			name:
+				currentLanguage === "lv"
+					? "Vārda dienu paziņojumi"
+					: "Name Day Notifications",
+			description:
+				currentLanguage === "lv"
+					? "Paziņojumi par jūsu mīļākajām vārda dienām"
+					: "Notifications for your favourite name days",
+			sound: "default",
+			vibration: true,
+		});
+
+		const notificationId = `debug-today-${Date.now()}`;
+
+		await notifee.createTriggerNotification(
+			{
+				id: notificationId,
+				title: `🔧 DEBUG: ${notificationText.title}`,
+				body: `🔧 DEBUG: ${notificationText.body}`,
+				data: {
+					deepLink: `vardadienas://favourites?name=Debug%20Test&day=15&month=Janvāris&daysBefore=0`,
+					name: "Debug Test",
+					day: "15",
+					month: "Janvāris",
+					daysBefore: "0",
+					isDebug: "true",
+				},
+				android: {
+					channelId,
+					pressAction: {
+						id: "default",
+					},
+					smallIcon: "ic_launcher",
+				},
+				ios: {
+					sound: "default",
+				},
+			},
+			{
+				type: TriggerType.TIMESTAMP,
+				timestamp: today.getTime(),
+				alarmManager: {
+					allowWhileIdle: true,
+				},
+			},
+		);
+
+		console.log("✅ Debug notification scheduled!");
+		console.log(`Notification ID: ${notificationId}`);
+		console.log(`Will fire at: ${today.toLocaleString()}`);
+
+		// Show scheduled notifications
+		const scheduled = await getScheduledNotifications();
+		const debugNotifications = scheduled.filter((n) =>
+			n.notification.id?.startsWith("debug-"),
+		);
+		console.log("Debug notifications scheduled:", debugNotifications.length);
+
+		return {
+			success: true,
+			message: "Debug notification scheduled successfully!",
+			details: `Will fire at ${today.toLocaleString()} (in ${minutesUntil.toFixed(1)} minutes)`,
+		};
+	} catch (error) {
+		console.error("❌ Error scheduling debug notification:", error);
+		return {
+			success: false,
+			message: "Failed to schedule debug notification",
+			details: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+export async function debugShowAllScheduledNotifications(): Promise<{
+	success: boolean;
+	message: string;
+	details: string;
+}> {
+	console.log("=== ALL SCHEDULED NOTIFICATIONS ===");
+
+	try {
+		const scheduled = await getScheduledNotifications();
+		console.log(`Total scheduled notifications: ${scheduled.length}`);
+
+		if (scheduled.length === 0) {
+			console.log("No notifications scheduled");
+			return {
+				success: true,
+				message: "No notifications scheduled",
+				details: "There are currently no scheduled notifications",
+			};
+		}
+
+		const now = new Date();
+		console.log("Current time:", now.toLocaleString());
+
+		let details = `Total: ${scheduled.length} notifications\nCurrent time: ${now.toLocaleString()}\n\n`;
+
+		scheduled.forEach((notification, index) => {
+			const trigger = notification.trigger;
+			const notificationData = notification.notification;
+
+			console.log(`\n--- Notification ${index + 1} ---`);
+			console.log(`ID: ${notificationData.id}`);
+			console.log(`Title: ${notificationData.title}`);
+			console.log(`Body: ${notificationData.body}`);
+
+			details += `${index + 1}. ${notificationData.title}\n`;
+
+			if (trigger.type === TriggerType.TIMESTAMP) {
+				const triggerDate = new Date(trigger.timestamp);
+				const timeUntil = triggerDate.getTime() - now.getTime();
+				const minutesUntil = timeUntil / (1000 * 60);
+
+				console.log(`Trigger type: TIMESTAMP`);
+				console.log(`Scheduled for: ${triggerDate.toLocaleString()}`);
+				console.log(`Time until: ${minutesUntil.toFixed(2)} minutes`);
+				console.log(`Is in past: ${triggerDate <= now}`);
+
+				details += `   Scheduled: ${triggerDate.toLocaleString()}\n`;
+				details += `   Time until: ${minutesUntil.toFixed(1)} minutes\n`;
+				details += `   Past: ${triggerDate <= now ? "Yes" : "No"}\n`;
+			} else {
+				console.log(`Trigger type: ${trigger.type}`);
+				details += `   Trigger: ${trigger.type}\n`;
+			}
+
+			if (notificationData.data) {
+				console.log(`Data:`, notificationData.data);
+			}
+
+			details += "\n";
+		});
+
+		return {
+			success: true,
+			message: `Found ${scheduled.length} scheduled notifications`,
+			details: details,
+		};
+	} catch (error) {
+		console.error("❌ Error getting scheduled notifications:", error);
+		return {
+			success: false,
+			message: "Failed to get scheduled notifications",
+			details: error instanceof Error ? error.message : "Unknown error",
+		};
 	}
 }
