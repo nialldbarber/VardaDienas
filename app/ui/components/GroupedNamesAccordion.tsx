@@ -337,23 +337,37 @@ function addPublicHolidaysToGroupedData(
 				);
 				const holidayName =
 					currentLanguage === "lv" ? holiday.titleLv : holiday.title;
-				const holidayDay: NamesByDay = {
+
+				// Check if there's already a day entry for this date
+				const existingDayIndex = monthData.days.findIndex(
+					(day: NamesByDay) => day.day === holiday.day.toString(),
+				);
+
+				const holidayFavourite = {
+					name: holidayName,
 					day: holiday.day.toString(),
-					names: [holidayName],
-					favourites: [
-						{
-							name: holidayName,
-							day: holiday.day.toString(),
-							month: monthData.month,
-							notifyMe: false,
-							daysBefore: [],
-							isPublicHoliday: true,
-							emoji: holiday.emoji,
-							titleLv: holiday.titleLv,
-						},
-					],
+					month: monthData.month,
+					notifyMe: false,
+					daysBefore: [],
+					isPublicHoliday: true,
+					emoji: holiday.emoji,
+					titleLv: holiday.titleLv,
 				};
-				monthData.days.push(holidayDay);
+
+				if (existingDayIndex !== -1) {
+					// Merge with existing day
+					const existingDay = monthData.days[existingDayIndex];
+					existingDay.names.push(holidayName);
+					existingDay.favourites.push(holidayFavourite);
+				} else {
+					// Create new day entry
+					const holidayDay: NamesByDay = {
+						day: holiday.day.toString(),
+						names: [holidayName],
+						favourites: [holidayFavourite],
+					};
+					monthData.days.push(holidayDay);
+				}
 			}
 
 			// Sort days by day number after adding public holidays

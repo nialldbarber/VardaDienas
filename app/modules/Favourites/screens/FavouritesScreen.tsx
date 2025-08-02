@@ -265,7 +265,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 	},
 	infoTitle: {
 		fontSize: 18,
-		fontWeight: "600",
+		fontWeight: "700",
 		color: colors.black,
 		marginBottom: sizes["16px"],
 		textAlign: "center",
@@ -273,6 +273,7 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 	infoText: {
 		fontSize: 14,
 		color: colors.black,
+		fontWeight: "600",
 		lineHeight: 20,
 		marginBottom: sizes["12px"],
 	},
