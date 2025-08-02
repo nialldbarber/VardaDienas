@@ -695,7 +695,7 @@ export const GroupedNamesAccordion = ({
 					favourite.name,
 					favourite.day,
 					favourite.month,
-					[0],
+					favourite.daysBefore || [0],
 				);
 
 				Toast.show({

@@ -71,7 +71,7 @@ export function CheckboxRow({
 		try {
 			const hasPermission = await requestNotificationPermissions();
 			if (hasPermission) {
-				await scheduleNameDayNotifications(vards, data.diena, month ?? "");
+				await scheduleNameDayNotifications(vards, data.diena, month ?? "", [0]);
 				favourites$.toggleNotification(vards, true);
 
 				Toast.show({

@@ -60,6 +60,7 @@ export function LanguageSelector() {
 						favourite.name,
 						favourite.day,
 						favourite.month,
+						favourite.daysBefore || [0],
 					);
 				}
 
