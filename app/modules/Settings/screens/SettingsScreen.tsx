@@ -35,6 +35,7 @@ import {
 	simulatePushNotification,
 	testDeepLink,
 	testNotificationNavigation,
+	testNotificationPermissions,
 } from "@/app/utils/notifications";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
@@ -464,6 +465,25 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleTestNotificationPermissions = async () => {
+		try {
+			await testNotificationPermissions();
+			Toast.show({
+				type: "success",
+				text1: "Notification permissions test completed",
+				text2: "Check console for details",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Notification permissions test error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Notification permissions test failed",
+				position: "bottom",
+			});
+		}
+	};
+
 	return (
 		<Layout
 			ref={layoutRef}
@@ -561,6 +581,14 @@ Thank you for your feedback!`;
 							onPress={handleCancelTestNotifications}
 						>
 							<Text style={styles.rowText}>Cancel Test Notifications</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+
+						<Pressable
+							style={styles.row}
+							onPress={handleTestNotificationPermissions}
+						>
+							<Text style={styles.rowText}>Test Notification Permissions</Text>
 							<ArrowRight2 size="20" color={colors.primary} />
 						</Pressable>
 					</View>

@@ -3,7 +3,7 @@ import notifee, {
 	TriggerType,
 	type TriggerNotification,
 } from "@notifee/react-native";
-import {PermissionsAndroid, Platform} from "react-native";
+import * as Permissions from "react-native-permissions";
 
 // Helper function to get translations without hooks
 function getNotificationText(
@@ -58,30 +58,13 @@ function getNotificationText(
 
 export async function requestNotificationPermissions(): Promise<boolean> {
 	try {
-		if (Platform.OS === "android") {
-			if (Platform.Version >= 33) {
-				const granted = await PermissionsAndroid.request(
-					PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-				);
-				const hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+		const {status} = await Permissions.requestNotifications([
+			"alert",
+			"sound",
+			"badge",
+		]);
 
-				if (hasPermission) {
-					language$.setNotificationPermissionStatus("granted");
-					language$.setNotifications(true);
-				} else {
-					language$.setNotificationPermissionStatus("denied");
-					language$.setNotifications(false);
-				}
-
-				return hasPermission;
-			}
-			language$.setNotificationPermissionStatus("granted");
-			language$.setNotifications(true);
-			return true;
-		}
-
-		const settings = await notifee.requestPermission();
-		const hasPermission = settings.authorizationStatus >= 1;
+		const hasPermission = status === Permissions.RESULTS.GRANTED;
 
 		if (hasPermission) {
 			language$.setNotificationPermissionStatus("granted");
@@ -102,26 +85,9 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 
 export async function checkNotificationPermissions(): Promise<boolean> {
 	try {
-		if (Platform.OS === "android") {
-			if (Platform.Version >= 33) {
-				const hasPermission = await PermissionsAndroid.check(
-					PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-				);
+		const {status} = await Permissions.checkNotifications();
 
-				if (hasPermission) {
-					language$.setNotificationPermissionStatus("granted");
-				} else {
-					language$.setNotificationPermissionStatus("denied");
-				}
-
-				return hasPermission;
-			}
-			language$.setNotificationPermissionStatus("granted");
-			return true;
-		}
-
-		const settings = await notifee.getNotificationSettings();
-		const hasPermission = settings.authorizationStatus >= 1;
+		const hasPermission = status === Permissions.RESULTS.GRANTED;
 
 		if (hasPermission) {
 			language$.setNotificationPermissionStatus("granted");
@@ -710,5 +676,30 @@ export async function simulateMultiplePushNotifications(
 		);
 	} catch (error) {
 		console.error("❌ Error scheduling multiple test notifications:", error);
+	}
+}
+
+export async function testNotificationPermissions(): Promise<void> {
+	console.log("=== TESTING NOTIFICATION PERMISSIONS ===");
+
+	try {
+		// Test the permission check
+		const hasPermission = await checkNotificationPermissions();
+		console.log("✅ Permission check result:", hasPermission);
+
+		// Test requesting permissions
+		const requestedPermission = await requestNotificationPermissions();
+		console.log("✅ Permission request result:", requestedPermission);
+
+		// Test scheduling a simple notification
+		if (hasPermission) {
+			console.log("✅ Scheduling test notification...");
+			await simulatePushNotification("Test User", "15", "Janvāris", 0);
+			console.log("✅ Test notification scheduled successfully!");
+		} else {
+			console.log("❌ No permission to schedule notifications");
+		}
+	} catch (error) {
+		console.error("❌ Error testing notification permissions:", error);
 	}
 }
