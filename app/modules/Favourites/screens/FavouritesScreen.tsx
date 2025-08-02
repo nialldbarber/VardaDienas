@@ -30,7 +30,7 @@ type FavouritesScreenRef = {
 };
 
 export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
-	(props, ref) => {
+	(_, ref) => {
 		const {t} = useTranslation();
 		const favourites = use$(favourites$.favourites);
 		const hapticsEnabled = use$(haptics$.enabled);
@@ -41,14 +41,6 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 		const infoBottomSheetRef = React.useRef<BottomSheetModal>(null);
 		const layoutRef = React.useRef<ScrollView>(null);
 
-		console.log(
-			"### FavouritesScreen loaded, showPublicHolidays:",
-			showPublicHolidays,
-		);
-		console.log("### Haptics store value:", haptics$.enabled.get());
-		console.log("### Public holidays store value:", publicHolidays$.show.get());
-
-		// Get the highlightName from route params (from notification)
 		const highlightName = (route.params as {highlightName?: string})
 			?.highlightName;
 
@@ -91,21 +83,17 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 		const handleContextMenuPress = (e: {
 			nativeEvent: {name: string; index: number};
 		}) => {
-			console.log("### Context menu pressed, haptics enabled:", hapticsEnabled);
 			if (hapticsEnabled) {
 				haptic.impactMedium();
-				console.log("### Haptic feedback triggered");
 			}
 
-			const actionName = e.nativeEvent.name;
 			const actionIndex = e.nativeEvent.index;
 
-			// Use index-based detection since name might not be reliable
 			switch (actionIndex) {
-				case 0: // First action - Favourites info
+				case 0:
 					handleOpenInfo();
 					break;
-				case 1: // Second action - Show/Hide public holidays
+				case 1:
 					publicHolidays$.setShow(!showPublicHolidays.show);
 					break;
 				default:
@@ -113,21 +101,8 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 			}
 		};
 
-		const scrollToPosition = (y: number) => {
-			if (layoutRef.current) {
-				// Use custom animation for smooth scroll with quick start and soft landing
-				layoutRef.current.scrollTo({
-					y,
-					animated: true,
-				});
-			}
-		};
-
-		// Custom scroll function with quick start and soft landing
 		const scrollToPositionWithCustomAnimation = (y: number) => {
 			if (layoutRef.current) {
-				// Use the built-in scrollTo with animated: true for now
-				// This is more reliable than the custom animation approach
 				layoutRef.current.scrollTo({
 					y,
 					animated: true,
@@ -198,7 +173,6 @@ export const FavouritesScreen = React.forwardRef<FavouritesScreenRef>(
 						</Text>
 					</BottomSheetView>
 				</BottomSheetModal>
-
 				<ContextMenu
 					actions={[
 						{
@@ -227,7 +201,6 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 	container: {
 		flex: 1,
 	},
-
 	settingsButton: {
 		width: 32,
 		height: 32,
@@ -238,27 +211,23 @@ const styles = StyleSheet.create(({colors, sizes, tokens}, {insets}) => ({
 		shadowColor: colors.black,
 		boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
 	},
-
 	contextMenuContainer: {
 		position: "absolute",
 		top: insets.top + 60,
 		right: sizes["16px"],
 		zIndex: 100,
 	},
-
 	publicHolidaysStatus: {
 		paddingHorizontal: sizes["16px"],
 		paddingVertical: sizes["8px"],
 		marginBottom: sizes["8px"],
 	},
-
 	publicHolidaysText: {
 		fontSize: 16,
 		fontWeight: "600",
 		color: colors.primary,
 		textAlign: "center",
 	},
-
 	emptyState: {
 		flex: 1,
 		justifyContent: "center",

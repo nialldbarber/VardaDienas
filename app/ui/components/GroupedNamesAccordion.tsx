@@ -85,7 +85,6 @@ function Provider({
 	const accordionIsOpen = () => {
 		const newValue = !isOpen;
 		onChange?.(newValue);
-		// Always update internal state, even when controlled
 		setInternalIsOpen(newValue);
 	};
 
@@ -285,14 +284,11 @@ function addPublicHolidaysToGroupedData(
 		publicHolidays.map((h) => `${h.month}/${h.day} - ${h.title}`),
 	);
 
-	// Create a deep copy of the grouped data
 	const newGroupedData = JSON.parse(JSON.stringify(groupedData));
 
-	// Get all months that have public holidays
 	const monthsWithHolidays = [...new Set(publicHolidays.map((h) => h.month))];
 	console.log("🔍 Months with holidays:", monthsWithHolidays);
 
-	// Create month names for months with holidays
 	const monthNames = {
 		1: "Janvāris",
 		2: "Februāris",
@@ -308,7 +304,6 @@ function addPublicHolidaysToGroupedData(
 		12: "Decembris",
 	};
 
-	// Ensure all months with holidays are in the grouped data
 	for (const monthNumber of monthsWithHolidays) {
 		const monthName = monthNames[monthNumber as keyof typeof monthNames];
 		let monthData = newGroupedData.find(
@@ -325,13 +320,11 @@ function addPublicHolidaysToGroupedData(
 		}
 	}
 
-	// Sort the data by month number
 	newGroupedData.sort(
 		(a: NamesByMonth, b: NamesByMonth) =>
 			getMonthNumber(a.month) - getMonthNumber(b.month),
 	);
 
-	// Add public holidays to each month
 	for (const monthData of newGroupedData) {
 		const monthNumber = getMonthNumber(monthData.month);
 		const holidaysForMonth = publicHolidays.filter(
@@ -366,10 +359,6 @@ function addPublicHolidaysToGroupedData(
 		}
 	}
 
-	console.log(
-		"🔍 Final grouped data months:",
-		newGroupedData.map((m: NamesByMonth) => m.month),
-	);
 	return newGroupedData;
 }
 
@@ -404,7 +393,6 @@ function getMonthNumber(monthName: string): number {
 }
 
 export const GroupedNamesAccordion = ({
-	favourites,
 	highlightName,
 	scrollToPosition,
 }: Props) => {
@@ -434,10 +422,7 @@ export const GroupedNamesAccordion = ({
 		let data = groupFavouritesByMonthAndDay(reactiveFavourites);
 
 		if (showPublicHolidays.show) {
-			console.log("🔍 Public holidays enabled, adding them...");
 			data = addPublicHolidaysToGroupedData(data, currentLanguage);
-		} else {
-			console.log("🔍 Public holidays disabled");
 		}
 
 		return data;
@@ -451,9 +436,6 @@ export const GroupedNamesAccordion = ({
 
 	const scrollToTodaysNameDay = React.useCallback(() => {
 		if (todaysFavourites.length === 0 || !scrollToPosition) {
-			console.log(
-				"🔍 Debug: No today's favourites or no scrollToPosition function",
-			);
 			return;
 		}
 
@@ -463,17 +445,6 @@ export const GroupedNamesAccordion = ({
 		const todayMonth = today.toLocaleDateString("lv-LV", {month: "long"});
 		const capitalisedTodayMonth =
 			todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
-
-		console.log(
-			"🔍 Debug: Looking for month:",
-			capitalisedTodayMonth,
-			"day:",
-			todayDay,
-		);
-		console.log(
-			"🔍 Debug: Available months:",
-			groupedData.map((m) => m.month),
-		);
 
 		let scrollY = 0;
 		let foundTarget = false;
@@ -505,16 +476,13 @@ export const GroupedNamesAccordion = ({
 		}
 
 		if (foundTarget) {
-			console.log("🔍 Debug: Scrolling to exact day position:", scrollY - 55);
 			scrollToPosition(scrollY - 55);
 		} else {
-			console.log("🔍 Debug: Day not found, trying to scroll to month");
 			scrollY = 0;
 			for (const monthData of groupedData) {
 				scrollY += 60;
 
 				if (monthData.month === capitalisedTodayMonth) {
-					console.log("🔍 Debug: Scrolling to month position:", scrollY - 60);
 					scrollToPosition(scrollY - 60);
 					return;
 				}
@@ -524,15 +492,11 @@ export const GroupedNamesAccordion = ({
 					scrollY += dayData.favourites.length * 80;
 				}
 			}
-			console.log("🔍 Debug: Month not found, no scroll performed");
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData]);
 
 	const scrollToTodaysNameDayWithMeasuredHeights = React.useCallback(() => {
 		if (todaysFavourites.length === 0 || !scrollToPosition) {
-			console.log(
-				"🔍 Debug: No today's favourites or no scrollToPosition function",
-			);
 			return;
 		}
 
@@ -542,9 +506,6 @@ export const GroupedNamesAccordion = ({
 		const capitalisedTodayMonth =
 			todayMonth.charAt(0).toUpperCase() + todayMonth.slice(1);
 
-		console.log("🔍 Debug: Using measured heights for scroll calculation");
-		console.log("🔍 Debug: Measured heights:", componentHeights);
-
 		let scrollY = 0;
 		let foundTarget = false;
 
@@ -552,12 +513,10 @@ export const GroupedNamesAccordion = ({
 			scrollY += componentHeights.monthHeight;
 
 			if (monthData.month === capitalisedTodayMonth) {
-				console.log("🔍 Debug: Found matching month:", monthData.month);
 				for (const dayData of monthData.days) {
 					scrollY += componentHeights.dayHeight;
 
 					if (dayData.day === todayDay) {
-						console.log("🔍 Debug: Found matching day:", dayData.day);
 						foundTarget = true;
 						break;
 					}
@@ -577,24 +536,13 @@ export const GroupedNamesAccordion = ({
 		}
 
 		if (foundTarget) {
-			console.log(
-				"🔍 Debug: Scrolling to exact day position (measured):",
-				scrollY - 55,
-			);
 			scrollToPosition(scrollY - 55);
 		} else {
-			console.log(
-				"🔍 Debug: Day not found, trying to scroll to month (measured)",
-			);
 			scrollY = 0;
 			for (const monthData of groupedData) {
 				scrollY += componentHeights.monthHeight;
 
 				if (monthData.month === capitalisedTodayMonth) {
-					console.log(
-						"🔍 Debug: Scrolling to month position (measured):",
-						scrollY - 60,
-					);
 					scrollToPosition(scrollY - 60);
 					return;
 				}
@@ -605,7 +553,6 @@ export const GroupedNamesAccordion = ({
 						dayData.favourites.length * componentHeights.favouriteHeight;
 				}
 			}
-			console.log("🔍 Debug: Month not found, no scroll performed");
 		}
 	}, [todaysFavourites, scrollToPosition, groupedData, componentHeights]);
 
@@ -614,64 +561,38 @@ export const GroupedNamesAccordion = ({
 
 		setTimeout(() => {
 			const accordionKeys: string[] = [];
-			console.log(
-				"🔍 Debug: Checking for today's name days on first render...",
-			);
-			console.log("🔍 Debug: Today's favourites:", todaysFavourites);
-			console.log("🔍 Debug: Grouped data:", groupedData);
-
 			const today = new Date();
-			console.log("🔍 Debug: Today's date:", today);
-			console.log("🔍 Debug: Today's day:", today.getDate());
-			console.log("🔍 Debug: Today's month:", today.getMonth());
 
 			for (const monthData of groupedData) {
 				for (const dayData of monthData.days) {
 					for (let index = 0; index < dayData.favourites.length; index++) {
 						const favourite = dayData.favourites[index];
 						const isToday = isTodayNameDay(favourite.day, favourite.month);
-						console.log(
-							`🔍 Debug: ${favourite.name} (${favourite.day} ${favourite.month}) - isToday: ${isToday}`,
-						);
 						if (isToday) {
 							const key = `${favourite.name}-${index}`;
 							accordionKeys.push(key);
-							console.log(`🔍 Debug: Adding accordion key: ${key}`);
 						}
 					}
 				}
 			}
-			console.log("🔍 Debug: Final accordion keys:", accordionKeys);
 
 			setAutoOpenAccordions(new Set(accordionKeys));
 
 			setTimeout(() => {
-				console.log("🔍 Debug: Attempting to scroll to today's name day");
 				const attemptScroll = (attempts = 0) => {
 					if (attempts >= 4) {
-						console.log("🔍 Debug: Max scroll attempts reached, giving up");
 						return;
 					}
 
 					try {
 						if (attempts === 0) {
-							console.log("🔍 Debug: Attempt 1 - Original scroll method");
 							scrollToTodaysNameDay();
 						} else if (attempts === 1) {
-							console.log("🔍 Debug: Attempt 2 - Measured heights method");
 							scrollToTodaysNameDayWithMeasuredHeights();
 						} else {
-							console.log(
-								`🔍 Debug: Attempt ${attempts + 1} - Retry original method`,
-							);
 							scrollToTodaysNameDay();
 						}
-						console.log("🔍 Debug: Scroll attempt successful");
 					} catch (error) {
-						console.log(
-							`🔍 Debug: Scroll attempt ${attempts + 1} failed:`,
-							error,
-						);
 						setTimeout(() => attemptScroll(attempts + 1), 300);
 					}
 				};
@@ -683,7 +604,6 @@ export const GroupedNamesAccordion = ({
 		}, 300);
 	}, [
 		groupedData,
-		todaysFavourites,
 		scrollToTodaysNameDay,
 		scrollToTodaysNameDayWithMeasuredHeights,
 		hasAutoOpened,
