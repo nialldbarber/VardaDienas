@@ -938,3 +938,138 @@ export async function debugShowAllScheduledNotifications(): Promise<{
 		};
 	}
 }
+
+export async function debugCheckMMKVStorage(): Promise<{
+	success: boolean;
+	message: string;
+	details: string;
+}> {
+	console.log("=== MMKV STORAGE DEBUG ===");
+
+	try {
+		// Import MMKV to check raw storage
+		const {MMKV} = await import("react-native-mmkv");
+
+		const favouritesStorage = new MMKV({
+			id: "favourites-storage",
+		});
+
+		const notificationsStorage = new MMKV({
+			id: "notifications-storage",
+		});
+
+		// Get all keys from both storages
+		const favouritesKeys = favouritesStorage.getAllKeys();
+		const notificationsKeys = notificationsStorage.getAllKeys();
+
+		console.log("Favourites storage keys:", favouritesKeys);
+		console.log("Notifications storage keys:", notificationsKeys);
+
+		// Try to get the favourites data
+		let favouritesData = null;
+		try {
+			favouritesData = favouritesStorage.getString("favourites");
+		} catch (error) {
+			console.log("Error reading favourites from MMKV:", error);
+		}
+
+		let notificationsData = null;
+		try {
+			notificationsData = notificationsStorage.getString("notificationTime");
+		} catch (error) {
+			console.log("Error reading notifications from MMKV:", error);
+		}
+
+		let details = `Favourites Storage:\n`;
+		details += `  Keys: ${favouritesKeys.join(", ") || "None"}\n`;
+		details += `  Data: ${favouritesData ? "Present" : "Missing"}\n`;
+		details += `\nNotifications Storage:\n`;
+		details += `  Keys: ${notificationsKeys.join(", ") || "None"}\n`;
+		details += `  Data: ${notificationsData ? "Present" : "Missing"}\n`;
+
+		if (favouritesData) {
+			try {
+				const parsed = JSON.parse(favouritesData);
+				details += `\nFavourites count: ${parsed.length || 0}`;
+			} catch (error) {
+				details += `\nFavourites data: Invalid JSON`;
+			}
+		}
+
+		return {
+			success: true,
+			message: "MMKV Storage Debug Complete",
+			details: details,
+		};
+	} catch (error) {
+		console.error("❌ Error checking MMKV storage:", error);
+		return {
+			success: false,
+			message: "Failed to check MMKV storage",
+			details: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+export async function recoverFavouritesFromStorage(): Promise<{
+	success: boolean;
+	message: string;
+	details: string;
+}> {
+	console.log("=== ATTEMPTING FAVOURITES RECOVERY ===");
+
+	try {
+		// Import MMKV and favourites store
+		const {MMKV} = await import("react-native-mmkv");
+		const {favourites$} = await import("@/app/store/favourites");
+
+		const favouritesStorage = new MMKV({
+			id: "favourites-storage",
+		});
+
+		// Try to get the raw favourites data
+		const favouritesData = favouritesStorage.getString("favourites");
+
+		if (!favouritesData) {
+			return {
+				success: false,
+				message: "No favourites data found in storage",
+				details: "The MMKV storage appears to be empty",
+			};
+		}
+
+		try {
+			const parsedFavourites = JSON.parse(favouritesData);
+
+			if (!Array.isArray(parsedFavourites)) {
+				return {
+					success: false,
+					message: "Invalid favourites data format",
+					details: "The stored data is not an array",
+				};
+			}
+
+			// Restore the favourites to the store
+			favourites$.favourites.set(parsedFavourites);
+
+			return {
+				success: true,
+				message: `Recovered ${parsedFavourites.length} favourites!`,
+				details: `Successfully restored favourites from storage. Please restart the app to see them.`,
+			};
+		} catch (parseError) {
+			return {
+				success: false,
+				message: "Failed to parse favourites data",
+				details: `JSON parse error: ${parseError instanceof Error ? parseError.message : "Unknown error"}`,
+			};
+		}
+	} catch (error) {
+		console.error("❌ Error recovering favourites:", error);
+		return {
+			success: false,
+			message: "Failed to recover favourites",
+			details: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}

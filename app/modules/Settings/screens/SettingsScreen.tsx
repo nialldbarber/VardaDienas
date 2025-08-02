@@ -18,6 +18,7 @@ import {StyleSheet} from "react-native-unistyles";
 
 import {setSettingsScrollToTop} from "@/app/navigation/components/TabBar";
 import type {SettingsStackParamList} from "@/app/navigation/navigation";
+import {favourites$} from "@/app/store/favourites";
 import {haptics$} from "@/app/store/haptics";
 import {language$} from "@/app/store/language";
 import {notifications$} from "@/app/store/notifications";
@@ -33,8 +34,10 @@ import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {
 	cancelTestNotifications,
+	debugCheckMMKVStorage,
 	debugScheduleForToday,
 	debugShowAllScheduledNotifications,
+	recoverFavouritesFromStorage,
 	simulateMultiplePushNotifications,
 	simulatePushNotification,
 	testDeepLink,
@@ -528,6 +531,66 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleDebugCheckFavourites = () => {
+		try {
+			const favourites = favourites$.favourites.get();
+			const count = favourites.length;
+
+			Toast.show({
+				type: "success",
+				text1: `Favourites Debug: ${count} items`,
+				text2:
+					count > 0 ? `First: ${favourites[0]?.name}` : "No favourites found",
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Debug check favourites error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Debug check favourites failed",
+				position: "bottom",
+			});
+		}
+	};
+
+	const handleDebugCheckMMKVStorage = async () => {
+		try {
+			const result = await debugCheckMMKVStorage();
+			Toast.show({
+				type: result.success ? "success" : "error",
+				text1: result.message,
+				text2: result.details,
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Debug MMKV storage error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Debug MMKV storage failed",
+				position: "bottom",
+			});
+		}
+	};
+
+	const handleRecoverFavourites = async () => {
+		try {
+			const result = await recoverFavouritesFromStorage();
+			Toast.show({
+				type: result.success ? "success" : "error",
+				text1: result.message,
+				text2: result.details,
+				position: "bottom",
+			});
+		} catch (error) {
+			console.error("Recover favourites error:", error);
+			Toast.show({
+				type: "error",
+				text1: "Recover favourites failed",
+				position: "bottom",
+			});
+		}
+	};
+
 	const handleOpenTimePicker = () => {
 		if (hapticsEnabled) {
 			haptics.impactMedium();
@@ -682,6 +745,21 @@ Thank you for your feedback!`;
 						<Text style={styles.rowText}>
 							Debug: Show All Scheduled Notifications
 						</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+
+					<Pressable style={styles.row} onPress={handleDebugCheckFavourites}>
+						<Text style={styles.rowText}>Debug: Check Favourites</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+
+					<Pressable style={styles.row} onPress={handleDebugCheckMMKVStorage}>
+						<Text style={styles.rowText}>Debug: Check MMKV Storage</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+
+					<Pressable style={styles.row} onPress={handleRecoverFavourites}>
+						<Text style={styles.rowText}>Recover Favourites</Text>
 						<ArrowRight2 size="20" color={colors.primary} />
 					</Pressable>
 				</View>
