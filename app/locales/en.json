@@ -32,7 +32,7 @@
 		"haptics": "Haptic Feedback",
 		"notifications": "Notifications",
 		"notificationTime": "Notification Time",
-		"notificationTimeDescription": "Time to send name day notifications",
+		"notificationTimeDescription": "Time notifications are sent",
 		"setNotificationTime": "Set Notification Time",
 		"notificationTimeUpdated": "Notification time updated",
 		"timePicker": {

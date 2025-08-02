@@ -32,7 +32,7 @@
 		"haptics": "Taktilā atbildes",
 		"notifications": "Paziņojumi",
 		"notificationTime": "Paziņojumu laiks",
-		"notificationTimeDescription": "Laiks, kad sūtīt vārda dienu paziņojumus",
+		"notificationTimeDescription": "Laiks, kad sūtīt paziņojumus",
 		"setNotificationTime": "Iestatīt paziņojumu laiku",
 		"notificationTimeUpdated": "Paziņojumu laiks atjaunināts",
 		"timePicker": {
