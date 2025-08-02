@@ -13,6 +13,11 @@ function getNotificationText(
 	name: string,
 	daysBefore = 0,
 ) {
+	console.log(`###### GET NOTIFICATION TEXT CALLED ######`);
+	console.log(
+		`###### Input - Language: ${language}, Key: ${key}, Name: ${name}, DaysBefore: ${daysBefore} ######`,
+	);
+
 	const translations = {
 		en: {
 			today: {
@@ -48,12 +53,20 @@ function getNotificationText(
 		translations[language as keyof typeof translations] || translations.en;
 
 	// Determine which message to use based on daysBefore
+	console.log(`###### DECIDING WHICH MESSAGE TO USE ######`);
+	console.log(
+		`###### DaysBefore value: ${daysBefore}, Type: ${typeof daysBefore} ######`,
+	);
+
 	if (daysBefore === 0) {
+		console.log(`###### SELECTED: TODAY MESSAGE ######`);
 		return langTranslations.today;
 	}
 	if (daysBefore === 1) {
+		console.log(`###### SELECTED: TOMORROW MESSAGE ######`);
 		return langTranslations.tomorrow;
 	}
+	console.log(`###### SELECTED: FUTURE MESSAGE (${daysBefore} days) ######`);
 	return langTranslations.future;
 }
 
@@ -133,6 +146,7 @@ export async function scheduleNameDayNotifications(
 		});
 
 		// Cancel existing notifications for this name first
+		console.log(`###### CANCELLING EXISTING NOTIFICATIONS FOR ${name} ######`);
 		await cancelNameDayNotifications(name, day, month);
 
 		const daysArray = Array.isArray(daysBefore) ? daysBefore : [daysBefore];
@@ -160,6 +174,12 @@ export async function scheduleNameDayNotifications(
 				month,
 				dayBefore,
 			);
+			console.log(`###### NOTIFICATION SCHEDULING ######`);
+			console.log(
+				`###### Name: ${name}, Day: ${day}, Month: ${month}, DaysBefore: ${dayBefore} ######`,
+			);
+			console.log(`###### Language: ${currentLanguage} ######`);
+
 			const notificationText = getNotificationText(
 				currentLanguage,
 				"nameDayToday",
@@ -167,7 +187,19 @@ export async function scheduleNameDayNotifications(
 				dayBefore,
 			);
 
+			console.log(`###### NOTIFICATION TEXT RESULT ######`);
+			console.log(`###### Title: ${notificationText.title} ######`);
+			console.log(`###### Body: ${notificationText.body} ######`);
+
 			try {
+				console.log(
+					`###### CREATING NOTIFICATION WITH ID: ${notificationId} ######`,
+				);
+				console.log(`###### NOTIFICATION OBJECT BEING CREATED ######`);
+				console.log(`###### ID: ${notificationId} ######`);
+				console.log(`###### TITLE: ${notificationText.title} ######`);
+				console.log(`###### BODY: ${notificationText.body} ######`);
+
 				await notifee.createTriggerNotification(
 					{
 						id: notificationId,
@@ -1009,6 +1041,55 @@ export async function debugCheckMMKVStorage(): Promise<{
 			details: error instanceof Error ? error.message : "Unknown error",
 		};
 	}
+}
+
+export function testNotificationTextLogic(): {
+	success: boolean;
+	message: string;
+	details: string;
+} {
+	console.log("=== TESTING NOTIFICATION TEXT LOGIC ===");
+
+	const testCases = [
+		{daysBefore: 0, expected: "today"},
+		{daysBefore: 1, expected: "tomorrow"},
+		{daysBefore: 2, expected: "future"},
+		{daysBefore: 3, expected: "future"},
+		{daysBefore: 5, expected: "future"},
+	];
+
+	let details = "Testing notification text logic:\n\n";
+
+	for (const testCase of testCases) {
+		const enResult = getNotificationText(
+			"en",
+			"test",
+			"John",
+			testCase.daysBefore,
+		);
+		const lvResult = getNotificationText(
+			"lv",
+			"test",
+			"Jānis",
+			testCase.daysBefore,
+		);
+
+		details += `Days before: ${testCase.daysBefore}\n`;
+		details += `  EN Title: ${enResult.title}\n`;
+		details += `  EN Body: ${enResult.body}\n`;
+		details += `  LV Title: ${lvResult.title}\n`;
+		details += `  LV Body: ${lvResult.body}\n\n`;
+
+		console.log(`Days before ${testCase.daysBefore}:`);
+		console.log(`  EN: ${enResult.title} - ${enResult.body}`);
+		console.log(`  LV: ${lvResult.title} - ${lvResult.body}`);
+	}
+
+	return {
+		success: true,
+		message: "Notification text logic test complete",
+		details: details,
+	};
 }
 
 export async function recoverFavouritesFromStorage(): Promise<{

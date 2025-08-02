@@ -43,6 +43,7 @@ import {
 	testDeepLink,
 	testNotificationNavigation,
 	testNotificationPermissions,
+	testNotificationTextLogic,
 } from "@/app/utils/notifications";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
@@ -575,19 +576,20 @@ Thank you for your feedback!`;
 	const handleRecoverFavourites = async () => {
 		try {
 			const result = await recoverFavouritesFromStorage();
-			Toast.show({
-				type: result.success ? "success" : "error",
-				text1: result.message,
-				text2: result.details,
-				position: "bottom",
-			});
+			Alert.alert(result.message, result.details);
 		} catch (error) {
-			console.error("Recover favourites error:", error);
-			Toast.show({
-				type: "error",
-				text1: "Recover favourites failed",
-				position: "bottom",
-			});
+			console.error("Error recovering favourites:", error);
+			Alert.alert("Error", "Failed to recover favourites");
+		}
+	};
+
+	const handleTestNotificationTextLogic = () => {
+		try {
+			const result = testNotificationTextLogic();
+			Alert.alert(result.message, result.details);
+		} catch (error) {
+			console.error("Error testing notification text logic:", error);
+			Alert.alert("Error", "Failed to test notification text logic");
 		}
 	};
 
@@ -763,6 +765,14 @@ Thank you for your feedback!`;
 
 					<Pressable style={styles.row} onPress={handleRecoverFavourites}>
 						<Text style={styles.rowText}>Recover Favourites</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+
+					<Pressable
+						style={styles.row}
+						onPress={handleTestNotificationTextLogic}
+					>
+						<Text style={styles.rowText}>Test Notification Text Logic</Text>
 						<ArrowRight2 size="20" color={colors.primary} />
 					</Pressable>
 				</View>
