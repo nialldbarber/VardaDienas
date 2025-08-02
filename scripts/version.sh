@@ -32,12 +32,20 @@ sed -i '' "s/versionName \"[^\"]*\"/versionName \"$NEW_VERSION\"/" android/app/b
 echo "Updating iOS versions..."
 sed -i '' "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $NEW_VERSION;/g" ios/VardaDienas.xcodeproj/project.pbxproj
 
+# Increment build number (CURRENT_PROJECT_VERSION) for App Store uploads
+echo "Incrementing build number..."
+# Extract current build number and increment it
+CURRENT_BUILD=$(grep -o 'CURRENT_PROJECT_VERSION = [0-9]*;' ios/VardaDienas.xcodeproj/project.pbxproj | head -1 | grep -o '[0-9]*')
+NEW_BUILD=$((CURRENT_BUILD + 1))
+sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" ios/VardaDienas.xcodeproj/project.pbxproj
+
 echo "Version updated to $NEW_VERSION successfully!"
+echo "Build number incremented to $NEW_BUILD"
 echo ""
 echo "Files updated:"
 echo "- package.json"
 echo "- android/app/build.gradle"
-echo "- ios/VardaDienas.xcodeproj/project.pbxproj"
+echo "- ios/VardaDienas.xcodeproj/project.pbxproj (version and build number)"
 echo ""
 echo "Next steps:"
 echo "1. Commit these changes: git add . && git commit -m \"Bump version to $NEW_VERSION\""
