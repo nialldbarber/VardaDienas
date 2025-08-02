@@ -156,8 +156,8 @@ const styles = StyleSheet.create(({colors, sizes}) => ({
 		height: 20,
 	},
 	letter: {
-		fontSize: 11,
-		fontWeight: "600",
+		fontSize: 12,
+		fontWeight: "900",
 		color: colors.primary,
 	},
 	indicator: {
