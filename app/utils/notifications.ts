@@ -332,12 +332,29 @@ function getNextOccurrenceDate(
 	const now = new Date();
 	const currentYear = now.getFullYear();
 
+	// Get the custom notification time from the store
+	const notificationTime = notifications$.notificationTime.get();
+
 	// Create the target date for the name day
-	let targetDate = new Date(currentYear, monthIndex, dayNumber, 9, 0, 0);
+	let targetDate = new Date(
+		currentYear,
+		monthIndex,
+		dayNumber,
+		notificationTime.hours,
+		notificationTime.minutes,
+		0,
+	);
 
 	// If the name day has already passed this year, schedule for next year
 	if (targetDate <= now) {
-		targetDate = new Date(currentYear + 1, monthIndex, dayNumber, 9, 0, 0);
+		targetDate = new Date(
+			currentYear + 1,
+			monthIndex,
+			dayNumber,
+			notificationTime.hours,
+			notificationTime.minutes,
+			0,
+		);
 	}
 
 	// Calculate the notification date by subtracting days before

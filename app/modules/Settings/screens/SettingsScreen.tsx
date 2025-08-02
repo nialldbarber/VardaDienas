@@ -20,11 +20,13 @@ import {setSettingsScrollToTop} from "@/app/navigation/components/TabBar";
 import type {SettingsStackParamList} from "@/app/navigation/navigation";
 import {haptics$} from "@/app/store/haptics";
 import {language$} from "@/app/store/language";
+import {notifications$} from "@/app/store/notifications";
 import {Header} from "@/app/ui/components/Header";
 import {LanguageSelector} from "@/app/ui/components/LanguageSelector";
 import {Layout} from "@/app/ui/components/layout";
 import {Switch} from "@/app/ui/components/Switch";
 import {Text} from "@/app/ui/components/Text";
+import {TimePickerModal} from "@/app/ui/components/TimePickerModal";
 import {View} from "@/app/ui/components/View";
 import {WebViewScreen} from "@/app/ui/components/WebViewScreen";
 import {colors} from "@/app/ui/config/colors";
@@ -55,10 +57,12 @@ export const SettingsScreen = React.forwardRef<SettingsScreenRef>((_, ref) => {
 	const notificationPermissionStatus = use$(
 		language$.notificationPermissionStatus,
 	);
+	const notificationTime = use$(notifications$.notificationTime);
 
 	const [webViewVisible, setWebViewVisible] = React.useState(false);
 	const [webViewUrl, setWebViewUrl] = React.useState("");
 	const [webViewTitle, setWebViewTitle] = React.useState("");
+	const [showTimePicker, setShowTimePicker] = React.useState(false);
 
 	React.useImperativeHandle(ref, () => ({
 		scrollToTop: () => {
@@ -484,6 +488,27 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleOpenTimePicker = () => {
+		if (hapticsEnabled) {
+			haptics.impactMedium();
+		}
+		setShowTimePicker(true);
+	};
+
+	const handleTimePickerConfirm = (time: {hours: number; minutes: number}) => {
+		notifications$.setNotificationTime(time);
+		Toast.show({
+			type: "success",
+			text1: t("settings.notificationTimeUpdated"),
+			text2: `${time.hours.toString().padStart(2, "0")}:${time.minutes.toString().padStart(2, "0")}`,
+			position: "bottom",
+		});
+	};
+
+	const formatNotificationTime = () => {
+		return `${notificationTime.hours.toString().padStart(2, "0")}:${notificationTime.minutes.toString().padStart(2, "0")}`;
+	};
+
 	return (
 		<Layout
 			ref={layoutRef}
@@ -520,6 +545,21 @@ Thank you for your feedback!`;
 							onValueChange={handleNotificationToggle}
 						/>
 					</View>
+
+					<Pressable style={styles.row} onPress={handleOpenTimePicker}>
+						<View style={styles.rowContent}>
+							<Text style={styles.rowText}>
+								{t("settings.notificationTime")}
+							</Text>
+							<Text style={styles.rowSubtext}>
+								{t("settings.notificationTimeDescription")}
+							</Text>
+						</View>
+						<View style={styles.timeDisplay}>
+							<Text style={styles.timeText}>{formatNotificationTime()}</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</View>
+					</Pressable>
 				</View>
 
 				<View style={styles.section}>
@@ -613,6 +653,12 @@ Thank you for your feedback!`;
 				title={webViewTitle}
 				onClose={handleCloseWebView}
 			/>
+			<TimePickerModal
+				visible={showTimePicker}
+				onClose={() => setShowTimePicker(false)}
+				onConfirm={handleTimePickerConfirm}
+				title={t("settings.setNotificationTime")}
+			/>
 		</Layout>
 	);
 });
@@ -692,5 +738,15 @@ const styles = StyleSheet.create(({colors, sizes, tokens}) => ({
 		fontSize: 12,
 		color: colors.grey,
 		fontWeight: "400",
+	},
+	timeDisplay: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: sizes["8px"],
+	},
+	timeText: {
+		fontSize: 16,
+		fontWeight: "600",
+		color: colors.primary,
 	},
 }));

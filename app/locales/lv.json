@@ -31,6 +31,10 @@
 		"madeWith": "Ar ❤️ Dančukam no Nīla",
 		"haptics": "Taktilā atbildes",
 		"notifications": "Paziņojumi",
+		"notificationTime": "Paziņojumu laiks",
+		"notificationTimeDescription": "Laiks, kad sūtīt vārda dienu paziņojumus",
+		"setNotificationTime": "Iestatīt paziņojumu laiku",
+		"notificationTimeUpdated": "Paziņojumu laiks atjaunināts",
 		"notificationStatuses": {
 			"enabled": "Ieslēgti",
 			"disabled": "Izslēgti",

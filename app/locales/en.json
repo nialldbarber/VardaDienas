@@ -31,6 +31,10 @@
 		"madeWith": "Made with ❤️ for Dana, by Niall",
 		"haptics": "Haptic Feedback",
 		"notifications": "Notifications",
+		"notificationTime": "Notification Time",
+		"notificationTimeDescription": "Time to send name day notifications",
+		"setNotificationTime": "Set Notification Time",
+		"notificationTimeUpdated": "Notification time updated",
 		"notificationStatuses": {
 			"enabled": "Enabled",
 			"disabled": "Disabled",
