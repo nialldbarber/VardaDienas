@@ -34,6 +34,7 @@ import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {
 	cancelTestNotifications,
+	checkScheduledNotificationContent,
 	debugCheckMMKVStorage,
 	debugScheduleForToday,
 	debugShowAllScheduledNotifications,
@@ -593,6 +594,16 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleCheckScheduledNotificationContent = async () => {
+		try {
+			const result = await checkScheduledNotificationContent();
+			Alert.alert(result.message, result.details);
+		} catch (error) {
+			console.error("Error checking scheduled notification content:", error);
+			Alert.alert("Error", "Failed to check scheduled notification content");
+		}
+	};
+
 	const handleOpenTimePicker = () => {
 		if (hapticsEnabled) {
 			haptics.impactMedium();
@@ -773,6 +784,16 @@ Thank you for your feedback!`;
 						onPress={handleTestNotificationTextLogic}
 					>
 						<Text style={styles.rowText}>Test Notification Text Logic</Text>
+						<ArrowRight2 size="20" color={colors.primary} />
+					</Pressable>
+
+					<Pressable
+						style={styles.row}
+						onPress={handleCheckScheduledNotificationContent}
+					>
+						<Text style={styles.rowText}>
+							Check Scheduled Notification Content
+						</Text>
 						<ArrowRight2 size="20" color={colors.primary} />
 					</Pressable>
 				</View>

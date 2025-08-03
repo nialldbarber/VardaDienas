@@ -26,25 +26,25 @@ function getNotificationText(
 			},
 			tomorrow: {
 				title: "🎉 Name day tomorrow!",
-				body: `Tomorrow is ${name}'s name day! Don't forget to say sveiciens!`,
+				body: `Tomorrow is ${name}'s name day!`,
 			},
 			future: {
 				title: "🎉 Name day coming up!",
-				body: `${name}'s name day is in ${daysBefore} days! Don't forget to say sveiciens!`,
+				body: `${name}'s name day is in ${daysBefore} days!`,
 			},
 		},
 		lv: {
 			today: {
 				title: "🎉 Vārda diena šodien!",
-				body: `Šodien ir ${name} vārda diena! Neaizmirsti teikt sveiciens!`,
+				body: `${name} svin vārda dienu šodien! Neaizmirsti teikt sveiciens!`,
 			},
 			tomorrow: {
 				title: "🎉 Vārda diena rīt!",
-				body: `Rīt ir ${name} vārda diena! Neaizmirsti teikt sveiciens!`,
+				body: `Rīt ${name} svinēs vārda dienu!`,
 			},
 			future: {
 				title: "🎉 Vārda diena drīzumā!",
-				body: `${name} vārda diena ir pēc ${daysBefore} dienām! Neaizmirsti teikt sveiciens!`,
+				body: `${name} vārda diena būs pēc ${daysBefore} dienām!`,
 			},
 		},
 	};
@@ -152,17 +152,38 @@ export async function scheduleNameDayNotifications(
 		const daysArray = Array.isArray(daysBefore) ? daysBefore : [daysBefore];
 		console.log("Scheduling notifications for days array:", daysArray);
 
+		// Remove duplicates and sort to avoid conflicts
+		const uniqueDays = [...new Set(daysArray)].sort((a, b) => b - a); // Sort descending
+		console.log("Unique days after deduplication:", uniqueDays);
+
 		// Track successful and failed notifications
 		const successfulNotifications: number[] = [];
 		const failedNotifications: number[] = [];
 
-		for (const dayBefore of daysArray) {
+		for (const dayBefore of uniqueDays) {
 			console.log(`Processing day ${dayBefore} for ${name}`);
 			const nextDate = getNextOccurrenceDate(day, month, dayBefore);
 
 			if (!nextDate) {
 				console.warn(
 					`Could not calculate next date for ${day} ${month} with ${dayBefore} days before`,
+				);
+				failedNotifications.push(dayBefore);
+				continue;
+			}
+
+			// Check if this notification would fire at the same time as another one
+			const notificationTime = nextDate.getTime();
+			const existingNotificationTime = successfulNotifications.find(
+				(successfulDay) => {
+					const existingDate = getNextOccurrenceDate(day, month, successfulDay);
+					return existingDate && existingDate.getTime() === notificationTime;
+				},
+			);
+
+			if (existingNotificationTime !== undefined) {
+				console.warn(
+					`Skipping notification for ${dayBefore} days before - would fire at same time as ${existingNotificationTime} days before notification`,
 				);
 				failedNotifications.push(dayBefore);
 				continue;
@@ -200,37 +221,39 @@ export async function scheduleNameDayNotifications(
 				console.log(`###### TITLE: ${notificationText.title} ######`);
 				console.log(`###### BODY: ${notificationText.body} ######`);
 
-				await notifee.createTriggerNotification(
-					{
-						id: notificationId,
-						title: notificationText.title,
-						body: notificationText.body,
-						data: {
-							deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${dayBefore}`,
-							name,
-							day,
-							month,
-							daysBefore: dayBefore.toString(),
-						},
-						android: {
-							channelId,
-							pressAction: {
-								id: "default",
-							},
-							smallIcon: "ic_launcher",
-						},
-						ios: {
-							sound: "default",
-						},
+				const notificationObject = {
+					id: notificationId,
+					title: notificationText.title,
+					body: notificationText.body,
+					data: {
+						deepLink: `vardadienas://favourites?name=${encodeURIComponent(name)}&day=${encodeURIComponent(day)}&month=${encodeURIComponent(month)}&daysBefore=${dayBefore}`,
+						name,
+						day,
+						month,
+						daysBefore: dayBefore.toString(),
 					},
-					{
-						type: TriggerType.TIMESTAMP,
-						timestamp: nextDate.getTime(),
-						alarmManager: {
-							allowWhileIdle: true,
+					android: {
+						channelId,
+						pressAction: {
+							id: "default",
 						},
+						smallIcon: "ic_launcher",
 					},
-				);
+					ios: {
+						sound: "default",
+					},
+				};
+
+				console.log(`###### FULL NOTIFICATION OBJECT ######`);
+				console.log(JSON.stringify(notificationObject, null, 2));
+
+				await notifee.createTriggerNotification(notificationObject, {
+					type: TriggerType.TIMESTAMP,
+					timestamp: nextDate.getTime(),
+					alarmManager: {
+						allowWhileIdle: true,
+					},
+				});
 
 				console.log(
 					`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${dayBefore} days before name day)`,
@@ -1038,6 +1061,46 @@ export async function debugCheckMMKVStorage(): Promise<{
 		return {
 			success: false,
 			message: "Failed to check MMKV storage",
+			details: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+export async function checkScheduledNotificationContent(): Promise<{
+	success: boolean;
+	message: string;
+	details: string;
+}> {
+	console.log("=== CHECKING SCHEDULED NOTIFICATION CONTENT ===");
+
+	try {
+		const scheduled = await getScheduledNotifications();
+		let details = `Found ${scheduled.length} scheduled notifications:\n\n`;
+
+		scheduled.forEach((notification, index) => {
+			const notificationData = notification.notification;
+			details += `${index + 1}. ID: ${notificationData.id}\n`;
+			details += `   Title: ${notificationData.title}\n`;
+			details += `   Body: ${notificationData.body}\n`;
+			details += `   Data: ${JSON.stringify(notificationData.data)}\n\n`;
+
+			console.log(`Notification ${index + 1}:`);
+			console.log(`  ID: ${notificationData.id}`);
+			console.log(`  Title: ${notificationData.title}`);
+			console.log(`  Body: ${notificationData.body}`);
+			console.log(`  Data:`, notificationData.data);
+		});
+
+		return {
+			success: true,
+			message: `Found ${scheduled.length} scheduled notifications`,
+			details: details,
+		};
+	} catch (error) {
+		console.error("Error checking scheduled notifications:", error);
+		return {
+			success: false,
+			message: "Failed to check scheduled notifications",
 			details: error instanceof Error ? error.message : "Unknown error",
 		};
 	}

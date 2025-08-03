@@ -719,6 +719,15 @@ export const GroupedNamesAccordion = ({
 				});
 			}
 
+			// Cancel notifications if disabling
+			if (!enabled) {
+				await cancelNameDayNotifications(
+					favourite.name,
+					favourite.day,
+					favourite.month,
+				);
+			}
+
 			favourites$.toggleNotification(favourite.name, enabled);
 		} catch (error) {
 			console.error("Error toggling notification:", error);
@@ -731,7 +740,17 @@ export const GroupedNamesAccordion = ({
 		}
 	};
 
-	const handleRemoveFavourite = (name: string) => {
+	const handleRemoveFavourite = async (name: string) => {
+		// Find the favourite to get its day and month for notification cancellation
+		const favourite = reactiveFavourites.find((f) => f.name === name);
+		if (favourite) {
+			// Cancel notifications before removing the favourite
+			await cancelNameDayNotifications(
+				favourite.name,
+				favourite.day,
+				favourite.month,
+			);
+		}
 		favourites$.removeFavourite(name);
 	};
 

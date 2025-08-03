@@ -11,6 +11,7 @@ import {Text} from "@/app/ui/components/Text";
 import {View} from "@/app/ui/components/View";
 import {hapticToTrigger} from "@/app/utils/haptics";
 import {
+	cancelNameDayNotifications,
 	requestNotificationPermissions,
 	scheduleNameDayNotifications,
 } from "@/app/utils/notifications";
@@ -107,7 +108,9 @@ export function CheckboxRow({
 		}
 	};
 
-	const handleUnCheckedChange = () => {
+	const handleUnCheckedChange = async () => {
+		// Cancel notifications before removing the favourite
+		await cancelNameDayNotifications(vards, data.diena, month ?? "");
 		favourites$.removeFavourite(vards);
 		Toast.show({
 			type: "info",
