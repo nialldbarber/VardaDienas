@@ -36,7 +36,7 @@ function getNotificationText(
 		lv: {
 			today: {
 				title: "🎉 Vārda diena šodien!",
-				body: `${name} svin vārda dienu šodien! Neaizmirsti teikt sveiciens!`,
+				body: `${name} šodien svin vārda dienu! Neaizmirsti apsveikt!`,
 			},
 			tomorrow: {
 				title: "🎉 Vārda diena rīt!",
@@ -44,7 +44,7 @@ function getNotificationText(
 			},
 			future: {
 				title: "🎉 Vārda diena drīzumā!",
-				body: `${name} vārda diena būs pēc ${daysBefore} dienām!`,
+				body: `${name} svinēs vārda dienu pēc ${daysBefore} dienām!`,
 			},
 		},
 	};
