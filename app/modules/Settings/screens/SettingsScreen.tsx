@@ -714,89 +714,94 @@ Thank you for your feedback!`;
 					</Pressable>
 				</View>
 
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Debug</Text>
-					<Pressable
-						style={styles.row}
-						onPress={handleSimulatePushNotification}
-					>
-						<Text style={styles.rowText}>
-							Schedule Test Notification (1 min)
-						</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+				{__DEV__ && (
+					<View style={styles.section}>
+						<Text style={styles.sectionTitle}>DEV - Debug</Text>
+						<Pressable
+							style={styles.row}
+							onPress={handleSimulatePushNotification}
+						>
+							<Text style={styles.rowText}>
+								Schedule Test Notification (1 min)
+							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleSimulateMultiplePushNotifications}
-					>
-						<Text style={styles.rowText}>
-							Schedule Multiple Test Notifications
-						</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleSimulateMultiplePushNotifications}
+						>
+							<Text style={styles.rowText}>
+								Schedule Multiple Test Notifications
+							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable style={styles.row} onPress={handleCancelTestNotifications}>
-						<Text style={styles.rowText}>Cancel Test Notifications</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleCancelTestNotifications}
+						>
+							<Text style={styles.rowText}>Cancel Test Notifications</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleTestNotificationPermissions}
-					>
-						<Text style={styles.rowText}>Test Notification Permissions</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleTestNotificationPermissions}
+						>
+							<Text style={styles.rowText}>Test Notification Permissions</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable style={styles.row} onPress={handleDebugScheduleForToday}>
-						<Text style={styles.rowText}>Debug Schedule For Today</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable style={styles.row} onPress={handleDebugScheduleForToday}>
+							<Text style={styles.rowText}>Debug Schedule For Today</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleDebugShowAllScheduledNotifications}
-					>
-						<Text style={styles.rowText}>
-							Debug: Show All Scheduled Notifications
-						</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleDebugShowAllScheduledNotifications}
+						>
+							<Text style={styles.rowText}>
+								Debug: Show All Scheduled Notifications
+							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable style={styles.row} onPress={handleDebugCheckFavourites}>
-						<Text style={styles.rowText}>Debug: Check Favourites</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable style={styles.row} onPress={handleDebugCheckFavourites}>
+							<Text style={styles.rowText}>Debug: Check Favourites</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable style={styles.row} onPress={handleDebugCheckMMKVStorage}>
-						<Text style={styles.rowText}>Debug: Check MMKV Storage</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable style={styles.row} onPress={handleDebugCheckMMKVStorage}>
+							<Text style={styles.rowText}>Debug: Check MMKV Storage</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable style={styles.row} onPress={handleRecoverFavourites}>
-						<Text style={styles.rowText}>Recover Favourites</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable style={styles.row} onPress={handleRecoverFavourites}>
+							<Text style={styles.rowText}>Recover Favourites</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleTestNotificationTextLogic}
-					>
-						<Text style={styles.rowText}>Test Notification Text Logic</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
+						<Pressable
+							style={styles.row}
+							onPress={handleTestNotificationTextLogic}
+						>
+							<Text style={styles.rowText}>Test Notification Text Logic</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
 
-					<Pressable
-						style={styles.row}
-						onPress={handleCheckScheduledNotificationContent}
-					>
-						<Text style={styles.rowText}>
-							Check Scheduled Notification Content
-						</Text>
-						<ArrowRight2 size="20" color={colors.primary} />
-					</Pressable>
-				</View>
+						<Pressable
+							style={styles.row}
+							onPress={handleCheckScheduledNotificationContent}
+						>
+							<Text style={styles.rowText}>
+								Check Scheduled Notification Content
+							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+					</View>
+				)}
 
 				<View style={styles.madeWith}>
 					<Text style={styles.madeWithText} withEmoji>
