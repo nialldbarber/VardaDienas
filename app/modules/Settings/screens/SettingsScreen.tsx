@@ -685,15 +685,17 @@ Thank you for your feedback!`;
 						</View>
 					</Pressable>
 
-					<View style={styles.row}>
-						<View style={styles.rowContent}>
-							<Text style={styles.rowText}>Debug: Current Time</Text>
-							<Text style={styles.rowSubtext}>
-								Local: {getCurrentLocalTime()} | Notification:{" "}
-								{formatNotificationTime()}
-							</Text>
+					{__DEV__ && (
+						<View style={styles.row}>
+							<View style={styles.rowContent}>
+								<Text style={styles.rowText}>Debug: Current Time</Text>
+								<Text style={styles.rowSubtext}>
+									Local: {getCurrentLocalTime()} | Notification:{" "}
+									{formatNotificationTime()}
+								</Text>
+							</View>
 						</View>
-					</View>
+					)}
 				</View>
 
 				<View style={styles.section}>

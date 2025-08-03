@@ -3,7 +3,12 @@ import {useNavigation} from "@react-navigation/native";
 import {FlashList} from "@shopify/flash-list";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {Pressable, useWindowDimensions} from "react-native";
+import {
+	AppState,
+	Pressable,
+	useWindowDimensions,
+	type AppStateStatus,
+} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {StyleSheet} from "react-native-unistyles";
 
@@ -67,6 +72,7 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 	const insets = useSafeAreaInsets();
 	const [loading, setLoading] = React.useState(true);
 	const hasScrolledRef = React.useRef(false);
+	const appStateRef = React.useRef(AppState.currentState);
 
 	const formatNames = React.useCallback(
 		(names: string[]): string => {
@@ -109,6 +115,35 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 
 		return () => {
 			setHomeScrollToToday(() => {});
+		};
+	}, []);
+
+	// Handle app state changes to scroll to today when app comes back to foreground
+	React.useEffect(() => {
+		const handleAppStateChange = (nextAppState: AppStateStatus) => {
+			if (
+				appStateRef.current.match(/inactive|background/) &&
+				nextAppState === "active"
+			) {
+				// App has come to the foreground, scroll to today
+				if (flashListRef.current) {
+					const todaysIndex = getTodaysIndex(vardūs);
+					flashListRef.current.scrollToIndex({
+						index: todaysIndex,
+						animated: true,
+					});
+				}
+			}
+			appStateRef.current = nextAppState;
+		};
+
+		const subscription = AppState.addEventListener(
+			"change",
+			handleAppStateChange,
+		);
+
+		return () => {
+			subscription?.remove();
 		};
 	}, []);
 
