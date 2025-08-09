@@ -325,8 +325,26 @@ export async function cancelNameDayNotifications(
 
 export async function cancelAllNotifications(): Promise<void> {
 	try {
+		// Cancel all displayed notifications
 		await notifee.cancelAllNotifications();
-		console.log("Cancelled all notifications");
+		console.log("### Cancelled all displayed notifications");
+
+		// Also cancel all scheduled trigger notifications explicitly
+		const scheduled = await notifee.getTriggerNotifications();
+		console.log(
+			`### Found ${scheduled.length} scheduled trigger notifications`,
+		);
+		for (const n of scheduled) {
+			const id = n.notification.id;
+			if (id) {
+				try {
+					await notifee.cancelNotification(id);
+					console.log(`### Cancelled trigger notification: ${id}`);
+				} catch (e) {
+					console.log(`### Failed to cancel trigger notification: ${id}`);
+				}
+			}
+		}
 	} catch (error) {
 		console.error("Error cancelling all notifications:", error);
 	}

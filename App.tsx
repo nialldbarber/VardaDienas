@@ -4,12 +4,18 @@ import notifee, {
 	type InitialNotification,
 } from "@notifee/react-native";
 import * as Sentry from "@sentry/react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import RNBootSplash from "react-native-bootsplash";
 import Config from "react-native-config";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 
+import {favourites$} from "@/app/store/favourites";
+import {notifications$} from "@/app/store/notifications";
+import {
+	cancelAllNotifications,
+	scheduleNameDayNotifications,
+} from "@/app/utils/notifications";
 import {Navigation} from "./app/navigation/RootStack";
 import {setupDeepLinking} from "./app/navigation/deepLinking";
 import {AnimatedSplash} from "./app/ui/components/AnimatedSplash";
@@ -79,6 +85,37 @@ export default Sentry.wrap(function App() {
 		return () => {
 			unsubscribeOnForegroundEvent();
 		};
+	}, []);
+
+	// One-time migration to clear incorrect legacy schedules and reschedule correctly
+	useEffect(() => {
+		const runMigration = async () => {
+			try {
+				const alreadyDone = notifications$.migrationDone.get();
+				if (alreadyDone) return;
+				console.log(
+					"### Migration: starting notification cleanup & reschedule",
+				);
+				await cancelAllNotifications();
+				const favourites = favourites$.favourites.get();
+				const enabled = favourites.filter((f) => f.notifyMe);
+				for (const fav of enabled) {
+					await scheduleNameDayNotifications(
+						fav.name,
+						fav.day,
+						fav.month,
+						fav.daysBefore && fav.daysBefore.length > 0 ? fav.daysBefore : [0],
+					);
+				}
+				notifications$.setMigrationDone(true);
+				console.log(
+					`### Migration: rescheduled ${enabled.length} favourites and marked done`,
+				);
+			} catch (e) {
+				console.error("### Migration error:", e);
+			}
+		};
+		runMigration();
 	}, []);
 
 	const handleSplashComplete = () => {

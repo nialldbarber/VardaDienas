@@ -26,7 +26,16 @@ export const notifications$ = observable({
 			name: "notificationTime",
 		},
 	}),
+	migrationDone: syncedNotifications({
+		initial: false,
+		persist: {
+			name: "notificationsMigrationV1",
+		},
+	}),
 	setNotificationTime: (time: NotificationTime) => {
 		notifications$.notificationTime.set(time);
+	},
+	setMigrationDone: (done: boolean) => {
+		notifications$.migrationDone.set(done);
 	},
 });
