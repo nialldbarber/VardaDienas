@@ -642,9 +642,7 @@ export const GroupedNamesAccordion = ({
 		favouriteName?: string,
 		index?: number,
 	) => {
-		if (hapticsEnabled) {
-			haptics.impactMedium();
-		}
+		haptics.impactMedium();
 
 		if (favouriteName && index !== undefined) {
 			setAutoOpenAccordions((prev) => {
@@ -756,9 +754,7 @@ export const GroupedNamesAccordion = ({
 
 	const handleShareWishes = async (name: string) => {
 		try {
-			if (hapticsEnabled) {
-				haptics.impactMedium();
-			}
+			haptics.impactMedium();
 
 			const message = t("favourites.shareMessage", {name});
 			await Share.open({
@@ -814,11 +810,13 @@ export const GroupedNamesAccordion = ({
 			);
 
 			if (isNowSelected) {
-				const updatedFavourite = reactiveFavourites.find(
+				// Read the latest favourites from the store after the toggle
+				const latestFavourites = favourites$.favourites.get();
+				const updatedFavourite = latestFavourites.find(
 					(f) => f.name === favourite.name,
 				);
 				console.log(
-					"Scheduling notifications for days:",
+					"### Updated daysBefore after toggle:",
 					updatedFavourite?.daysBefore,
 				);
 				if (

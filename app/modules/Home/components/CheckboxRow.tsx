@@ -120,9 +120,7 @@ export function CheckboxRow({
 	};
 
 	const handleRowPress = () => {
-		if (hapticsEnabled) {
-			haptic.impactMedium();
-		}
+		haptic.impactMedium();
 
 		if (isChecked) {
 			handleUnCheckedChange();

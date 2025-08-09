@@ -33,12 +33,15 @@ import {WebViewScreen} from "@/app/ui/components/WebViewScreen";
 import {colors} from "@/app/ui/config/colors";
 import {haptics} from "@/app/utils/haptics";
 import {
+	cancelAllNotifications,
 	cancelTestNotifications,
 	checkScheduledNotificationContent,
 	debugCheckMMKVStorage,
+	debugNotificationIssue,
 	debugScheduleForToday,
 	debugShowAllScheduledNotifications,
 	recoverFavouritesFromStorage,
+	scheduleNameDayNotifications,
 	simulateMultiplePushNotifications,
 	simulatePushNotification,
 	testDeepLink,
@@ -604,6 +607,16 @@ Thank you for your feedback!`;
 		}
 	};
 
+	const handleDebugNotificationIssue = async () => {
+		try {
+			const result = await debugNotificationIssue();
+			Alert.alert(result.message, result.details);
+		} catch (error) {
+			console.error("Error debugging notification issue:", error);
+			Alert.alert("Error", "Failed to debug notification issue");
+		}
+	};
+
 	const handleOpenTimePicker = () => {
 		if (hapticsEnabled) {
 			haptics.impactMedium();
@@ -611,7 +624,10 @@ Thank you for your feedback!`;
 		setShowTimePicker(true);
 	};
 
-	const handleTimePickerConfirm = (time: {hours: number; minutes: number}) => {
+	const handleTimePickerConfirm = async (time: {
+		hours: number;
+		minutes: number;
+	}) => {
 		notifications$.setNotificationTime(time);
 		Toast.show({
 			type: "success",
@@ -619,6 +635,33 @@ Thank you for your feedback!`;
 			text2: `${time.hours.toString().padStart(2, "0")}:${time.minutes.toString().padStart(2, "0")}`,
 			position: "bottom",
 		});
+
+		try {
+			// Reschedule notifications for favourites that have reminders enabled
+			const favourites = favourites$.favourites.get();
+			const favouritesWithNotifications = favourites.filter(
+				(fav) => fav.notifyMe,
+			);
+
+			if (favouritesWithNotifications.length > 0) {
+				await cancelAllNotifications();
+				for (const favourite of favouritesWithNotifications) {
+					await scheduleNameDayNotifications(
+						favourite.name,
+						favourite.day,
+						favourite.month,
+						favourite.daysBefore && favourite.daysBefore.length > 0
+							? favourite.daysBefore
+							: [0],
+					);
+				}
+			}
+		} catch (error) {
+			console.error(
+				"Error rescheduling notifications after time change:",
+				error,
+			);
+		}
 	};
 
 	const formatNotificationTime = () => {
@@ -800,6 +843,14 @@ Thank you for your feedback!`;
 							<Text style={styles.rowText}>
 								Check Scheduled Notification Content
 							</Text>
+							<ArrowRight2 size="20" color={colors.primary} />
+						</Pressable>
+
+						<Pressable
+							style={styles.row}
+							onPress={handleDebugNotificationIssue}
+						>
+							<Text style={styles.rowText}>Debug Notification Issue</Text>
 							<ArrowRight2 size="20" color={colors.primary} />
 						</Pressable>
 					</View>

@@ -13,9 +13,9 @@ function getNotificationText(
 	name: string,
 	daysBefore = 0,
 ) {
-	console.log(`###### GET NOTIFICATION TEXT CALLED ######`);
+	console.log(`### GET NOTIFICATION TEXT CALLED`);
 	console.log(
-		`###### Input - Language: ${language}, Key: ${key}, Name: ${name}, DaysBefore: ${daysBefore} ######`,
+		`### Input - Language: ${language}, Key: ${key}, Name: ${name}, DaysBefore: ${daysBefore}`,
 	);
 
 	const translations = {
@@ -53,20 +53,20 @@ function getNotificationText(
 		translations[language as keyof typeof translations] || translations.en;
 
 	// Determine which message to use based on daysBefore
-	console.log(`###### DECIDING WHICH MESSAGE TO USE ######`);
+	console.log(`### DECIDING WHICH MESSAGE TO USE`);
 	console.log(
-		`###### DaysBefore value: ${daysBefore}, Type: ${typeof daysBefore} ######`,
+		`### DaysBefore value: ${daysBefore}, Type: ${typeof daysBefore}`,
 	);
 
 	if (daysBefore === 0) {
-		console.log(`###### SELECTED: TODAY MESSAGE ######`);
+		console.log(`### SELECTED: TODAY MESSAGE`);
 		return langTranslations.today;
 	}
 	if (daysBefore === 1) {
-		console.log(`###### SELECTED: TOMORROW MESSAGE ######`);
+		console.log(`### SELECTED: TOMORROW MESSAGE`);
 		return langTranslations.tomorrow;
 	}
-	console.log(`###### SELECTED: FUTURE MESSAGE (${daysBefore} days) ######`);
+	console.log(`### SELECTED: FUTURE MESSAGE (${daysBefore} days)`);
 	return langTranslations.future;
 }
 
@@ -146,27 +146,27 @@ export async function scheduleNameDayNotifications(
 		});
 
 		// Cancel existing notifications for this name first
-		console.log(`###### CANCELLING EXISTING NOTIFICATIONS FOR ${name} ######`);
+		console.log(`### CANCELLING EXISTING NOTIFICATIONS FOR ${name}`);
 		await cancelNameDayNotifications(name, day, month);
 
 		const daysArray = Array.isArray(daysBefore) ? daysBefore : [daysBefore];
-		console.log("Scheduling notifications for days array:", daysArray);
+		console.log("### Scheduling notifications for days array:", daysArray);
 
 		// Remove duplicates and sort to avoid conflicts
 		const uniqueDays = [...new Set(daysArray)].sort((a, b) => b - a); // Sort descending
-		console.log("Unique days after deduplication:", uniqueDays);
+		console.log("### Unique days after deduplication:", uniqueDays);
 
 		// Track successful and failed notifications
 		const successfulNotifications: number[] = [];
 		const failedNotifications: number[] = [];
 
 		for (const dayBefore of uniqueDays) {
-			console.log(`Processing day ${dayBefore} for ${name}`);
+			console.log(`### Processing day ${dayBefore} for ${name}`);
 			const nextDate = getNextOccurrenceDate(day, month, dayBefore);
 
 			if (!nextDate) {
 				console.warn(
-					`Could not calculate next date for ${day} ${month} with ${dayBefore} days before`,
+					`### Could not calculate next date for ${day} ${month} with ${dayBefore} days before`,
 				);
 				failedNotifications.push(dayBefore);
 				continue;
@@ -183,7 +183,7 @@ export async function scheduleNameDayNotifications(
 
 			if (existingNotificationTime !== undefined) {
 				console.warn(
-					`Skipping notification for ${dayBefore} days before - would fire at same time as ${existingNotificationTime} days before notification`,
+					`### Skipping notification for ${dayBefore} days before - would fire at same time as ${existingNotificationTime} days before notification`,
 				);
 				failedNotifications.push(dayBefore);
 				continue;
@@ -195,11 +195,11 @@ export async function scheduleNameDayNotifications(
 				month,
 				dayBefore,
 			);
-			console.log(`###### NOTIFICATION SCHEDULING ######`);
+			console.log(`### NOTIFICATION SCHEDULING`);
 			console.log(
-				`###### Name: ${name}, Day: ${day}, Month: ${month}, DaysBefore: ${dayBefore} ######`,
+				`### Name: ${name}, Day: ${day}, Month: ${month}, DaysBefore: ${dayBefore}`,
 			);
-			console.log(`###### Language: ${currentLanguage} ######`);
+			console.log(`### Language: ${currentLanguage}`);
 
 			const notificationText = getNotificationText(
 				currentLanguage,
@@ -208,18 +208,16 @@ export async function scheduleNameDayNotifications(
 				dayBefore,
 			);
 
-			console.log(`###### NOTIFICATION TEXT RESULT ######`);
-			console.log(`###### Title: ${notificationText.title} ######`);
-			console.log(`###### Body: ${notificationText.body} ######`);
+			console.log(`### NOTIFICATION TEXT RESULT`);
+			console.log(`### Title: ${notificationText.title}`);
+			console.log(`### Body: ${notificationText.body}`);
 
 			try {
-				console.log(
-					`###### CREATING NOTIFICATION WITH ID: ${notificationId} ######`,
-				);
-				console.log(`###### NOTIFICATION OBJECT BEING CREATED ######`);
-				console.log(`###### ID: ${notificationId} ######`);
-				console.log(`###### TITLE: ${notificationText.title} ######`);
-				console.log(`###### BODY: ${notificationText.body} ######`);
+				console.log(`### CREATING NOTIFICATION WITH ID: ${notificationId}`);
+				console.log(`### NOTIFICATION OBJECT BEING CREATED`);
+				console.log(`### ID: ${notificationId}`);
+				console.log(`### TITLE: ${notificationText.title}`);
+				console.log(`### BODY: ${notificationText.body}`);
 
 				const notificationObject = {
 					id: notificationId,
@@ -244,7 +242,7 @@ export async function scheduleNameDayNotifications(
 					},
 				};
 
-				console.log(`###### FULL NOTIFICATION OBJECT ######`);
+				console.log(`### FULL NOTIFICATION OBJECT`);
 				console.log(JSON.stringify(notificationObject, null, 2));
 
 				await notifee.createTriggerNotification(notificationObject, {
@@ -255,13 +253,16 @@ export async function scheduleNameDayNotifications(
 					},
 				});
 
+				const nt = notifications$.notificationTime.get();
+				const hh = nt.hours.toString().padStart(2, "0");
+				const mm = nt.minutes.toString().padStart(2, "0");
 				console.log(
-					`Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at 9am (${dayBefore} days before name day)`,
+					`### Scheduled notification for ${name} on ${nextDate.toLocaleDateString()} at ${hh}:${mm} (${dayBefore} days before name day)`,
 				);
 				successfulNotifications.push(dayBefore);
 			} catch (error) {
 				console.error(
-					`Failed to schedule notification for ${name} (${dayBefore} days before):`,
+					`### Failed to schedule notification for ${name} (${dayBefore} days before):`,
 					error,
 				);
 				failedNotifications.push(dayBefore);
@@ -271,13 +272,13 @@ export async function scheduleNameDayNotifications(
 		// Log summary
 		if (successfulNotifications.length > 0) {
 			console.log(
-				`Successfully scheduled ${successfulNotifications.length} notifications for ${name}:`,
+				`### Successfully scheduled ${successfulNotifications.length} notifications for ${name}:`,
 				successfulNotifications,
 			);
 		}
 		if (failedNotifications.length > 0) {
 			console.warn(
-				`Failed to schedule ${failedNotifications.length} notifications for ${name}:`,
+				`### Failed to schedule ${failedNotifications.length} notifications for ${name}:`,
 				failedNotifications,
 			);
 		}
@@ -391,51 +392,66 @@ function getNextOccurrenceDate(
 	// Get the custom notification time from the store
 	const notificationTime = notifications$.notificationTime.get();
 
-	// For "today" notifications (daysBefore = 0), schedule for today at the specified time
-	if (daysBefore === 0) {
-		const today = new Date();
-		today.setHours(notificationTime.hours, notificationTime.minutes, 0, 0);
-
-		// If the time has already passed today, schedule for tomorrow
-		if (today <= now) {
-			today.setDate(today.getDate() + 1);
-		}
-
-		return today;
-	}
-
-	// For "X days before" notifications, calculate the next name day occurrence
-	let targetDate = new Date(
-		currentYear,
-		monthIndex,
-		dayNumber,
-		notificationTime.hours,
-		notificationTime.minutes,
-		0,
-	);
-
-	// If the name day has already passed this year, schedule for next year
-	if (targetDate <= now) {
-		targetDate = new Date(
-			currentYear + 1,
+	// Helper to build a date and validate that the requested calendar day exists (e.g. 29 Feb)
+	const buildValidTargetDate = (year: number): Date | null => {
+		const candidate = new Date(
+			year,
 			monthIndex,
 			dayNumber,
 			notificationTime.hours,
 			notificationTime.minutes,
 			0,
 		);
+		// Validate date didn't roll over (e.g. 29 Feb -> 1 Mar in non-leap years)
+		if (
+			candidate.getMonth() !== monthIndex ||
+			candidate.getDate() !== dayNumber ||
+			candidate.getFullYear() !== year
+		) {
+			return null;
+		}
+		return candidate;
+	};
+
+	// Find the next valid name-day target date that is in the future
+	const findNextTargetDate = (startYear: number): Date => {
+		let year = startYear;
+		// Limit attempts defensively to avoid infinite loops
+		for (let attempts = 0; attempts < 8; attempts++) {
+			const candidate = buildValidTargetDate(year);
+			if (candidate && candidate > now) return candidate;
+			year += 1;
+		}
+		// Fallback: if somehow not found, use the next year raw date (JS will roll if invalid)
+		return new Date(
+			startYear + 1,
+			monthIndex,
+			dayNumber,
+			notificationTime.hours,
+			notificationTime.minutes,
+			0,
+		);
+	};
+
+	// Compute the soonest upcoming name-day date (on the day)
+	let targetDate = buildValidTargetDate(currentYear);
+	if (!targetDate || targetDate <= now) {
+		targetDate = findNextTargetDate(currentYear + (targetDate ? 0 : 1));
 	}
 
-	// Calculate the notification date by subtracting days before
-	const notificationDate = new Date(targetDate);
-	notificationDate.setDate(notificationDate.getDate() - daysBefore);
+	// Calculate the notification date by subtracting daysBefore
+	let notificationDate = new Date(targetDate);
+	if (daysBefore > 0) {
+		notificationDate.setDate(notificationDate.getDate() - daysBefore);
+	}
 
-	// Don't schedule notifications in the past
+	// If subtracting pushed us into the past (e.g. enabling after window), move to next year's occurrence
 	if (notificationDate <= now) {
-		console.warn(
-			`Notification date ${notificationDate.toLocaleDateString()} is in the past for ${day} ${month} (${daysBefore} days before)`,
-		);
-		return null;
+		const nextYearTarget = findNextTargetDate(targetDate.getFullYear() + 1);
+		notificationDate = new Date(nextYearTarget);
+		if (daysBefore > 0) {
+			notificationDate.setDate(notificationDate.getDate() - daysBefore);
+		}
 	}
 
 	return notificationDate;
@@ -1213,6 +1229,81 @@ export async function recoverFavouritesFromStorage(): Promise<{
 		return {
 			success: false,
 			message: "Failed to recover favourites",
+			details: error instanceof Error ? error.message : "Unknown error",
+		};
+	}
+}
+
+export async function debugNotificationIssue(): Promise<{
+	success: boolean;
+	message: string;
+	details: string;
+}> {
+	console.log("=== DEBUGGING NOTIFICATION ISSUE ===");
+
+	try {
+		const scheduled = await getScheduledNotifications();
+		console.log(`Total scheduled notifications: ${scheduled.length}`);
+
+		if (scheduled.length === 0) {
+			return {
+				success: true,
+				message: "No notifications scheduled",
+				details: "There are currently no scheduled notifications",
+			};
+		}
+
+		const now = new Date();
+		const notificationTime = notifications$.notificationTime.get();
+
+		let details = `Total: ${scheduled.length} notifications\nCurrent time: ${now.toLocaleString()}\nNotification time setting: ${notificationTime.hours}:${notificationTime.minutes}\n\n`;
+
+		// Group notifications by trigger time
+		const notificationsByTime = new Map<number, any[]>();
+
+		scheduled.forEach((notification) => {
+			const trigger = notification.trigger;
+			if (trigger.type === TriggerType.TIMESTAMP) {
+				const triggerTime = trigger.timestamp;
+				if (!notificationsByTime.has(triggerTime)) {
+					notificationsByTime.set(triggerTime, []);
+				}
+				notificationsByTime.get(triggerTime)!.push(notification);
+			}
+		});
+
+		// Check for notifications scheduled at the same time
+		let hasDuplicateTimes = false;
+		notificationsByTime.forEach((notifications, triggerTime) => {
+			if (notifications.length > 1) {
+				hasDuplicateTimes = true;
+				const triggerDate = new Date(triggerTime);
+				details += `⚠️  ${notifications.length} notifications scheduled for ${triggerDate.toLocaleString()}:\n`;
+				notifications.forEach((notification, index) => {
+					details += `   ${index + 1}. ${notification.notification.title}\n`;
+				});
+				details += "\n";
+			}
+		});
+
+		if (hasDuplicateTimes) {
+			return {
+				success: false,
+				message: "Found notifications scheduled at the same time",
+				details: details,
+			};
+		}
+
+		return {
+			success: true,
+			message: `Found ${scheduled.length} scheduled notifications`,
+			details: details,
+		};
+	} catch (error) {
+		console.error("❌ Error debugging notification issue:", error);
+		return {
+			success: false,
+			message: "Failed to debug notification issue",
 			details: error instanceof Error ? error.message : "Unknown error",
 		};
 	}

@@ -21,9 +21,7 @@ export function Search({openSearch, currentMonth}: Props) {
 
 	const handleOpenSearch = () => {
 		openSearch();
-		if (hapticsEnabled) {
-			haptic.impactMedium();
-		}
+		haptic.impactMedium();
 	};
 
 	return (

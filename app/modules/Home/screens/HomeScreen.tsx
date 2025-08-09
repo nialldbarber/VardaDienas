@@ -60,7 +60,7 @@ function getFirstDayIndexAfter(
 
 const ITEM_HEIGHT = 70;
 
-export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
+export const HomeScreen = React.forwardRef<HomeScreenRef>((_, ref) => {
 	const {t} = useTranslation();
 	const bottomSheetRef = React.useRef<BottomSheetModal>(null);
 	const flashListRef = React.useRef<FlashList<string | VardusItem>>(null);
@@ -208,7 +208,6 @@ export const HomeScreen = React.forwardRef<HomeScreenRef>((props, ref) => {
 				if (aExact && !bExact) return -1;
 				if (!aExact && bExact) return 1;
 
-				// If both are exact matches or both are not exact matches, prioritize names that start with the query
 				const aStartsWith = aNormalized.startsWith(normalizedQuery);
 				const bStartsWith = bNormalized.startsWith(normalizedQuery);
 

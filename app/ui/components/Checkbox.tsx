@@ -35,9 +35,7 @@ export function Checkbox({
 			onUnCheckedChange?.();
 		}
 
-		if (hapticsEnabled) {
-			haptic.impactMedium();
-		}
+		haptic.impactMedium();
 	};
 
 	return (

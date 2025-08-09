@@ -35,9 +35,7 @@ export function FastScrollIndex({
 	}, [months]);
 
 	const triggerHapticFeedback = () => {
-		if (hapticsEnabled) {
-			haptic.impactLight();
-		}
+		haptic.impactLight();
 	};
 
 	const handlePositionUpdate = (y: number, isInitial = false) => {

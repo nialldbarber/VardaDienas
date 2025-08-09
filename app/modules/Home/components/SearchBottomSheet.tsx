@@ -119,9 +119,7 @@ export const SearchBottomSheet = React.forwardRef<
 						<Pressable
 							onPress={() => {
 								onSearchQueryChange("");
-								if (hapticsEnabled) {
-									haptic.impactMedium();
-								}
+								haptic.impactMedium();
 							}}
 						>
 							<CloseCircle size="28" variant="Bold" color={colors.primary} />

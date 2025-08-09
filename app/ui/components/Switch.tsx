@@ -73,9 +73,7 @@ export function Switch({
 	const handlePress = () => {
 		if (disabled) return;
 
-		if (hapticsEnabled) {
-			haptics.impactMedium();
-		}
+		haptics.impactMedium();
 		onValueChange(!value);
 	};
 
