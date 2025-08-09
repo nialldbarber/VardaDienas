@@ -55,11 +55,12 @@ workflows:
           cd $CM_BUILD_DIR/ios
           echo "Current build number from project:"
           agvtool what-version -terse || echo "No current version found"
-          
-          # Use Codemagic's build number (automatically incremented)
-          echo "Setting build number to $CM_BUILD_NUMBER..."
-          agvtool new-version -all $CM_BUILD_NUMBER
-          
+
+          # Use a UTC timestamp to ensure a strictly increasing and unique build number across workflows
+          BUILD_NUMBER=$(date -u +%Y%m%d%H%M%S)
+          echo "Setting build number to $BUILD_NUMBER..."
+          agvtool new-version -all $BUILD_NUMBER
+
           echo "Verifying build number was set:"
           agvtool what-version -terse
 
@@ -152,11 +153,12 @@ workflows:
           cd $CM_BUILD_DIR/ios
           echo "Current build number from project:"
           agvtool what-version -terse || echo "No current version found"
-          
-          # Use Codemagic's build number (automatically incremented)
-          echo "Setting build number to $CM_BUILD_NUMBER..."
-          agvtool new-version -all $CM_BUILD_NUMBER
-          
+
+          # Use a UTC timestamp to ensure a strictly increasing and unique build number across workflows
+          BUILD_NUMBER=$(date -u +%Y%m%d%H%M%S)
+          echo "Setting build number to $BUILD_NUMBER..."
+          agvtool new-version -all $BUILD_NUMBER
+
           echo "Verifying build number was set:"
           agvtool what-version -terse
 

@@ -8,31 +8,18 @@ import * as Permissions from "react-native-permissions";
 
 // Helper function to get translations without hooks
 function getNotificationText(
-	language: string,
-	key: string,
+	_language: string,
+	_key: string,
 	name: string,
 	daysBefore = 0,
 ) {
-	console.log(`### GET NOTIFICATION TEXT CALLED`);
+	console.log("### GET NOTIFICATION TEXT CALLED");
 	console.log(
-		`### Input - Language: ${language}, Key: ${key}, Name: ${name}, DaysBefore: ${daysBefore}`,
+		`### Input - Language: lv, Key: nameDay, Name: ${name}, DaysBefore: ${daysBefore}`,
 	);
 
+	// Force Latvian copy
 	const translations = {
-		en: {
-			today: {
-				title: "🎉 Name day today!",
-				body: `It's ${name}'s name day! Don't forget to say sveiciens!`,
-			},
-			tomorrow: {
-				title: "🎉 Name day tomorrow!",
-				body: `Tomorrow is ${name}'s name day!`,
-			},
-			future: {
-				title: "🎉 Name day coming up!",
-				body: `${name}'s name day is in ${daysBefore} days!`,
-			},
-		},
 		lv: {
 			today: {
 				title: "🎉 Vārda diena šodien!",
@@ -47,23 +34,22 @@ function getNotificationText(
 				body: `${name} svinēs vārda dienu pēc ${daysBefore} dienām!`,
 			},
 		},
-	};
+	} as const;
 
-	const langTranslations =
-		translations[language as keyof typeof translations] || translations.en;
+	const langTranslations = translations.lv;
 
 	// Determine which message to use based on daysBefore
-	console.log(`### DECIDING WHICH MESSAGE TO USE`);
+	console.log("### DECIDING WHICH MESSAGE TO USE");
 	console.log(
 		`### DaysBefore value: ${daysBefore}, Type: ${typeof daysBefore}`,
 	);
 
 	if (daysBefore === 0) {
-		console.log(`### SELECTED: TODAY MESSAGE`);
+		console.log("### SELECTED: TODAY MESSAGE");
 		return langTranslations.today;
 	}
 	if (daysBefore === 1) {
-		console.log(`### SELECTED: TOMORROW MESSAGE`);
+		console.log("### SELECTED: TOMORROW MESSAGE");
 		return langTranslations.tomorrow;
 	}
 	console.log(`### SELECTED: FUTURE MESSAGE (${daysBefore} days)`);
@@ -133,14 +119,8 @@ export async function scheduleNameDayNotifications(
 
 		const channelId = await notifee.createChannel({
 			id: "nameday-notifications",
-			name:
-				currentLanguage === "lv"
-					? "Vārda dienu paziņojumi"
-					: "Name Day Notifications",
-			description:
-				currentLanguage === "lv"
-					? "Paziņojumi par jūsu mīļākajām vārda dienām"
-					: "Notifications for your favourite name days",
+			name: "Vārda dienu paziņojumi",
+			description: "Paziņojumi par jūsu mīļākajām vārda dienām",
 			sound: "default",
 			vibration: true,
 		});
@@ -195,11 +175,11 @@ export async function scheduleNameDayNotifications(
 				month,
 				dayBefore,
 			);
-			console.log(`### NOTIFICATION SCHEDULING`);
+			console.log("### NOTIFICATION SCHEDULING");
 			console.log(
 				`### Name: ${name}, Day: ${day}, Month: ${month}, DaysBefore: ${dayBefore}`,
 			);
-			console.log(`### Language: ${currentLanguage}`);
+			console.log("### Language: lv (forced)");
 
 			const notificationText = getNotificationText(
 				currentLanguage,
@@ -208,7 +188,7 @@ export async function scheduleNameDayNotifications(
 				dayBefore,
 			);
 
-			console.log(`### NOTIFICATION TEXT RESULT`);
+			console.log("### NOTIFICATION TEXT RESULT");
 			console.log(`### Title: ${notificationText.title}`);
 			console.log(`### Body: ${notificationText.body}`);
 
