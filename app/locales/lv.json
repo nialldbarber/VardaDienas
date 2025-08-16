@@ -56,7 +56,9 @@
 		"shareWithFriends": "Dalīties ar draugiem",
 		"giveFeedback": "Dot atsauksmi",
 		"privacyPolicy": "Privātuma politika",
-		"shareMessage": "Apskatiet {{appName}} - skaistu vārdu dienu kalendāra lietotni! {{storeUrl}}",
+		"shareMessage": "Apskatiet {{appName}}! {{storeUrl}}",
+		"shareTitle": "Dalīties",
+		"share": "Dalīties ar lietotni",
 		"version": "Versija"
 	},
 	"home": {
@@ -85,7 +87,7 @@
 		"daysBefore": "Dienas iepriekš",
 		"onTheDay": "Dienā",
 		"shareWishes": "Dalīties ar vēlējumiem",
-		"shareMessage": "{{name}}, sveicieni vārda dienā! 🎉"
+		"shareMessage": "Daudz laimes vārda dienā, {{name}}! 🎉"
 	},
 	"contextMenu": {
 		"favouritesInfo": "Mīļāko informācija",

@@ -56,7 +56,9 @@
 		"shareWithFriends": "Share with Friends",
 		"giveFeedback": "Give Feedback",
 		"privacyPolicy": "Privacy Policy",
-		"shareMessage": "Check out {{appName}} - a beautiful name day calendar app! {{storeUrl}}",
+		"shareMessage": "Check out {{appName}}! {{storeUrl}}",
+		"shareTitle": "Share",
+		"share": "Share app",
 		"version": "Version"
 	},
 	"home": {
